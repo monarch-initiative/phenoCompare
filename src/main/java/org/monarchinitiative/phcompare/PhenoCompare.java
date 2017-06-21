@@ -1,7 +1,5 @@
 package org.monarchinitiative.phcompare;
 
-
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -23,45 +21,86 @@ import ontologizer.ontology.TermContainer;
 import ontologizer.ontology.TermID;
 import ontologizer.types.ByteString;
 
-
 /**
- * Created by robinp on 6/13/17.
+ *  PhenoCompare compares two groups of patients to judge their overlap/divergence in the Human Phenotype
+ *  Ontology.  PhenoCompare calculates for each node of HPO, the number of patients in each of the two groups
+ *  who exhibit a phenotype covered by that node. Takes into account the type hierarchy.
+ *     @author Hannah Blau (blauh)
+ *     @version 0.0.1
  */
 public class PhenoCompare {
+    private static final String hpoPath = "/Users/blauh/phenoCompare/hp.obo";
+    private static final int NUM_GROUPS = 2;
+    private static final int GROUPA = 0;
+    private static final int GROUPB = 1;
 
-
+    private static Ontology hpo;
+    private static PatientGroup[] patientGroups = new PatientGroup[NUM_GROUPS];
+    private static Map<TermID, Integer[]> patientCounts = new HashMap<>();
 
     public static void main(String[] args) {
         if (args.length != 3) {
             System.err.println("Error: incorrect number of arguments");
-            System.err.println("Usage: java -jar obo2dot.jar IN.obo IN.gaf OUT.tsv");
+            System.err.println("Usage: java -jar phenoCompare.jar groupAdirectory groupBdirectory outDirectory");
             System.exit(1);
         }
 
         try {
             // Load Ontology from file
-            Ontology ontology = parseObo(args[0]);
-
-            // Load associations
-            List<Association> associations = parseAssociations(args[1], ontology);
-
-            // Compute information content
-            SortedMap<TermID, Double> informationContent =
-                    computeInformationContent(ontology, associations);
-
-            // Write out information content.
-            writeInformationContent(args[2], informationContent);
+            hpo = parseObo(hpoPath);
         } catch (IOException e) {
-            System.err.println(
-                    "ERROR: Problem reading input file. See below for technical information\n\n");
+            System.err.println("ERROR: Problem reading OBO file " + hpoPath + "\n\n");
             e.printStackTrace();
             System.exit(1);
         } catch (OBOParserException e) {
-            System.err.println(
-                    "ERROR: Problem parsing OBO file. See below for technical information\n\n");
+            System.err.println("ERROR: Problem parsing OBO file " + hpoPath + "\n\n");
             e.printStackTrace();
             System.exit(1);
         }
+        // Read patient files for groups A and B
+        try {
+            for (int i = 0; i < NUM_GROUPS; i++) {
+                patientGroups[i] = new PatientGroup(args[i]);
+                patientGroups[i].readPatientFiles();
+            }
+        } catch (IOException e) {
+            System.err.println("ERROR: Problem reading patient files, " + e.getMessage() + "\n\n");
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        // For each node in the HPO ontology that covers one or more patients, count how many patients
+        // in each group fall under that node. Any node of the hierarchy that is not referenced has counts of
+        // 0 for each group.
+        countPatients();
+    }
+
+    private static void countPatients() {
+        for (int g = 0; g < NUM_GROUPS; g++) {
+            for (Patient p : patientGroups[g].getGroupMembers()) {
+                for (TermID tid : p.getHpoTerms()) {
+                    updateCount(tid, g);
+                    for (TermID pid : hpo.getTermParents(tid)) {
+                        updateCount(pid, g);
+                    }
+                }
+            }
+        }
+    }
+
+            /* Load associations
+            List<Association> associations = parseAssociations(args[1], hpo);
+
+            // Compute information content
+            SortedMap<TermID, Double> informationContent =
+                    computeInformationContent(hpo, associations);
+
+            // Write out information content.
+            writeInformationContent(args[2], informationContent);
+            */
+
+    private static void updateCount(TermID tid, int g) {
+//        if (patientCounts.get(tid))
     }
 
     private static Ontology parseObo(String pathObo) throws IOException, OBOParserException {
