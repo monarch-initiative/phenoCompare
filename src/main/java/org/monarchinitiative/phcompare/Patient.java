@@ -2,25 +2,30 @@ package org.monarchinitiative.phcompare;
 
 import ontologizer.ontology.TermID;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.HashSet;
 
 /**
  * A patient is just a collection of HPO term IDs.
  * @author Hannah Blau (blauh)
  * @version 0.0.1
  */
-public class Patient {
-    Set<TermID> hpoTerms;
+class Patient {
+    private Set<TermID> hpoTerms;
 
-    public Patient(File sourceDir, String fname) throws IOException {
+    /**
+     * Constructor reads from the specified patient file, extracts the HPO term IDs from the correct
+     * column, and stores those term IDs in the instance variable hpoTerms.
+     * @param sourceDir      directory in which patient file will be found
+     * @param fname          name of patient file
+     * @throws IOException   if patient file cannot be opened
+     */
+    Patient(File sourceDir, String fname) throws IOException {
         String hpoTermID = "";
-        final int colNum = 7;    // column in which HPO terms appear in file
+        final int colNum = 8;    // column in which HPO terms appear in file
 
         hpoTerms = new HashSet<>();
 
@@ -34,16 +39,20 @@ public class Patient {
         // First line of file is a header line; skip over it.
         if (scan.hasNextLine())
             scan.nextLine();
-        for (int i = 0; i < colNum && scan.hasNext(); i++) {
-            hpoTermID = scan.next();
+        while (scan.hasNextLine()) {
+            // Skip over the uninteresting columns until you reach the HPO term id.
+            for (int i = 0; i < colNum && scan.hasNext(); i++) {
+                hpoTermID = scan.next();
+            }
+            hpoTerms.add(new TermID(hpoTermID));
+            // Throw away remainder of current line.
+            scan.nextLine();
         }
-        hpoTerms.add(new TermID(hpoTermID));
-        scan.nextLine();
     }
 
-    public Set<TermID> getHpoTerms() {
+    Set<TermID> getHpoTerms() {
         return hpoTerms;
     }
 
-    public boolean hasHpoTerms() { return !hpoTerms.isEmpty(); }
+//    public boolean hasHpoTerms() { return !hpoTerms.isEmpty(); }
 }
