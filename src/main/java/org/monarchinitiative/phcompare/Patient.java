@@ -50,6 +50,9 @@ class Patient {
         }
     }
 
+    /*
+     * This constructor useful for test classes.
+     */
     Patient(TreeSet<TermID> terms) {
         if (terms == null) {
             hpoTerms = new TreeSet<>();

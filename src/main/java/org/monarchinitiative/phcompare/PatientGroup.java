@@ -28,6 +28,9 @@ class PatientGroup {
         return groupMembers;
     }
 
+    /*
+     * Reads files for individual patients from directory specified when patientGroup was constructed.
+     */
     void readPatientFiles() throws IOException {
         String[] filesInDir;
 
