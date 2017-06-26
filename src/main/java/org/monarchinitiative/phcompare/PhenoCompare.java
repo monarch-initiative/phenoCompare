@@ -1,21 +1,16 @@
 package org.monarchinitiative.phcompare;
 
-import java.io.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import ontologizer.association.Association;
 import ontologizer.io.obo.OBOParser;
 import ontologizer.io.obo.OBOParserException;
 import ontologizer.io.obo.OBOParserFileInput;
 import ontologizer.ontology.Ontology;
 import ontologizer.ontology.TermContainer;
 import ontologizer.ontology.TermID;
-import ontologizer.types.ByteString;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.*;
 
 /**
  *  PhenoCompare compares two groups of patients to judge their overlap/divergence in the Human Phenotype
@@ -32,7 +27,7 @@ public class PhenoCompare {
     private PatientGroup[] patientGroups = new PatientGroup[NUM_GROUPS];
     private SortedMap<TermID, int[]> patientCounts = new TreeMap<>();
 
-    public PhenoCompare(String hpoPath) throws IOException, OBOParserException {
+    PhenoCompare(String hpoPath) throws IOException, OBOParserException {
         // Load Ontology from file
         hpo = parseObo(hpoPath);
     }
@@ -53,24 +48,34 @@ public class PhenoCompare {
     }
 
     private void countPatient(Patient p, int group) {
+        Set<TermID> ancestors = new HashSet<>();
         for (TermID tid : p.getHpoTerms()) {
             // getTermsOfInducedGraph returns a set of TermIDs for ancestors of tid
-            for (TermID aid : hpo.getTermsOfInducedGraph(null, tid)) {
-                updateCount(aid, group);
+            try {
+                // merging sets of TermIDs eliminates duplicates if a given ontology node appears
+                // in the induced graph for more than one of patient's HPO terms
+                ancestors.addAll(hpo.getTermsOfInducedGraph(null, tid));
             }
+            // if tid is no longer in the ontology, getTermsOfInducedGraph results in IllegalArgumentException
+            catch (IllegalArgumentException e) {
+                System.err.println(e.getMessage());
+            }
+        }
+        for (TermID ancestor : ancestors) {
+            updateCount(ancestor, group);
         }
     }
 
     private void updateCount(TermID tid, int group) {
-        int[] counts;
-
         if (patientCounts.containsKey(tid)) {
             patientCounts.get(tid)[group]++;
+//            System.err.println(tid.toString() + " " + patientCounts.get(tid)[0] + " " + patientCounts.get(tid)[1]);
         }
         else {
-            counts = new int[NUM_GROUPS];
+            int[] counts = new int[NUM_GROUPS];
             counts[group]++;
             patientCounts.put(tid, counts);
+//            System.err.println(tid.toString() + " " + patientCounts.get(tid)[0] + " " + patientCounts.get(tid)[1]);
         }
     }
 
@@ -85,7 +90,7 @@ public class PhenoCompare {
 
             bw.write(String.format("%s \t%s", tid, hpo.getTerm(tid).getName().toString()));
             for (int i = 0; i < NUM_GROUPS; i++) {
-                bw.write(String.format("\t%s%c: %d6", "group", ('A' + i), counts[i]));
+                bw.write(String.format("\t%s%c: %5d", "group", ('A' + i), counts[i]));
             }
             bw.newLine();
         }
@@ -106,6 +111,7 @@ public class PhenoCompare {
         return ontology;
     }
 
+/*
     private static SortedMap<TermID, Double> computeInformationContent(Ontology ontology,
                                                                        List<Association> associations) {
         // First, build mapping from term to database ID
@@ -136,17 +142,7 @@ public class PhenoCompare {
         }
         return termInformationContent;
     }
-
-    private static void writeInformationContent(String pathTxt,
-                                                Map<TermID, Double> informationContent) throws FileNotFoundException {
-        System.err.println("Writing ontology as .txt file to " + pathTxt + " ...");
-        PrintWriter out = new PrintWriter(new File(pathTxt));
-        for (Entry<TermID, Double> e : informationContent.entrySet()) {
-            out.println(e.getKey() + "\t" + e.getValue());
-        }
-        out.close();
-        System.err.println("=> done writing DOT file");
-    }
+*/
 
     public static void main(String[] args) {
         PhenoCompare phenoC = null;

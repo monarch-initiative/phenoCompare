@@ -1,6 +1,7 @@
 package org.monarchinitiative.phcompare;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,31 +11,34 @@ import java.util.List;
  * @author Hannah Blau (blauh)
  * @version 0.0.1
  */
-public class PatientGroup {
-    File sourceDir;
-    List<Patient> groupMembers;
+class PatientGroup {
+    private static String FNAME_EXT = ".tab";      // filename extension for patient files
+    private File sourceDir;
+    private List<Patient> groupMembers;
 
-    public PatientGroup(String path) throws IOException {
-        File sourceDir = new File(path);
+    PatientGroup(String path) throws IOException {
+        sourceDir = new File(path);
         if (!sourceDir.exists()) {
             throw new IOException("[PatientGroup.PatientGroup] Cannot find source directory " + path);
         }
         groupMembers = new ArrayList<>();
     }
 
-    public List<Patient> getGroupMembers() {
+    List<Patient> getGroupMembers() {
         return groupMembers;
     }
 
-    public void readPatientFiles() throws IOException {
+    void readPatientFiles() throws IOException {
         String[] filesInDir;
 
-        if ((filesInDir = sourceDir.list()) != null) {
+        FilenameFilter fFilter = (File dir, String name) ->
+           name.toLowerCase().endsWith(FNAME_EXT);
+
+        if ((filesInDir = sourceDir.list(fFilter)) != null) {
             for (String f : filesInDir) {
                 Patient p = new Patient(sourceDir, f);
                 groupMembers.add(p);
             }
         }
     }
-
 }

@@ -4,9 +4,9 @@ import ontologizer.ontology.TermID;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * A patient is just a collection of HPO term IDs.
@@ -25,9 +25,9 @@ class Patient {
      */
     Patient(File sourceDir, String fname) throws IOException {
         String hpoTermID = "";
-        final int colNum = 8;    // column in which HPO terms appear in file
+        final int colNum = 7;    // column in which HPO terms appear in file
 
-        hpoTerms = new HashSet<>();
+        hpoTerms = new TreeSet<>();
 
         File patientFile = new File(sourceDir, fname);
         if (!patientFile.exists()) {
@@ -35,7 +35,7 @@ class Patient {
                     " in directory " + sourceDir.getPath());
 
         }
-        Scanner scan = new Scanner(patientFile);
+        Scanner scan = new Scanner(patientFile).useDelimiter("\\t");
         // First line of file is a header line; skip over it.
         if (scan.hasNextLine())
             scan.nextLine();
@@ -50,9 +50,40 @@ class Patient {
         }
     }
 
+    Patient(TreeSet<TermID> terms) {
+        if (terms == null) {
+            hpoTerms = new TreeSet<>();
+        }
+        else hpoTerms = terms;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Patient patient = (Patient) o;
+
+        return hpoTerms.equals(patient.hpoTerms);
+    }
+
     Set<TermID> getHpoTerms() {
         return hpoTerms;
     }
 
-//    public boolean hasHpoTerms() { return !hpoTerms.isEmpty(); }
+    @Override
+    public int hashCode() {
+        return getHpoTerms().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("Patient:\n");
+        for (TermID t : getHpoTerms()) {
+            sb.append("\t");
+            sb.append(t.toString());
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
 }

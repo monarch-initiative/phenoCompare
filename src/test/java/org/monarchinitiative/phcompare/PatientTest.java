@@ -29,6 +29,25 @@ public class PatientTest {
     }
 
     @Test
+    public void test0FileNotFound() throws Exception {
+        try {
+            p = new Patient(f, "OMIM-missing.tab");
+        }
+        catch (IOException e) {
+            System.err.println("test0FileNotFound: catching IOException");
+            System.err.println("ERROR: Problem reading patient files, " + e.getMessage() + "\n\n");
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void test1Constructor() throws Exception {
+        p = new Patient(f, "OMIM-611553.tab");
+        System.out.println("\nHPO terms from file OMIM-611553");
+            System.out.println(p);
+    }
+
+    @Test
     public void test2GetHpoTerms() throws Exception {
         Set<String> expected = new HashSet<>();
         Set<String> pTerms = new HashSet<>();
@@ -45,27 +64,7 @@ public class PatientTest {
         for (TermID t : p.getHpoTerms()) {
             pTerms.add(t.toString());
         }
-        assertEquals(expected, pTerms);
-    }
-
-    @Test
-    public void test0FileNotFound() throws Exception {
-        try {
-            p = new Patient(f, "OMIM-missing.tab");
-        }
-        catch (IOException e) {
-            System.err.println("test0FileNotFound: catching IOException");
-            System.err.println("ERROR: Problem reading patient files, " + e.getMessage() + "\n\n");
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void test1Constructor() throws Exception {
-        p = new Patient(f, "OMIM-611553.tab");
-        System.out.println("\nHPO terms from file OMIM-611553");
-        for (TermID t : p.getHpoTerms()) {
-            System.out.println(t);
-        }
+        assertEquals("HPO terms read from OMIM-611553.tab are not as expected", expected, pTerms);
+        System.out.println("HPO terms read from OMIM-611553.tab match expectation.");
     }
 }
