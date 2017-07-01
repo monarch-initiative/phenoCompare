@@ -6,6 +6,7 @@ import ontologizer.io.obo.OBOParserFileInput;
 import ontologizer.ontology.Ontology;
 import ontologizer.ontology.TermContainer;
 import ontologizer.ontology.TermID;
+import org.monarchinitiative.phcompare.stats.ChiSquared;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -38,27 +39,16 @@ public class PhenoCompare {
     }
 
     /*
-     * Each group of patients is created from a set of patient files in the directory specified
-     * in parameter paths.
+     * Calculates the chi squared statistic for each HPO term, based on counts of patients in each
+     * group who have/do not have that phenotype.
      */
-    private void createPatientGroups(String[] paths) throws IOException {
-        for (int i = 0; i < NUM_GROUPS; i++) {
-            patientGroups[i] = new PatientGroup(paths[i]);
-            patientGroups[i].readPatientFiles();
-        }
-    }
-
-    /*
-     * For each group of patients, counts how many patients exhibit phenotype associated with
-     * each node of ontology. HPO terms that do not appear in any patient file are implicitly given
-     * a count of 0 for all patient groups.
-     */
-    private void countPatients() {
+    private double calculateChiSq(int[] countsForTermID) {
+        long[][] csq = new long[NUM_GROUPS][2];
         for (int g = 0; g < NUM_GROUPS; g++) {
-            for (Patient p : patientGroups[g].getGroupMembers()) {
-                countPatient(p, g);
-            }
+            csq[g][0] = countsForTermID[g];                              // have phenotype
+            csq[g][1] = patientGroups[g].size() - countsForTermID[g];    // don't have phenotype
         }
+        return new ChiSquared(csq).getChiSquare();
     }
 
     /*
@@ -89,25 +79,32 @@ public class PhenoCompare {
     }
 
     /*
-     * Increments the count mapped to HPO term tid for the specified patient group.
+     * For each group of patients, counts how many patients exhibit phenotype associated with
+     * each node of ontology. HPO terms that do not appear in any patient file are implicitly given
+     * a count of 0 for all patient groups.
      */
-    private void updateCount(TermID tid, int group) {
-        if (patientCounts.containsKey(tid)) {
-            // Have already seen this termID before, just increment existing array element.
-            patientCounts.get(tid)[group]++;
+    private void countPatients() {
+        for (int g = 0; g < NUM_GROUPS; g++) {
+            for (Patient p : patientGroups[g].getGroupMembers()) {
+                countPatient(p, g);
+            }
         }
-        else {
-            // First time we have seen this termID, create a new map entry for it and record count of 1 for
-            // specified group.
-            int[] counts = new int[NUM_GROUPS];
-            counts[group]++;
-            patientCounts.put(tid, counts);
-        }
-//            System.err.println(tid.toString() + " " + patientCounts.get(tid)[0] + " " + patientCounts.get(tid)[1]);
     }
 
     /*
-     * Writes termID, term name, counts for each group of patients to specified output file.
+     * Each group of patients is created from a set of patient files in the directory specified
+     * in parameter paths.
+     */
+    private void createPatientGroups(String[] paths) throws IOException {
+        for (int i = 0; i < NUM_GROUPS; i++) {
+            patientGroups[i] = new PatientGroup(paths[i]);
+            patientGroups[i].readPatientFiles();
+        }
+    }
+
+    /*
+     * Writes termID, term name, counts for each group of patients, and the chi squared statistic
+     * to specified output file.
      */
     private void displayResults(String outPath) throws IOException {
         TermID tid;
@@ -120,8 +117,9 @@ public class PhenoCompare {
 
             bw.write(String.format("%s \t%s", tid, hpo.getTerm(tid).getName().toString()));
             for (int i = 0; i < NUM_GROUPS; i++) {
-                bw.write(String.format("\t%s%c: %5d", "group", ('A' + i), counts[i]));
+                bw.write(String.format("\tgroup%c: %5d", ('A' + i), counts[i]));
             }
+            bw.write(String.format("\tChiSq: %7.3f", calculateChiSq(counts)));
             bw.newLine();
         }
         bw.close();
@@ -145,38 +143,22 @@ public class PhenoCompare {
         return ontology;
     }
 
-/*
-    private static SortedMap<TermID, Double> computeInformationContent(Ontology ontology,
-                                                                       List<Association> associations) {
-        // First, build mapping from term to database ID
-        HashMap<TermID, HashSet<ByteString>> termToDbId =
-                new HashMap<TermID, HashSet<ByteString>>();
-
-        for (Association a : associations) {
-            if (!termToDbId.containsKey(a.getTermID())) {
-                termToDbId.put(a.getTermID(), new HashSet<ByteString>());
-            }
-            termToDbId.get(a.getTermID()).add(a.getDB_Object());
+    /*
+     * Increments the count mapped to HPO term tid for the specified patient group.
+     */
+    private void updateCount(TermID tid, int group) {
+        if (patientCounts.containsKey(tid)) {
+            // Have already seen this termID before, just increment existing array element.
+            patientCounts.get(tid)[group]++;
         }
-
-        // From this, derive absolute frequencies for annotation of dabase object ID with term
-        Map<TermID, Integer> termFreqAbs = new HashMap<TermID, Integer>();
-        for (TermID t : termToDbId.keySet()) {
-            termFreqAbs.put(t, termToDbId.get(t).size());
+        else {
+            // First time we have seen this termID, create a new map entry for it and record count of 1 for
+            // specified group.
+            int[] counts = new int[NUM_GROUPS];
+            counts[group]++;
+            patientCounts.put(tid, counts);
         }
-
-        // Get total number of genes with annotation
-        final int numDbObjects = termFreqAbs.size();
-
-        // From this, we can easily compute the information content
-        TreeMap<TermID, Double> termInformationContent = new TreeMap<TermID, Double>();
-        for (Entry<TermID, Integer> e : termFreqAbs.entrySet()) {
-            termInformationContent.put(e.getKey(),
-                    -Math.log(((double) e.getValue()) / numDbObjects));
-        }
-        return termInformationContent;
     }
-*/
 
     public static void main(String[] args) {
         PhenoCompare phenoC = null;

@@ -44,4 +44,6 @@ class PatientGroup {
             }
         }
     }
+
+    int size() { return groupMembers.size(); }
 }
