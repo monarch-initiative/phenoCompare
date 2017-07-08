@@ -1,0 +1,19 @@
+Disease ID	Disease Name	Gene ID	Gene Name	Genotype	Gene Symbol(s)	Phenotype ID	Phenotype Name	Age of Onset ID	Age of Onset Name	Evidence ID	Evidence Name	Frequency	Sex ID	Sex Name	Negation ID	Negation Name	Description	Pub	Assigned by	Date Created
+OMIM:615355	NOONAN SYNDROME 8; NS8					HP:0004482	Relative macrocephaly			PCS	PCS							PMID:25124994	HPO:probinson	2017-05-31
+OMIM:615355	NOONAN SYNDROME 8; NS8					HP:0000766	Abnormality of the sternum			PCS	PCS							PMID:25124994	HPO:probinson	2017-05-31
+OMIM:615355	NOONAN SYNDROME 8; NS8					HP:0002212	Curly hair			PCS	PCS							PMID:25124994	HPO:probinson	2017-05-31
+OMIM:615355	NOONAN SYNDROME 8; NS8					HP:0001712	Left ventricular hypertrophy			PCS	PCS	14/23						PMID:25124994	HPO:probinson	2017-05-31
+OMIM:615355	NOONAN SYNDROME 8; NS8					HP:0004322	Short stature			PCS	PCS	7/20						PMID:25124994	HPO:probinson	2017-05-31
+OMIM:615355	NOONAN SYNDROME 8; NS8					HP:0001249	Intellectual disability			PCS	PCS				NOT	NOT		PMID:25124994	HPO:probinson	2017-05-31
+OMIM:615355	NOONAN SYNDROME 8; NS8					HP:0004482	Relative macrocephaly			PCS	PCS	11/19						PMID:25124994	HPO:probinson	2017-05-31
+OMIM:615355	NOONAN SYNDROME 8; NS8					HP:0000465	Webbed neck			PCS	PCS	15/21						PMID:25124994	HPO:probinson	2017-05-31
+OMIM:615355	NOONAN SYNDROME 8; NS8					HP:0001643	Patent ductus arteriosus			PCS	PCS	3/22						PMID:25124994	HPO:probinson	2017-05-31
+OMIM:615355	NOONAN SYNDROME 8; NS8					HP:0001629	Ventricular septal defect			PCS	PCS							PMID:25124994	HPO:probinson	2017-05-31
+OMIM:615355	NOONAN SYNDROME 8; NS8					HP:0001631	Atrial septal defect			PCS	PCS							PMID:25124994	HPO:probinson	2017-05-31
+OMIM:615355	NOONAN SYNDROME 8; NS8					HP:0000766	Abnormality of the sternum			PCS	PCS	5/19						PMID:25124994	HPO:probinson	2017-05-31
+OMIM:615355	NOONAN SYNDROME 8; NS8					HP:0000028	Cryptorchidism			PCS	PCS	9/13	Male					PMID:25124994	HPO:probinson	2017-05-31
+OMIM:615355	NOONAN SYNDROME 8; NS8					HP:0002212	Curly hair			PCS	PCS	9/20						PMID:25124994	HPO:probinson	2017-05-31
+OMIM:615355	NOONAN SYNDROME 8; NS8					HP:0000953	Hyperpigmentation of the skin			PCS	PCS	6/17						PMID:25124994	HPO:probinson	2017-05-31
+OMIM:615355	NOONAN SYNDROME 8; NS8					HP:0000974	Hyperextensible skin			PCS	PCS	6/17						PMID:25124994	HPO:probinson	2017-05-31
+OMIM:615355	NOONAN SYNDROME 8; NS8					HP:0007517	Palmoplantar cutis laxa			PCS	PCS	8/16						PMID:25124994	HPO:probinson	2017-05-31
+OMIM:615355	NOONAN SYNDROME 8; NS8					HP:0001249	Intellectual disability			PCS	PCS	4/18						PMID:25124994	HPO:probinson	2017-05-31

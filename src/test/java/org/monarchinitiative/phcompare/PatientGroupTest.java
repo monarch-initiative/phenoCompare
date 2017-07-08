@@ -1,14 +1,11 @@
 package org.monarchinitiative.phcompare;
 
 import ontologizer.ontology.TermID;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 
 import java.io.IOException;
 import java.util.TreeSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.Assert.assertTrue;
 
@@ -16,42 +13,33 @@ import static org.junit.Assert.assertTrue;
  * Tests for the PatientGroup class.
  *
  * @author Hannah Blau (blauh)
- * @version 0.0.1
+ * @version 0.0.2
  */
-
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-
 public class PatientGroupTest {
-    private static String emptyDir = "/Users/blauh/phenoCompare/groupC/";
-    private static String missingDir = "/Users/blauh/phenoCompare/groupD/";
-    private static String normalDir = "/Users/blauh/phenoCompare/groupB/";
+    private static String emptyDir = "src/test/resources/patientFiles/groupC/";
+    private static String missingDir = "src/test/resources/patientFiles/groupD/";
+    private static String normalDir = "src/test/resources/patientFiles/groupB/";
 
-    @Test
-    public void test0FileNotFound() throws Exception {
-        try {
-            PatientGroup mpg = new PatientGroup(missingDir);
-        } catch (IOException e) {
-            System.err.println("test0FileNotFound: catching IOException");
-            System.err.println(e.getMessage());
-        }
+    @Test(expected = IOException.class)
+    public void testFileNotFound() throws Exception {
+        PatientGroup mpg = new PatientGroup(missingDir);
     }
 
     @Test
-    public void test1EmptyDirectory() throws Exception {
+    public void testEmptyDirectory() throws Exception {
         PatientGroup epg = new PatientGroup(emptyDir);
         epg.readPatientFiles();
         assertTrue("Test 1: patient group should be empty but is not.", epg.getGroupMembers().isEmpty());
-        System.err.println("test1EmptyDirectory passed");
     }
 
     @Test
-    public void test2readPatientFiles() throws Exception {
+    public void testReadPatientFiles() throws Exception {
         PatientGroup pg = new PatientGroup(normalDir);
         pg.readPatientFiles();
-        System.out.println("\nPatients from " + normalDir);
-        for (Patient p : pg.getGroupMembers()) {
-            System.out.println(p);
-        }
+//        System.out.println("\nPatients from " + normalDir);
+//        for (Patient p : pg.getGroupMembers()) {
+//            System.out.println(p);
+//        }
 
         TreeSet<TermID> f239300 = new TreeSet<>();
         f239300.add(new TermID("HP:0000007"));

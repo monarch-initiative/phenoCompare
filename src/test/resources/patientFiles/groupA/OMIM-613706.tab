@@ -1,0 +1,14 @@
+Disease ID	Disease Name	Gene ID	Gene Name	Genotype	Gene Symbol(s)	Phenotype ID	Phenotype Name	Age of Onset ID	Age of Onset Name	Evidence ID	Evidence Name	Frequency	Sex ID	Sex Name	Negation ID	Negation Name	Description	Pub	Assigned by	Date Created	
+OMIM:613706	#613706 NOONAN SYNDROME 7; NS7				BRAF	HP:0008872	Feeding difficulties in infancy			TAS	TAS							OMIM:613706	HPO:probinson	Jun 2, 2013	
+OMIM:613706	#613706 NOONAN SYNDROME 7; NS7				BRAF	HP:0004322	Short stature			TAS	TAS							OMIM:613706	HPO:probinson	Jun 2, 2013	
+OMIM:613706	#613706 NOONAN SYNDROME 7; NS7				BRAF	HP:0001249	Intellectual disability			TAS	TAS							OMIM:613706	HPO:probinson	Jun 2, 2013	
+OMIM:613706	#613706 NOONAN SYNDROME 7; NS7				BRAF	HP:0001252	Muscular hypotonia			TAS	TAS							OMIM:613706	HPO:probinson	Jun 2, 2013	
+OMIM:613706	#613706 NOONAN SYNDROME 7; NS7				BRAF	HP:0000268	Dolichocephaly			TAS	TAS							OMIM:613706	HPO:probinson	Jun 2, 2013	
+OMIM:613706	#613706 NOONAN SYNDROME 7; NS7				BRAF	HP:0011220	Prominent forehead			TAS	TAS							OMIM:613706	HPO:probinson	Jun 2, 2013	
+OMIM:613706	#613706 NOONAN SYNDROME 7; NS7				BRAF	HP:0000316	Hypertelorism			TAS	TAS							OMIM:613706	HPO:probinson	Jun 2, 2013	
+OMIM:613706	#613706 NOONAN SYNDROME 7; NS7				BRAF	HP:0000369	Low-set ears			TAS	TAS							OMIM:613706	HPO:probinson	Jun 2, 2013	
+OMIM:613706	#613706 NOONAN SYNDROME 7; NS7				BRAF	HP:0000391	Thickened helices			TAS	TAS							OMIM:613706	HPO:probinson	Jun 2, 2013	
+OMIM:613706	#613706 NOONAN SYNDROME 7; NS7				BRAF	HP:0001642	Pulmonic stenosis			TAS	TAS	2/5						OMIM:613706	HPO:probinson	Jun 2, 2013	
+OMIM:613706	#613706 NOONAN SYNDROME 7; NS7				BRAF	HP:0001631	Defect in the atrial septum			TAS	TAS	2/5						OMIM:613706	HPO:probinson	Jun 2, 2013	
+OMIM:613706	#613706 NOONAN SYNDROME 7; NS7				BRAF	HP:0000953	Hyperpigmentation of the skin			TAS	TAS	3/5						OMIM:613706	HPO:probinson	Jun 2, 2013	
+OMIM:613706	#613706 NOONAN SYNDROME 7; NS7				BRAF	HP:0000006	Autosomal dominant inheritance			TAS	TAS							OMIM:613706	HPO:probinson	Jun 2, 2013	

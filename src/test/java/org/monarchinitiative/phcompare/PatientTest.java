@@ -1,54 +1,38 @@
 package org.monarchinitiative.phcompare;
 
 import ontologizer.ontology.TermID;
-import org.junit.*;
-import org.junit.runners.MethodSorters;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import static org.junit.Assert.*;
 
 /**
- * Tests for the Patient class, primarily the constructor (reads the patient file).
+ * Tests for the Patient class. The constructor reads the patient file.
  *     @author Hannah Blau (blauh)
- *     @version 0.0.1
+ *     @version 0.0.2
  */
-
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-
 public class PatientTest {
     private static File f;
-    private static Patient p;
 
     @BeforeClass
     public static void setUp() throws Exception {
-        f = new File("/Users/blauh/phenoCompare/groupA/");
+        f = new File("src/test/resources/patientFiles/groupA/");
+    }
+
+    @Test(expected = IOException.class)
+    public void testFileNotFound() throws Exception {
+        Patient p = new Patient(f, "OMIM-missing.tab");
     }
 
     @Test
-    public void test0FileNotFound() throws Exception {
-        try {
-            p = new Patient(f, "OMIM-missing.tab");
-        }
-        catch (IOException e) {
-            System.err.println("test0FileNotFound: catching IOException");
-            System.err.println("ERROR: Problem reading patient files, " + e.getMessage() + "\n\n");
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void test1Constructor() throws Exception {
-        p = new Patient(f, "OMIM-611553.tab");
-        System.out.println("\nHPO terms from file OMIM-611553");
-            System.out.println(p);
-    }
-
-    @Test
-    public void test2GetHpoTerms() throws Exception {
+    public void testGetHpoTerms() throws Exception {
+        Patient p = new Patient(f, "OMIM-611553.tab");
         Set<String> expected = new HashSet<>();
         Set<String> pTerms = new HashSet<>();
         expected.add("HP:0000470");
@@ -65,6 +49,30 @@ public class PatientTest {
             pTerms.add(t.toString());
         }
         assertEquals("HPO terms read from OMIM-611553.tab are not as expected", expected, pTerms);
-        System.out.println("HPO terms read from OMIM-611553.tab match expectation.");
+    }
+
+    @Test
+    public void testEquals() throws Exception {
+        Patient p = new Patient(f, "OMIM-613706.tab");
+        Patient q = new Patient(null);
+        TreeSet<TermID> hpot = new TreeSet<>();
+        hpot.add(new TermID("HP:0008872"));
+        hpot.add(new TermID("HP:0004322"));
+        hpot.add(new TermID("HP:0001249"));
+        hpot.add(new TermID("HP:0001252"));
+        hpot.add(new TermID("HP:0000268"));
+        hpot.add(new TermID("HP:0011220"));
+        hpot.add(new TermID("HP:0000316"));
+        hpot.add(new TermID("HP:0000369"));
+        hpot.add(new TermID("HP:0000391"));
+        hpot.add(new TermID("HP:0001642"));
+        hpot.add(new TermID("HP:0001631"));
+        hpot.add(new TermID("HP:0000953"));
+        hpot.add(new TermID("HP:0000006"));
+
+        assertFalse("Patient from OMIM-613706.tab equals array of int!", p.equals(new int[] {1, 2, 3}));
+        assertFalse("Patient from OMIM-613706.tab equals empty patient!", p.equals(q));
+        assertTrue("Patient from OMIM-613706.tab does not equal new patient with same HPO terms",
+                p.equals(new Patient(hpot)));
     }
 }

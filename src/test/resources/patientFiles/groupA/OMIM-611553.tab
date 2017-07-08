@@ -1,0 +1,10 @@
+Disease ID	Disease Name	Gene ID	Gene Name	Genotype	Gene Symbol(s)	Phenotype ID	Phenotype Name	Age of Onset ID	Age of Onset Name	Evidence ID	Evidence Name	Frequency	Sex ID	Sex Name	Negation ID	Negation Name	Description	Pub	Assigned by	Date Created	
+OMIM:611553	#611553 NOONAN SYNDROME 5; NS5				RAF1	HP:0000470	Short neck			PCS	PCS							pmid:17603482	HPO:probinson	Jan 9, 2013	
+OMIM:611553	#611553 NOONAN SYNDROME 5; NS5				RAF1	HP:0001263	Global developmental delay			PCS	PCS							pmid:17603482	HPO:probinson	Apr 6, 2013	
+OMIM:611553	#611553 NOONAN SYNDROME 5; NS5				RAF1	HP:0004322	Short stature			PCS	PCS	10/11						pmid:17603482	HPO:probinson	Apr 6, 2013	
+OMIM:611553	#611553 NOONAN SYNDROME 5; NS5				RAF1	HP:0000465	Webbed neck			PCS	PCS	7/9						pmid:17603482	HPO:probinson	Apr 6, 2013	
+OMIM:611553	#611553 NOONAN SYNDROME 5; NS5				RAF1	HP:0000766	Abnormality of the sternum			PCS	PCS							pmid:17603482	HPO:probinson	Apr 6, 2013	
+OMIM:611553	#611553 NOONAN SYNDROME 5; NS5				RAF1	HP:0001639	Hypertrophic cardiomyopathy			PCS	PCS	8/11						pmid:17603482	HPO:probinson	Apr 6, 2013	
+OMIM:611553	#611553 NOONAN SYNDROME 5; NS5				RAF1	HP:0001631	Defect in the atrial septum			PCS	PCS	6/11						pmid:17603482	HPO:probinson	Apr 6, 2013	
+OMIM:611553	#611553 NOONAN SYNDROME 5; NS5				RAF1	HP:0001999	Abnormal facial shape			PCS	PCS							pmid:17603482	HPO:probinson	Apr 6, 2013	
+OMIM:611553	#611553 NOONAN SYNDROME 5; NS5				RAF1	HP:0000006	Autosomal dominant inheritance			PCS	PCS							pmid:17603482	HPO:probinson	Apr 6, 2013	

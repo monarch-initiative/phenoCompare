@@ -25,7 +25,7 @@ import java.util.TreeMap;
  *     @version 0.0.1
  */
 public class PhenoCompare {
-    private static final String hpoPath = "/Users/blauh/phenoCompare/hp.obo";
+    private static final String HPO_PATH = "/Users/blauh/phenoCompare/hp.obo";
     private static final int NUM_GROUPS = 2;
 
     private Ontology hpo;
@@ -172,13 +172,13 @@ public class PhenoCompare {
 
         // Load ontology from file.
         try {
-            phenoC = new PhenoCompare(hpoPath);
+            phenoC = new PhenoCompare(HPO_PATH);
         } catch (IOException e) {
-            System.err.println("ERROR: Problem reading OBO file " + hpoPath + "\n\n");
+            System.err.println("ERROR: Problem reading OBO file " + HPO_PATH + "\n\n");
             e.printStackTrace();
             System.exit(1);
         } catch (OBOParserException e) {
-            System.err.println("ERROR: Problem parsing OBO file " + hpoPath + "\n\n");
+            System.err.println("ERROR: Problem parsing OBO file " + HPO_PATH + "\n\n");
             e.printStackTrace();
             System.exit(1);
         }
