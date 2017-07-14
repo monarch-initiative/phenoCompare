@@ -1,6 +1,14 @@
 package org.monarchinitiative.phcompare;
 
-import org.apache.commons.cli.*;
+import org.monarchinitiative.phcompare.stats.ChiSquared;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import ontologizer.io.obo.OBOParser;
 import ontologizer.io.obo.OBOParserException;
@@ -8,11 +16,13 @@ import ontologizer.io.obo.OBOParserFileInput;
 import ontologizer.ontology.Ontology;
 import ontologizer.ontology.TermContainer;
 import ontologizer.ontology.TermID;
-import org.monarchinitiative.phcompare.stats.ChiSquared;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -132,71 +142,98 @@ public class PhenoCompare {
         bw.close();
     }
 
+    /*
+     * Checks path string and adds a final separator character if not already there.
+     */
+    private String fixFinalSeparator(String path) {
+        return path.endsWith(File.separator) ? path : path + File.separator;
+    }
+
+    /*
+     * Parses the command line options with Apache Commons CLI library. First looks for (optional) help option.
+     * If no help option, looks for four required options:
+     *     -i directory where hp.obo file can be found
+     *     -o full path name for output file
+     *     -a directory where group A patient files can be found
+     *     -b directory where group B patient files can be found
+     */
     private void parseCommandLine(String[] args) {
         // create the Options
         Option hpoOpt = Option.builder("i")
                 .longOpt("hpoDir")
-                .required()
                 .desc("directory containing hp.obo")
                 .hasArg()
                 .optionalArg(false)
                 .argName("directory")
+                .required()
                 .build();
         Option groupAopt = Option.builder("a")
                 .longOpt("groupAdir")
-                .required()
                 .desc("directory containing group A patient files")
                 .hasArg()
                 .optionalArg(false)
                 .argName("directory")
+                .required()
                 .build();
         Option groupBopt = Option.builder("b")
                 .longOpt("groupBdir")
-                .required()
                 .desc("directory containing group B patient files")
                 .hasArg()
                 .optionalArg(false)
                 .argName("directory")
+                .required()
                 .build();
         Option outfileOpt = Option.builder("o")
                 .longOpt("outputFile")
-                .required()
                 .desc("results file")
                 .hasArg()
                 .optionalArg(false)
                 .argName("path")
+                .required()
                 .build();
-        Option help = Option.builder("h")
+        Option helpOpt= Option.builder("h")
                 .longOpt("help")
                 .required(false)
                 .hasArg(false)
                 .build();
-        Options options = new Options();
-        options.addOption(hpoOpt);
-        options.addOption(groupAopt);
-        options.addOption(groupBopt);
-        options.addOption(outfileOpt);
+        Options helpOptions = new Options();
+        helpOptions.addOption(helpOpt);
+        Options reqOptions = new Options();
+        reqOptions.addOption(hpoOpt);
+        reqOptions.addOption(outfileOpt);
+        reqOptions.addOption(groupAopt);
+        reqOptions.addOption(groupBopt);
+        Options allOptions = reqOptions.addOption(helpOpt);
 
         // create the command line parser and help formatter
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
         try {
-            // parse the command line arguments
-            CommandLine cmdl = parser.parse( options, args );
+            // parse the command line looking for help option
+            CommandLine cmdl = parser.parse(helpOptions, args);
             if (cmdl.hasOption("h")) {
-                // automatically generate usage information
-                formatter.printHelp( "phenoCompare", options );
+                // automatically generate usage information, write to System.out
+                formatter.printHelp("phenoCompare", allOptions);
                 System.exit(0);
             }
-            hpoPath = cmdl.getOptionValue("i") + "hp.obo";
-            groupAdir = cmdl.getOptionValue("a");
-            groupBdir = cmdl.getOptionValue("b");
-            outfile = cmdl.getOptionValue("o");
+            else {
+                // parse the command line looking for required options
+                // This branch executed if command line does not match help option but also does not trigger a
+                // ParseException. Seems to occur only when user types the directory paths but omits -i -o -a -b.
+                parseRequiredOptions(parser, reqOptions, args);
+            }
         }
-        catch( ParseException e ) {
-            System.err.println( "Incorrect command line arguments: " + e.getMessage() );
-            formatter.printHelp( "phenoCompare", options );
-            System.exit(1);
+        catch(ParseException e) {
+            try {
+                // parse the command line looking for required options
+                parseRequiredOptions(parser, reqOptions, args);
+            } catch (ParseException pe) {
+                System.err.println("Incorrect command line arguments --- " + pe.getMessage());
+                formatter.printHelp(new PrintWriter(System.err, true), 80,
+                        "phenoCompare", null, allOptions, formatter.getLeftPadding(),
+                        formatter.getDescPadding(), null);
+                System.exit(1);
+            }
         }
     }
 
@@ -216,6 +253,14 @@ public class PhenoCompare {
         final Ontology ontology = Ontology.create(termContainer);
         System.err.println("=> done reading OBO file");
         return ontology;
+    }
+
+    private void parseRequiredOptions(CommandLineParser psr, Options reqOptions, String[] args) throws ParseException {
+        CommandLine cmdl = psr.parse(reqOptions, args);
+        hpoPath = fixFinalSeparator(cmdl.getOptionValue("i")) + "hp.obo";
+        groupAdir = fixFinalSeparator(cmdl.getOptionValue("a"));
+        groupBdir = fixFinalSeparator(cmdl.getOptionValue("b"));
+        outfile = cmdl.getOptionValue("o");
     }
 
     /*
