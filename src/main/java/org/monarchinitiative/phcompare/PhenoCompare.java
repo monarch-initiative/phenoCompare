@@ -1,5 +1,7 @@
 package org.monarchinitiative.phcompare;
 
+import org.apache.commons.cli.*;
+
 import ontologizer.io.obo.OBOParser;
 import ontologizer.io.obo.OBOParserException;
 import ontologizer.io.obo.OBOParserFileInput;
@@ -25,17 +27,22 @@ import java.util.TreeMap;
  *     @version 0.0.1
  */
 public class PhenoCompare {
-    private static final String HPO_PATH = "/Users/blauh/phenoCompare/hp.obo";
     private static final int NUM_GROUPS = 2;
 
     private Ontology hpo;
-    private PatientGroup[] patientGroups = new PatientGroup[NUM_GROUPS];
+    private String hpoPath;
+    private String groupAdir;
+    private String groupBdir;
+    private String outfile;
+    private PatientGroup[] patientGroups;
     // patientCounts maps from an HPO term to an array of the counts for each group of patients
-    private SortedMap<TermID, int[]> patientCounts = new TreeMap<>();
+    private SortedMap<TermID, int[]> patientCounts;
 
-    PhenoCompare(String hpoPath) throws IOException, OBOParserException {
-        // Load ontology from file.
-        hpo = parseObo(hpoPath);
+    private PhenoCompare() {
+        hpo = null;
+        hpoPath = groupAdir = groupBdir = outfile = "";
+        patientGroups = new PatientGroup[NUM_GROUPS];
+        patientCounts = new TreeMap<>();
     }
 
     /*
@@ -125,6 +132,74 @@ public class PhenoCompare {
         bw.close();
     }
 
+    private void parseCommandLine(String[] args) {
+        // create the Options
+        Option hpoOpt = Option.builder("i")
+                .longOpt("hpoDir")
+                .required()
+                .desc("directory containing hp.obo")
+                .hasArg()
+                .optionalArg(false)
+                .argName("directory")
+                .build();
+        Option groupAopt = Option.builder("a")
+                .longOpt("groupAdir")
+                .required()
+                .desc("directory containing group A patient files")
+                .hasArg()
+                .optionalArg(false)
+                .argName("directory")
+                .build();
+        Option groupBopt = Option.builder("b")
+                .longOpt("groupBdir")
+                .required()
+                .desc("directory containing group B patient files")
+                .hasArg()
+                .optionalArg(false)
+                .argName("directory")
+                .build();
+        Option outfileOpt = Option.builder("o")
+                .longOpt("outputFile")
+                .required()
+                .desc("results file")
+                .hasArg()
+                .optionalArg(false)
+                .argName("path")
+                .build();
+        Option help = Option.builder("h")
+                .longOpt("help")
+                .required(false)
+                .hasArg(false)
+                .build();
+        Options options = new Options();
+        options.addOption(hpoOpt);
+        options.addOption(groupAopt);
+        options.addOption(groupBopt);
+        options.addOption(outfileOpt);
+
+        // create the command line parser and help formatter
+        CommandLineParser parser = new DefaultParser();
+        HelpFormatter formatter = new HelpFormatter();
+        try {
+            // parse the command line arguments
+            CommandLine cmdl = parser.parse( options, args );
+            if (cmdl.hasOption("h")) {
+                // automatically generate usage information
+                formatter.printHelp( "phenoCompare", options );
+                System.exit(0);
+            }
+            hpoPath = cmdl.getOptionValue("i") + "hp.obo";
+            groupAdir = cmdl.getOptionValue("a");
+            groupBdir = cmdl.getOptionValue("b");
+            outfile = cmdl.getOptionValue("o");
+        }
+        catch( ParseException e ) {
+            System.err.println( "Incorrect command line arguments: " + e.getMessage() );
+            formatter.printHelp( "phenoCompare", options );
+            System.exit(1);
+        }
+    }
+
     /*
      * Code inherited from Sebastian Bauer (?) to read specified .obo file and create the corresponding
      * Ontology object.
@@ -161,31 +236,25 @@ public class PhenoCompare {
     }
 
     public static void main(String[] args) {
-        PhenoCompare phenoC = null;
-
-        if (args.length != NUM_GROUPS + 1) {
-            System.err.println("Error: incorrect number of arguments");
-            // TODO: fix usage message so it works for any number of groups not just 2
-            System.err.println("Usage: java -jar phenoCompare.jar groupAdirectory groupBdirectory outFile");
-            System.exit(1);
-        }
+        PhenoCompare phenoC = new PhenoCompare();
+        phenoC.parseCommandLine(args);
 
         // Load ontology from file.
         try {
-            phenoC = new PhenoCompare(HPO_PATH);
+            phenoC.hpo = parseObo(phenoC.hpoPath);
         } catch (IOException e) {
-            System.err.println("ERROR: Problem reading OBO file " + HPO_PATH + "\n\n");
+            System.err.println("ERROR: Problem reading OBO file\n\n");
             e.printStackTrace();
             System.exit(1);
         } catch (OBOParserException e) {
-            System.err.println("ERROR: Problem parsing OBO file " + HPO_PATH + "\n\n");
+            System.err.println("ERROR: Problem parsing OBO file\n\n");
             e.printStackTrace();
             System.exit(1);
         }
 
         // Read patient files and create patient groups.
         try {
-            phenoC.createPatientGroups(args);
+            phenoC.createPatientGroups(new String[] {phenoC.groupAdir, phenoC.groupBdir});
         } catch (IOException e) {
             System.err.println("ERROR: Problem reading patient files, " + e.getMessage() + "\n\n");
             e.printStackTrace();
@@ -199,9 +268,9 @@ public class PhenoCompare {
 
         // Display counts for each node of the ontology that has a non-zero count for one or more groups.
         try {
-            phenoC.displayResults(args[NUM_GROUPS]);
+            phenoC.displayResults(phenoC.outfile);
         } catch (IOException e) {
-            System.err.println("ERROR: Problem writing output file " + args[NUM_GROUPS] + " : " +
+            System.err.println("ERROR: Problem writing output file " + phenoC.outfile + " : " +
                     e.getMessage() + "\n\n");
             e.printStackTrace();
             System.exit(1);
