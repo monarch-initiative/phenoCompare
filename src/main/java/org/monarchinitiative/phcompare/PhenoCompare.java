@@ -38,13 +38,12 @@ import java.util.TreeMap;
  */
 public class PhenoCompare {
     private static final int NUM_GROUPS = 2;
-
     private Ontology hpo;
-    private String hpoPath;
-    private String groupAdir;
-    private String groupBdir;
-    private String outfile;
-    private PatientGroup[] patientGroups;
+    private String hpoPath;     // path to directory containing .obo file for HPO
+    private String outfile;     // path for output file
+    private String groupAdir;   // path to directory for group A patient files
+    private String groupBdir;   // path to directory for group B patient files
+    private PatientGroup[] patientGroups;    // array of patient group A, patient group B
     // patientCounts maps from an HPO term to an array of the counts for each group of patients
     private SortedMap<TermID, int[]> patientCounts;
 
@@ -55,9 +54,13 @@ public class PhenoCompare {
         patientCounts = new TreeMap<>();
     }
 
-    /*
+    /**
      * Calculates the chi squared statistic for each HPO term, based on counts of patients in each
      * group who have/do not have that phenotype.
+     * @param countsForTermID array of int containing counts of patients in group A, group B that
+     *                        can be described with a particular HPO term
+     * @return double         Chi-squared statistic calculated from the patient counts for
+     *                        groups A and B
      */
     private double calculateChiSq(int[] countsForTermID) {
         long[][] csq = new long[NUM_GROUPS][2];
@@ -68,10 +71,12 @@ public class PhenoCompare {
         return new ChiSquared(csq).getChiSquare();
     }
 
-    /*
+    /**
      * For an individual patient, increments the counts for all phenotypes exhibited by the patient,
      * including all nodes encountered between phenotypes mentioned in the patient's file and the root
      * node of the ontology.
+     * @param p       patient whose phenotypes we are counting
+     * @param group   integer index for patient's group (0 -> group A, 1 -> group B)
      */
     private void countPatient(Patient p, int group) {
         Set<TermID> ancestors = new HashSet<>();
@@ -95,7 +100,7 @@ public class PhenoCompare {
         }
     }
 
-    /*
+    /**
      * For each group of patients, counts how many patients exhibit phenotype associated with
      * each node of ontology. HPO terms that do not appear in any patient file are implicitly given
      * a count of 0 for all patient groups.
@@ -108,9 +113,12 @@ public class PhenoCompare {
         }
     }
 
-    /*
+    /**
      * Each group of patients is created from a set of patient files in the directory specified
      * in parameter paths.
+     * @param paths           array of Strings, each String is the path to a directory
+     *                        containing patient files for one group of patients
+     * @throws IOException    if problem reading patient files in specified directory
      */
     private void createPatientGroups(String[] paths) throws IOException {
         for (int i = 0; i < NUM_GROUPS; i++) {
@@ -119,9 +127,11 @@ public class PhenoCompare {
         }
     }
 
-    /*
+    /**
      * Writes termID, term name, counts for each group of patients, and the chi squared statistic
      * to specified output file.
+     * @param outPath         path (including filename) for output file
+     * @throws IOException    if problem writing to output file
      */
     private void displayResults(String outPath) throws IOException {
         TermID tid;
@@ -142,20 +152,24 @@ public class PhenoCompare {
         bw.close();
     }
 
-    /*
+    /**
      * Checks path string and adds a final separator character if not already there.
+     * @param path       String containing path as user typed it on command line
+     * @return String    path with final separator added if it was not already there
      */
     private String fixFinalSeparator(String path) {
         return path.endsWith(File.separator) ? path : path + File.separator;
     }
 
-    /*
+    /**
      * Parses the command line options with Apache Commons CLI library. First looks for (optional) help option.
      * If no help option, looks for four required options:
      *     -i directory where hp.obo file can be found
      *     -o full path name for output file
      *     -a directory where group A patient files can be found
      *     -b directory where group B patient files can be found
+     * Sets the instance variables of this PhenoCompare object accordingly.
+     * @param args    the arguments user typed on command line
      */
     private void parseCommandLine(String[] args) {
         // create the Options
@@ -237,9 +251,13 @@ public class PhenoCompare {
         }
     }
 
-    /*
+    /**
      * Code inherited from Sebastian Bauer (?) to read specified .obo file and create the corresponding
      * Ontology object.
+     *
+     * @param pathObo    path to .obo file we want to read
+     * @return Ontology  the Ontology object created from .obo file
+     *
      */
     private static Ontology parseObo(String pathObo) throws IOException, OBOParserException {
         System.err.println("Reading ontology from OBO file " + pathObo + " ...");
@@ -255,6 +273,13 @@ public class PhenoCompare {
         return ontology;
     }
 
+    /**
+     * Parses the command line arguments typed by user to look for the required (not help) options
+     * @param psr                 command line parser
+     * @param reqOptions          Options object containing all required options
+     * @param args                command line arguments typed by user
+     * @throws ParseException     if problem parsing args to find reqOptions
+     */
     private void parseRequiredOptions(CommandLineParser psr, Options reqOptions, String[] args) throws ParseException {
         CommandLine cmdl = psr.parse(reqOptions, args);
         hpoPath = fixFinalSeparator(cmdl.getOptionValue("i")) + "hp.obo";
@@ -263,8 +288,11 @@ public class PhenoCompare {
         outfile = cmdl.getOptionValue("o");
     }
 
-    /*
+    /**
      * Increments the count mapped to HPO term tid for the specified patient group.
+     *
+     * @param group  index for patient group (0 -> group A, 1 -> group B)
+     * @param tid    HPO term ID
      */
     private void updateCount(TermID tid, int group) {
         if (patientCounts.containsKey(tid)) {
@@ -280,6 +308,15 @@ public class PhenoCompare {
         }
     }
 
+    /**
+     * Main method for PhenoCompare class. Parses the command line arguments to find directory information,
+     * then creates the Ontology object for HPO from .obo file. Reads two groups (A, B) of patient files.
+     * For each phenotype mentioned in the patient files, counts the number of patients in each group that
+     * exhibit that phenotype, while also updating counts for all ancestors of the phenotype in the HPO DAG.
+     * Calculates Chi-squared statistic for each HPO term with counts > 0 and writes results to
+     * user-specified output file.
+     * @param args     command line arguments typed by user
+     */
     public static void main(String[] args) {
         PhenoCompare phenoC = new PhenoCompare();
         phenoC.parseCommandLine(args);
