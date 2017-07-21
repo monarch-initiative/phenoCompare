@@ -12,10 +12,15 @@ import java.util.List;
  * @version 0.0.1
  */
 class PatientGroup {
-    private static String FNAME_EXT = ".tab";      // filename extension for patient files
-    private File sourceDir;
-    private List<Patient> groupMembers;
+    private static String FNAME_EXT = ".tab";    // filename extension for patient files
+    private File sourceDir;               // directory containing this group of patient files
+    private List<Patient> groupMembers;   // list of Patients in this group
 
+    /**
+     * Initializes the PatientGroup object but does not read any patient data.
+     * @param path             path (as String) to directory containing the patient files
+     * @throws IOException     if no directory exists at specified path
+     */
     PatientGroup(String path) throws IOException {
         sourceDir = new File(path);
         if (!sourceDir.exists()) {
@@ -28,8 +33,10 @@ class PatientGroup {
         return groupMembers;
     }
 
-    /*
+    /**
      * Reads files for individual patients from directory specified when patientGroup was constructed.
+     * @throws IOException     if error reading from patient file (Patient constructor throws
+     *                         IOException)
      */
     void readPatientFiles() throws IOException {
         String[] filesInDir;
@@ -45,5 +52,9 @@ class PatientGroup {
         }
     }
 
+    /**
+     * Size of PatientGroup is the number of Patient objects in the list of group members.
+     * @return    int number of patients in this PatientGroup
+     */
     int size() { return groupMembers.size(); }
 }

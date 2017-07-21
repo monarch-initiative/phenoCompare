@@ -14,6 +14,7 @@ import java.util.TreeSet;
  * @version 0.0.1
  */
 class Patient {
+    // Terms from Human Phenotype Ontology that describe this patient
     private Set<TermID> hpoTerms;
 
     /**
@@ -50,8 +51,9 @@ class Patient {
         }
     }
 
-    /*
+    /**
      * This constructor useful for test classes.
+     * @param terms    TreeSet of TermIDs for HPO terms describing this patient
      */
     Patient(TreeSet<TermID> terms) {
         if (terms == null) {
@@ -60,6 +62,11 @@ class Patient {
         else hpoTerms = terms;
     }
 
+    /**
+     * Two Patient objects are considered equal if they have the same set of HPO terms.
+     * @param o    object to which this patient is compared
+     * @return     true if this patient and the object o are equal, false otherwise
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -74,11 +81,19 @@ class Patient {
         return hpoTerms;
     }
 
+    /**
+     * Relies on the hashcode of the TreeSet class.
+     * @return     hash value for this Patient.
+     */
     @Override
     public int hashCode() {
         return getHpoTerms().hashCode();
     }
 
+    /**
+     * Lists the HPO term IDs of this Patient, one per line.
+     * @return     String containing textual representation of Patient object.
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Patient:\n");
