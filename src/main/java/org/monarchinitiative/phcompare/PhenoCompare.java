@@ -43,6 +43,7 @@ public class PhenoCompare {
     private String outfile;     // path for output file
     private String groupAdir;   // path to directory for group A patient files
     private String groupBdir;   // path to directory for group B patient files
+    private String[] groupDirs; // array of patient group directory paths
     private PatientGroup[] patientGroups;    // array of patient group A, patient group B
     // patientCounts maps from an HPO term to an array of the counts for each group of patients
     private SortedMap<TermID, int[]> patientCounts;
@@ -114,16 +115,25 @@ public class PhenoCompare {
     }
 
     /**
-     * Each group of patients is created from a set of patient files in the directory specified
-     * in parameter paths.
-     * @param paths           array of Strings, each String is the path to a directory
-     *                        containing patient files for one group of patients
-     * @throws IOException    if problem reading patient files in specified directory
+     * Each group of patients is created from a set of patient files in the corresponding directory.
+     * If the directory contains no patient files, the group will be empty.
+     * @throws IOException           if problem reading patient files in specified directory
+     * @throws EmptyGroupException   if detects one or more empty patient groups
      */
-    private void createPatientGroups(String[] paths) throws IOException {
-        for (int i = 0; i < NUM_GROUPS; i++) {
-            patientGroups[i] = new PatientGroup(paths[i]);
-            patientGroups[i].readPatientFiles();
+    private void createPatientGroups() throws IOException, EmptyGroupException {
+        StringBuilder sb = new StringBuilder();
+
+        for (int g = 0; g < NUM_GROUPS; g++) {
+            patientGroups[g] = new PatientGroup(groupDirs[g]);
+            patientGroups[g].readPatientFiles();
+            if (patientGroups[g].isEmpty()) {
+                sb.append("Empty patient group from directory: ");
+                sb.append(groupDirs[g]);
+                sb.append(System.lineSeparator());
+            }
+            if (sb.length() > 0) {
+                throw new EmptyGroupException(sb.toString());
+            }
         }
     }
 
@@ -286,6 +296,7 @@ public class PhenoCompare {
         groupAdir = fixFinalSeparator(cmdl.getOptionValue("a"));
         groupBdir = fixFinalSeparator(cmdl.getOptionValue("b"));
         outfile = cmdl.getOptionValue("o");
+        groupDirs = new String[] {groupAdir, groupBdir};
     }
 
     /**
@@ -336,10 +347,13 @@ public class PhenoCompare {
 
         // Read patient files and create patient groups.
         try {
-            phenoC.createPatientGroups(new String[] {phenoC.groupAdir, phenoC.groupBdir});
+            phenoC.createPatientGroups();
         } catch (IOException e) {
             System.err.println("ERROR: Problem reading patient files, " + e.getMessage() + "\n\n");
             e.printStackTrace();
+            System.exit(1);
+        } catch (EmptyGroupException e) {
+            System.err.println("ERROR: Cannot compare empty patient groups\n" + e.getMessage());
             System.exit(1);
         }
 

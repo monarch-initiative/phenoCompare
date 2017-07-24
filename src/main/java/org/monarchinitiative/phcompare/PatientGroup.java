@@ -35,6 +35,7 @@ class PatientGroup {
 
     /**
      * Reads files for individual patients from directory specified when patientGroup was constructed.
+     * If directory contains no files with the correct extension, the patientGroup remains empty.
      * @throws IOException     if error reading from patient file (Patient constructor throws
      *                         IOException)
      */
@@ -53,8 +54,14 @@ class PatientGroup {
     }
 
     /**
-     * Size of PatientGroup is the number of Patient objects in the list of group members.
+     * Size of patientGroup is the number of Patient objects in the list of group members.
      * @return    int number of patients in this PatientGroup
      */
     int size() { return groupMembers.size(); }
+
+    /**
+     * Indicates whether or not this patientGroup is empty.
+     * @return    boolean true if this patientGroup contains no patients, false otherwise
+     */
+    boolean isEmpty() { return groupMembers.isEmpty(); }
 }
