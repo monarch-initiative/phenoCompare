@@ -131,9 +131,9 @@ public class PhenoCompare {
                 sb.append(groupDirs[g]);
                 sb.append(System.lineSeparator());
             }
-            if (sb.length() > 0) {
-                throw new EmptyGroupException(sb.toString());
-            }
+        }
+        if (sb.length() > 0) {
+            throw new EmptyGroupException(sb.toString());
         }
     }
 
