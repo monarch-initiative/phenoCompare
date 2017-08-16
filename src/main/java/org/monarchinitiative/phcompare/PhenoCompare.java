@@ -23,11 +23,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.zip.DataFormatException;
 
 /**
  *  PhenoCompare compares two groups of patients to judge their overlap/divergence in the Human Phenotype
@@ -38,20 +35,24 @@ import java.util.TreeMap;
  */
 public class PhenoCompare {
     private static final int NUM_GROUPS = 2;
-    private Ontology hpo;
-    private String hpoPath;     // path to directory containing .obo file for HPO
-    private String outfile;     // path for output file
-    private String groupAdir;   // path to directory for group A patient files
-    private String groupBdir;   // path to directory for group B patient files
-    private String[] groupDirs; // array of patient group directory paths
-    private PatientGroup[] patientGroups;    // array of patient group A, patient group B
+    private GeneGroups geneGroups; // groups of early and late genes
+    private String genesPath;      // path for input file containing lists of genes for the patient groups
+    private Ontology hpo;          // ontology of HPO terms
+    private String hpoPath;        // path to directory containing .obo file for HPO
+    private String patientsPath;   // path for input file containing one line per patient
+    private List<Patient>[] patientGroups;    // array of patient groups for early, late gene mutations
+    //    private PatientGroup[] patientGroups;    // array of patient groups for early, late gene mutations
+    private String resultsFile;    // path for output file
     // patientCounts maps from an HPO term to an array of the counts for each group of patients
     private SortedMap<TermID, int[]> patientCounts;
 
     private PhenoCompare() {
         hpo = null;
-        hpoPath = groupAdir = groupBdir = outfile = "";
-        patientGroups = new PatientGroup[NUM_GROUPS];
+        hpoPath = genesPath = patientsPath = resultsFile = "";
+        for (int g = 0; g < NUM_GROUPS; g++) {
+            patientGroups[g] = new ArrayList<>();
+        }
+//        patientGroups = new PatientGroup[NUM_GROUPS];
         patientCounts = new TreeMap<>();
     }
 
@@ -108,27 +109,52 @@ public class PhenoCompare {
      */
     private void countPatients() {
         for (int g = 0; g < NUM_GROUPS; g++) {
-            for (Patient p : patientGroups[g].getGroupMembers()) {
+            for (Patient p : patientGroups[g]) {
                 countPatient(p, g);
             }
         }
     }
 
     /**
-     * Each group of patients is created from a set of patient files in the corresponding directory.
-     * If the directory contains no patient files, the group will be empty.
-     * @throws IOException           if problem reading patient files in specified directory
-     * @throws EmptyGroupException   if detects one or more empty patient groups
+     * Each group of patients is created from patient records in the patients file.
+     * @throws DataFormatException   if thrown by Patient constructor
+     * @throws IOException           if problem opening or reading patients file
+     * @throws EmptyGroupException   if one or both patient groups is/are empty
      */
-    private void createPatientGroups() throws IOException, EmptyGroupException {
-        StringBuilder sb = new StringBuilder();
+    private void createPatientGroups() throws IOException, DataFormatException, EmptyGroupException {
+        String geneName;
+        Patient pat;
+        File patientsFile = new File(patientsPath);
+        if (!patientsFile.exists()) {
+            throw new IOException("[PhenoCompare.createPatientGroups] Cannot find patients file " +
+                    patientsPath);
+        }
 
+        // Read patients file line by line; each line is one patient record. Create a patient
+        // object and add it to the correct patient group according to which gene is mutated.
+        Scanner scan = new Scanner(patientsFile);
+        while (scan.hasNextLine()) {
+            pat = new Patient(scan.nextLine());
+            geneName = pat.getGene();
+            if (geneGroups.isEarlyGene(geneName)) {
+                patientGroups[0].add(pat);
+            }
+            else if (geneGroups.isLateGene(geneName)) {
+                patientGroups[1].add(pat);
+            }
+            else {
+                throw new DataFormatException("[PhenoCompare.createPatientGroups] Unknown gene name: " +
+                        geneName + System.lineSeparator());
+            }
+        }
+
+        // Check whether one or both patient groups is/are empty.
+        StringBuilder sb = new StringBuilder();
         for (int g = 0; g < NUM_GROUPS; g++) {
-            patientGroups[g] = new PatientGroup(groupDirs[g]);
-            patientGroups[g].readPatientFiles();
             if (patientGroups[g].isEmpty()) {
-                sb.append("Empty patient group from directory: ");
-                sb.append(groupDirs[g]);
+                sb.append("[PhenoCompare.createPatientGroups] Empty patient group for mutations in ");
+                sb.append(g == 0 ? "early" : "late");
+                sb.append(" genes.");
                 sb.append(System.lineSeparator());
             }
         }
@@ -174,59 +200,59 @@ public class PhenoCompare {
     /**
      * Parses the command line options with Apache Commons CLI library. First looks for (optional) help option.
      * If no help option, looks for four required options:
-     *     -i directory where hp.obo file can be found
-     *     -o full path name for output file
-     *     -a directory where group A patient files can be found
-     *     -b directory where group B patient files can be found
+     *     -g full path including filename for file of gene names
+     *     -o directory where hp.obo file can be found
+     *     -p full path including filename for file of patient data
+     *     -r full path including filename for output file
      * Sets the instance variables of this PhenoCompare object accordingly.
      * @param args    the arguments user typed on command line
      */
     private void parseCommandLine(String[] args) {
         // create the Options
-        Option hpoOpt = Option.builder("i")
-                .longOpt("hpoDir")
+        Option helpOpt= Option.builder("h")
+                .longOpt("help")
+                .required(false)
+                .hasArg(false)
+                .build();
+        Option genesOpt = Option.builder("g")
+                .longOpt("genes")
+                .desc("file containing list of genes for each group")
+                .hasArg()
+                .optionalArg(false)
+                .argName("path")
+                .required()
+                .build();
+        Option hpoOpt = Option.builder("o")
+                .longOpt("hpo")
                 .desc("directory containing hp.obo")
                 .hasArg()
                 .optionalArg(false)
                 .argName("directory")
                 .required()
                 .build();
-        Option groupAopt = Option.builder("a")
-                .longOpt("groupAdir")
-                .desc("directory containing group A patient files")
+        Option patientsOpt = Option.builder("p")
+                .longOpt("patients")
+                .desc("file containing patient records")
                 .hasArg()
                 .optionalArg(false)
-                .argName("directory")
+                .argName("path")
                 .required()
                 .build();
-        Option groupBopt = Option.builder("b")
-                .longOpt("groupBdir")
-                .desc("directory containing group B patient files")
-                .hasArg()
-                .optionalArg(false)
-                .argName("directory")
-                .required()
-                .build();
-        Option outfileOpt = Option.builder("o")
-                .longOpt("outputFile")
+        Option resultsOpt = Option.builder("r")
+                .longOpt("results")
                 .desc("results file")
                 .hasArg()
                 .optionalArg(false)
                 .argName("path")
                 .required()
                 .build();
-        Option helpOpt= Option.builder("h")
-                .longOpt("help")
-                .required(false)
-                .hasArg(false)
-                .build();
         Options helpOptions = new Options();
         helpOptions.addOption(helpOpt);
         Options reqOptions = new Options();
+        reqOptions.addOption(genesOpt);
         reqOptions.addOption(hpoOpt);
-        reqOptions.addOption(outfileOpt);
-        reqOptions.addOption(groupAopt);
-        reqOptions.addOption(groupBopt);
+        reqOptions.addOption(patientsOpt);
+        reqOptions.addOption(resultsOpt);
         Options allOptions = reqOptions.addOption(helpOpt);
 
         // create the command line parser and help formatter
@@ -292,11 +318,10 @@ public class PhenoCompare {
      */
     private void parseRequiredOptions(CommandLineParser psr, Options reqOptions, String[] args) throws ParseException {
         CommandLine cmdl = psr.parse(reqOptions, args);
-        hpoPath = fixFinalSeparator(cmdl.getOptionValue("i")) + "hp.obo";
-        groupAdir = fixFinalSeparator(cmdl.getOptionValue("a"));
-        groupBdir = fixFinalSeparator(cmdl.getOptionValue("b"));
-        outfile = cmdl.getOptionValue("o");
-        groupDirs = new String[] {groupAdir, groupBdir};
+        genesPath = cmdl.getOptionValue("g");
+        hpoPath = fixFinalSeparator(cmdl.getOptionValue("o")) + "hp.obo";
+        patientsPath = cmdl.getOptionValue("p");
+        resultsFile = cmdl.getOptionValue("r");
     }
 
     /**
@@ -345,15 +370,21 @@ public class PhenoCompare {
             System.exit(1);
         }
 
-        // Read patient files and create patient groups.
+        // Form two groups of genes corresponding to the two groups of patients
         try {
-            phenoC.createPatientGroups();
-        } catch (IOException e) {
-            System.err.println("ERROR: Problem reading patient files, " + e.getMessage() + "\n\n");
+            phenoC.geneGroups = new GeneGroups(phenoC.genesPath);
+        } catch (IOException | EmptyGroupException e) {
+            System.err.println(e.getMessage() + System.lineSeparator());
             e.printStackTrace();
             System.exit(1);
-        } catch (EmptyGroupException e) {
-            System.err.println("ERROR: Cannot compare empty patient groups\n" + e.getMessage());
+        }
+
+        // Read file of patient records and create patient groups.
+        try {
+            phenoC.createPatientGroups();
+        } catch (DataFormatException | IOException | EmptyGroupException e) {
+            System.err.println(e.getMessage() + System.lineSeparator());
+            e.printStackTrace();
             System.exit(1);
         }
 
@@ -364,9 +395,9 @@ public class PhenoCompare {
 
         // Display counts for each node of the ontology that has a non-zero count for one or more groups.
         try {
-            phenoC.displayResults(phenoC.outfile);
+            phenoC.displayResults(phenoC.resultsFile);
         } catch (IOException e) {
-            System.err.println("ERROR: Problem writing output file " + phenoC.outfile + " : " +
+            System.err.println("ERROR: Problem writing output file " + phenoC.resultsFile + " : " +
                     e.getMessage() + "\n\n");
             e.printStackTrace();
             System.exit(1);

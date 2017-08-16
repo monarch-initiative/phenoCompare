@@ -2,52 +2,47 @@ package org.monarchinitiative.phcompare;
 
 import ontologizer.ontology.TermID;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.zip.DataFormatException;
 
 /**
- * A patient is just a collection of HPO term IDs.
+ * A patient consists of a gene name (the mutated gene) and a collection of HPO term IDs.
  * @author Hannah Blau (blauh)
  * @version 0.0.1
  */
 class Patient {
+    // Name of gene that is mutated in this patient
+    private String gene = "";
     // Terms from Human Phenotype Ontology that describe this patient
     private Set<TermID> hpoTerms;
 
     /**
-     * Constructor reads from the specified patient file, extracts the HPO term IDs from the correct
-     * column, and stores those term IDs in the instance variable hpoTerms.
-     * @param sourceDir      directory in which patient file will be found
-     * @param fname          name of patient file
-     * @throws IOException   if patient file cannot be opened
+     * Constructor extracts the gene name and HPO term IDs from the patient record
+     * (one line of the patients file).
+     * @param line                   line of text for this patient in the patients file
+     * @throws DataFormatException   if gene name and/or HPO terms are not as expected
      */
-    Patient(File sourceDir, String fname) throws IOException {
-        String hpoTermID = "";
-        final int colNum = 7;    // column in which HPO terms appear in file
-
+    Patient(String line) throws DataFormatException {
         hpoTerms = new TreeSet<>();
 
-        File patientFile = new File(sourceDir, fname);
-        if (!patientFile.exists()) {
-            throw new IOException("[Patient.Patient] Cannot find patient file " + fname +
-                    " in directory " + sourceDir.getPath());
-
+        Scanner scan = new Scanner(line).useDelimiter("\\t");
+        // Gene name is in first column.
+        if (scan.hasNext())
+            gene = scan.next();
+        // Skip over the three intervening columns until you reach the list of HPO term ids.
+        for (int i = 0; i < 3 && scan.hasNext(); i++) {
+            scan.next();
         }
-        Scanner scan = new Scanner(patientFile).useDelimiter("\\t");
-        // First line of file is a header line; skip over it.
-        if (scan.hasNextLine())
-            scan.nextLine();
-        while (scan.hasNextLine()) {
-            // Skip over the uninteresting columns until you reach the HPO term id.
-            for (int i = 0; i < colNum && scan.hasNext(); i++) {
-                hpoTermID = scan.next();
-            }
-            hpoTerms.add(new TermID(hpoTermID));
-            // Throw away remainder of current line.
-            scan.nextLine();
+        // Read HPO terms up to end of line.
+        while (scan.hasNext()) {
+            hpoTerms.add(new TermID(scan.next()));
+        }
+        scan.close();
+        if (gene.equals("") || hpoTerms.isEmpty()) {
+            throw new DataFormatException("[Patient.Patient] Cannot parse patient record: " +
+                    line + System.lineSeparator());
         }
     }
 
@@ -55,7 +50,8 @@ class Patient {
      * This constructor useful for test classes.
      * @param terms    TreeSet of TermIDs for HPO terms describing this patient
      */
-    Patient(TreeSet<TermID> terms) {
+    Patient(String g, TreeSet<TermID> terms) {
+        gene = g;
         if (terms == null) {
             hpoTerms = new TreeSet<>();
         }
@@ -63,7 +59,7 @@ class Patient {
     }
 
     /**
-     * Two Patient objects are considered equal if they have the same set of HPO terms.
+     * Two Patient objects are considered equal if they have the same gene name and same set of HPO terms.
      * @param o    object to which this patient is compared
      * @return     true if this patient and the object o are equal, false otherwise
      */
@@ -73,9 +69,10 @@ class Patient {
         if (o == null || getClass() != o.getClass()) return false;
 
         Patient patient = (Patient) o;
-
-        return hpoTerms.equals(patient.hpoTerms);
+        return gene.equals(patient.gene) && hpoTerms.equals(patient.hpoTerms);
     }
+
+    String getGene() { return gene; }
 
     Set<TermID> getHpoTerms() {
         return hpoTerms;
@@ -91,16 +88,19 @@ class Patient {
     }
 
     /**
-     * Lists the HPO term IDs of this Patient, one per line.
+     * Lists the gene and HPO term IDs of this Patient.
      * @return     String containing textual representation of Patient object.
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Patient:\n");
+        StringBuilder sb = new StringBuilder("Patient: Gene = ");
+        sb.append(gene);
+        sb.append("; HPO Terms = ");
+        sb.append(System.lineSeparator());
         for (TermID t : getHpoTerms()) {
             sb.append("\t");
             sb.append(t.toString());
-            sb.append("\n");
+            sb.append(System.lineSeparator());
         }
         return sb.toString();
     }

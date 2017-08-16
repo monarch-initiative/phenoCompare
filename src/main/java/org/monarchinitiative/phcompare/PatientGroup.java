@@ -5,32 +5,25 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 /**
- * A PatientGroup is a list of patients whose description files are in the same directory.
+ * A PatientGroup is a list of patients described in the patient records file.
  * @author Hannah Blau (blauh)
  * @version 0.0.1
- */
+ *
 class PatientGroup {
-    private static String FNAME_EXT = ".tab";    // filename extension for patient files
-    private File sourceDir;               // directory containing this group of patient files
-    private List<Patient> groupMembers;   // list of Patients in this group
+    private List<Patient> patients;   // list of Patients in this group
 
     /**
-     * Initializes the PatientGroup object but does not read any patient data.
-     * @param path             path (as String) to directory containing the patient files
-     * @throws IOException     if no directory exists at specified path
-     */
-    PatientGroup(String path) throws IOException {
-        sourceDir = new File(path);
-        if (!sourceDir.exists()) {
-            throw new IOException("[PatientGroup.PatientGroup] Cannot find source directory " + path);
-        }
-        groupMembers = new ArrayList<>();
+     * Initializes the PatientGroup object.
+     *
+    PatientGroup() {
+        patients = new ArrayList<>();
     }
 
-    List<Patient> getGroupMembers() {
-        return groupMembers;
+    List<Patient> getPatients() {
+        return patients;
     }
 
     /**
@@ -38,30 +31,32 @@ class PatientGroup {
      * If directory contains no files with the correct extension, the patientGroup remains empty.
      * @throws IOException     if error reading from patient file (Patient constructor throws
      *                         IOException)
-     */
+
     void readPatientFiles() throws IOException {
         String[] filesInDir;
 
         FilenameFilter fFilter = (File dir, String name) ->
            name.toLowerCase().endsWith(FNAME_EXT);
 
-        if ((filesInDir = sourceDir.list(fFilter)) != null) {
+        if ((filesInDir = patientsFile.list(fFilter)) != null) {
             for (String f : filesInDir) {
-                Patient p = new Patient(sourceDir, f);
-                groupMembers.add(p);
+                Patient p = new Patient(patientsFile, f);
+                patients.add(p);
             }
         }
     }
+     *
 
     /**
      * Size of patientGroup is the number of Patient objects in the list of group members.
      * @return    int number of patients in this PatientGroup
-     */
-    int size() { return groupMembers.size(); }
+     *
+    int size() { return patients.size(); }
 
     /**
      * Indicates whether or not this patientGroup is empty.
      * @return    boolean true if this patientGroup contains no patients, false otherwise
-     */
-    boolean isEmpty() { return groupMembers.isEmpty(); }
-}
+     *
+    boolean isEmpty() { return patients.isEmpty(); }
+
+} */

@@ -1,7 +1,7 @@
 package org.monarchinitiative.phcompare;
 
 /**
- * EmptyGroupException is thrown when one or both of the PhenoCompare patient groups is/are empty.
+ * EmptyGroupException is thrown when one or both of the PhenoCompare groups (gene or patient) is/are empty.
  *
  * @author Hannah Blau (blauh)
  * @version 0.0.1

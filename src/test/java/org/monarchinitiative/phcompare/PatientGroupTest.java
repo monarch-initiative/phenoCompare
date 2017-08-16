@@ -14,7 +14,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Hannah Blau (blauh)
  * @version 0.0.2
- */
+ *
 public class PatientGroupTest {
     private static String emptyDir = "src/test/resources/patientFiles/groupC/";
     private static String missingDir = "src/test/resources/patientFiles/groupD/";
@@ -29,7 +29,7 @@ public class PatientGroupTest {
     public void testEmptyDirectory() throws Exception {
         PatientGroup epg = new PatientGroup(emptyDir);
         epg.readPatientFiles();
-        assertTrue("Test 1: patient group should be empty but is not.", epg.getGroupMembers().isEmpty());
+        assertTrue("Test 1: patient group should be empty but is not.", epg.getPatients().isEmpty());
     }
 
     @Test
@@ -37,7 +37,7 @@ public class PatientGroupTest {
         PatientGroup pg = new PatientGroup(normalDir);
         pg.readPatientFiles();
 //        System.out.println("\nPatients from " + normalDir);
-//        for (Patient p : pg.getGroupMembers()) {
+//        for (Patient p : pg.getPatients()) {
 //            System.out.println(p);
 //        }
 
@@ -120,10 +120,11 @@ public class PatientGroupTest {
         f614749.add(new TermID("HP:0010804"));
         Patient p614749 = new Patient(f614749);
 
-        List<Patient> pgm = pg.getGroupMembers();
+        List<Patient> pgm = pg.getPatients();
 
         assertTrue(pgm.contains(p239300));
         assertTrue(pgm.contains(p614207));
         assertTrue(pgm.contains(p614749));
     }
 }
+ */
