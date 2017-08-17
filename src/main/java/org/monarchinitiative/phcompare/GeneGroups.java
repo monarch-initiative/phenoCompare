@@ -44,13 +44,15 @@ class GeneGroups {
         }
     }
 
-    /*public Set<String> getEarlyGenes() {
+    /*
+    public Set<String> getEarlyGenes() {
         return earlyGenes;
     }
 
     public Set<String> getLateGenes() {
         return lateGenes;
-    }*/
+    }
+    */
 
     boolean isEarlyGene(String geneName) {
         return earlyGenes.contains(geneName);

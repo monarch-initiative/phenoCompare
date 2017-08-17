@@ -1,12 +1,14 @@
 package org.monarchinitiative.phcompare;
 
 import ontologizer.ontology.TermID;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
@@ -20,28 +22,44 @@ import static org.junit.Assert.*;
  * @version 0.0.2
  */
 public class PatientTest {
-    private static File f;
+    private static BufferedReader goodAndBadPatients;
+    private static BufferedReader onlyGoodPatients;
 
     @BeforeClass
     public static void setUp() throws Exception {
+        goodAndBadPatients = new BufferedReader(new FileReader(
+                "src/test/resources/patientFiles/goodAndBadPatients.tsv"));
+        onlyGoodPatients = new BufferedReader(new FileReader(
+                "src/test/resources/patientFiles/onlyGoodPatients.tsv"));
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        goodAndBadPatients.close();
+        onlyGoodPatients.close();
     }
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void testFormatError() throws DataFormatException {
+    public void testFormatError() throws Exception {
+        String line;
+
         thrown.expect(DataFormatException.class);
         thrown.expectMessage("Cannot parse patient record");
-        Patient p = new Patient("PIGG\t26996948\tMakrythanasis\t4:517638C>T[homozygous,codingcoding|missense]\t");
+        while (goodAndBadPatients.ready()) {
+            // third line of this file contains a patient record with no HPO terms
+            // should throw a DataFormatException when we try to create a Patient from that line
+            line = goodAndBadPatients.readLine();
+            Patient p = new Patient(line);
+        }
     }
 
     @Test
     public void testGetters() throws Exception {
-        Patient p = new Patient("PIGO\t22683086\tKrawitz\t" +
-                "9:35090263G>A[heterozygous,codingcoding|missense];9:35091522T>TG[heterozygous,codingcoding|stop-codon]\t" +
-                "HP:0003155;HP:0001252;HP:0001263;HP:0010804;HP:0002025;HP:0000316;HP:0001250;HP:0004322;HP:0000750;" +
-                "HP:0001270;HP:0000455;HP:0000431;HP:0006118;HP:0000076;HP:0000637\n");
+        String firstLine = onlyGoodPatients.readLine();
+        Patient p = new Patient(firstLine);
         Set<String> expected = new HashSet<>();
         expected.add("HP:0003155");
         expected.add("HP:0001252");
@@ -63,18 +81,17 @@ public class PatientTest {
         for (TermID t : p.getHpoTerms()) {
             pTerms.add(t.toString());
         }
-
-        System.out.print(p);
         assertEquals( "Gene name read from file is not as expected", "PIGO", p.getGene());
         assertEquals("HPO terms read from file are not as expected", expected, pTerms);
     }
 
     @Test
     public void testEquals() throws Exception {
-        Patient p = new Patient("PIGV\t24129430\tHorn\t" +
-                "1:27121547C>A[heterozygous,codingcoding|missense];1:27124258C>T[heterozygous,codingcoding|missense]\t" +
-                "HP:0001804;HP:0000455;HP:0001821;HP:0003155;HP:0000316;HP:0000126;HP:0200007;HP:0010804;HP:0000431;" +
-                "HP:0000175;HP:0001629;HP:0000072\n");
+        for (int i = 0; i < 4; i++) {
+            onlyGoodPatients.readLine();
+        }
+        // patient on sixth line of file
+        Patient p = new Patient(onlyGoodPatients.readLine());
         Patient q = new Patient("",null);
         TreeSet<TermID> hpot = new TreeSet<>();
         hpot.add(new TermID("HP:0001804"));
@@ -89,10 +106,13 @@ public class PatientTest {
         hpot.add(new TermID("HP:0000175"));
         hpot.add(new TermID("HP:0001629"));
         hpot.add(new TermID("HP:0000072"));
+        Patient r = new Patient("PIGV", hpot);
 
-        assertFalse("Patient from file equals array of int!", p.equals(new int[] {1, 2, 3}));
-        assertFalse("Patient from file equals empty patient!", p.equals(q));
-        assertTrue("Patient from file does not equal new patient with same elements.",
-                p.equals(new Patient("PIGV", hpot)));
+        assertFalse("Patient from file equals array of int!" + System.lineSeparator() + p.toString(),
+                p.equals(new int[] {1, 2, 3}));
+        assertFalse("Patient from file equals empty patient!" + System.lineSeparator() + p.toString(),
+                p.equals(q));
+        assertTrue("Patient from file does not equal new patient with same elements." +
+                        System.lineSeparator() + p.toString() + r.toString(), p.equals(r));
     }
 }
