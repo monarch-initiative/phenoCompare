@@ -39,9 +39,8 @@ public class PhenoCompare {
     private String genesPath;      // path for input file containing lists of genes for the patient groups
     private Ontology hpo;          // ontology of HPO terms
     private String hpoPath;        // path to directory containing .obo file for HPO
+    private PatientGroup[] patientGroups;    // array of patient groups for early, late gene mutations
     private String patientsPath;   // path for input file containing one line per patient
-    private List<Patient>[] patientGroups;    // array of patient groups for early, late gene mutations
-    //    private PatientGroup[] patientGroups;    // array of patient groups for early, late gene mutations
     private String resultsFile;    // path for output file
     // patientCounts maps from an HPO term to an array of the counts for each group of patients
     private SortedMap<TermID, int[]> patientCounts;
@@ -49,10 +48,10 @@ public class PhenoCompare {
     private PhenoCompare() {
         hpo = null;
         hpoPath = genesPath = patientsPath = resultsFile = "";
+        patientGroups = new PatientGroup[NUM_GROUPS];
         for (int g = 0; g < NUM_GROUPS; g++) {
-            patientGroups[g] = new ArrayList<>();
+            patientGroups[g] = new PatientGroup();
         }
-//        patientGroups = new PatientGroup[NUM_GROUPS];
         patientCounts = new TreeMap<>();
     }
 
@@ -109,7 +108,7 @@ public class PhenoCompare {
      */
     private void countPatients() {
         for (int g = 0; g < NUM_GROUPS; g++) {
-            for (Patient p : patientGroups[g]) {
+            for (Patient p : patientGroups[g].getPatients()) {
                 countPatient(p, g);
             }
         }
@@ -137,10 +136,10 @@ public class PhenoCompare {
             pat = new Patient(scan.nextLine());
             geneName = pat.getGene();
             if (geneGroups.isEarlyGene(geneName)) {
-                patientGroups[0].add(pat);
+                patientGroups[0].addPatient(pat);
             }
             else if (geneGroups.isLateGene(geneName)) {
-                patientGroups[1].add(pat);
+                patientGroups[1].addPatient(pat);
             }
             else {
                 throw new DataFormatException("[PhenoCompare.createPatientGroups] Unknown gene name: " +
@@ -180,7 +179,7 @@ public class PhenoCompare {
 
             bw.write(String.format("%s \t%s", tid, hpo.getTerm(tid).getName().toString()));
             for (int i = 0; i < NUM_GROUPS; i++) {
-                bw.write(String.format("\tgroup%c: %5d", ('A' + i), counts[i]));
+                bw.write(String.format("\t%s: %5d", i == 0 ? "early" : "late", counts[i]));
             }
             bw.write(String.format("\tChiSq: %7.3f", calculateChiSq(counts)));
             bw.newLine();
@@ -361,11 +360,11 @@ public class PhenoCompare {
         try {
             phenoC.hpo = parseObo(phenoC.hpoPath);
         } catch (IOException e) {
-            System.err.println("ERROR: Problem reading OBO file\n\n");
+            System.err.println("[PhenoCompare.main] Problem reading OBO file" + System.lineSeparator());
             e.printStackTrace();
             System.exit(1);
         } catch (OBOParserException e) {
-            System.err.println("ERROR: Problem parsing OBO file\n\n");
+            System.err.println("[PhenoCompare.main] Problem parsing OBO file" + System.lineSeparator());
             e.printStackTrace();
             System.exit(1);
         }
@@ -374,7 +373,6 @@ public class PhenoCompare {
         try {
             phenoC.geneGroups = new GeneGroups(phenoC.genesPath);
         } catch (IOException | EmptyGroupException e) {
-            System.err.println(e.getMessage() + System.lineSeparator());
             e.printStackTrace();
             System.exit(1);
         }
@@ -383,7 +381,6 @@ public class PhenoCompare {
         try {
             phenoC.createPatientGroups();
         } catch (DataFormatException | IOException | EmptyGroupException e) {
-            System.err.println(e.getMessage() + System.lineSeparator());
             e.printStackTrace();
             System.exit(1);
         }
@@ -397,8 +394,8 @@ public class PhenoCompare {
         try {
             phenoC.displayResults(phenoC.resultsFile);
         } catch (IOException e) {
-            System.err.println("ERROR: Problem writing output file " + phenoC.resultsFile + " : " +
-                    e.getMessage() + "\n\n");
+            System.err.println("[PhenoCompare.main] Problem writing output file " + phenoC.resultsFile +
+                    System.lineSeparator());
             e.printStackTrace();
             System.exit(1);
         }

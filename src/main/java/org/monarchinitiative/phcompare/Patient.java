@@ -35,9 +35,9 @@ class Patient {
         for (int i = 0; i < 3 && scan.hasNext(); i++) {
             scan.next();
         }
-        // Read HPO terms up to end of line.
-        while (scan.hasNext()) {
-            hpoTerms.add(new TermID(scan.next()));
+        // Read list of HPO terms up to end of line.
+        if (scan.hasNext()) {
+            parseHPOterms(scan.next());
         }
         scan.close();
         if (gene.equals("") || hpoTerms.isEmpty()) {
@@ -85,6 +85,18 @@ class Patient {
     @Override
     public int hashCode() {
         return getHpoTerms().hashCode();
+    }
+
+    /**
+     * Parses list of HPO terms from patient record. The HPO terms are separated by semicolons.
+     * Each term is added to this object's hpoTerms.
+     * @param listOfTerms    String consisting of HPO term IDs separated by semicolons
+     */
+    private void parseHPOterms(String listOfTerms) {
+        Scanner scan = new Scanner(listOfTerms).useDelimiter(";");
+        while (scan.hasNext()) {
+            hpoTerms.add(new TermID(scan.next()));
+        }
     }
 
     /**
