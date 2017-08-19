@@ -72,11 +72,15 @@ class Patient {
         return gene.equals(patient.gene) && hpoTerms.equals(patient.hpoTerms);
     }
 
+    /**
+     * @return    String containing name of the gene listed in the patient's record
+     */
     String getGene() { return gene; }
 
-    Set<TermID> getHpoTerms() {
-        return hpoTerms;
-    }
+    /**
+     * @return    Set of HPO TermIDs for the terms listed in the patient's record
+     */
+    Set<TermID> getHpoTerms() { return hpoTerms; }
 
     /**
      * Relies on the hashcode of the TreeSet class.

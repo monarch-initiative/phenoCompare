@@ -15,8 +15,9 @@ import java.util.TreeSet;
  * @since 14 Aug 2017
  */
 class GeneGroups {
-    // private (Set<String>)[] allGenes = {earlyGenes, lateGenes};
+    // names of the genes in the early part of the biochemical pathway
     private Set<String> earlyGenes = new TreeSet<>();
+    // names of the genes in the late part of the biochemical pathway
     private Set<String> lateGenes = new TreeSet<>();
 
     /**
@@ -44,24 +45,42 @@ class GeneGroups {
         }
     }
 
-    /*
-    public Set<String> getEarlyGenes() {
+    /**
+     * @return    Set of Strings, the names of the genes in the early part of the biochemical pathway
+     */
+    Set<String> getEarlyGenes() {
         return earlyGenes;
     }
 
-    public Set<String> getLateGenes() {
+    /**
+     * @return    Set of Strings, the names of the genes in the late part of the biochemical pathway
+     */
+    Set<String> getLateGenes() {
         return lateGenes;
     }
-    */
 
+    /**
+     * @param geneName   name of gene to be tested
+     * @return    true if geneName belongs to the set of early genes in this GeneGroup; false otherwise
+     */
     boolean isEarlyGene(String geneName) {
         return earlyGenes.contains(geneName);
     }
 
+    /**
+     * @param geneName   name of gene to be tested
+     * @return    true if geneName belongs to the set of late genes in this GeneGroup; false otherwise
+     */
     boolean isLateGene(String geneName) {
         return lateGenes.contains(geneName);
     }
 
+    /**
+     * Reads a line containing multiple gene names separated by tab characters, adds each gene name to
+     * the specified set.
+     * @param line      line of input to be parsed
+     * @param geneSet   set of gene names
+     */
     private void readGeneNames(String line, Set<String> geneSet) {
         Scanner scn = new Scanner(line).useDelimiter("\\t");
 
