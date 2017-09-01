@@ -37,16 +37,14 @@ public class GeneGroupsTest {
 
     @Test
     public void testNormalGeneFile() throws Exception {
-        Set<String> earlyg = new TreeSet<>();
-        Set<String> lateg = new TreeSet<>();
-        earlyg.add("PIGO");
-        earlyg.add("PIGG");
-        earlyg.add("PIGM");
-        lateg.add("PIGV");
+        GeneGroup earlyg = new GeneGroup();
+        GeneGroup lateg = new GeneGroup();
+        earlyg.addGene("PIGO");
+        earlyg.addGene("PIGG");
+        earlyg.addGene("PIGM");
+        lateg.addGene("PIGV");
         GeneGroups gg = new GeneGroups("src/test/resources/geneFiles/goodGenes.tsv");
-        assertEquals("Early genes are not as expected. ", earlyg, gg.getEarlyGenes());
-        assertEquals("Late genes are not as expected. ", lateg, gg.getLateGenes());
-        assertFalse("PIGF should not be an early gene", gg.isEarlyGene("PIGF"));
-        assertTrue("PIGV should be recognized as a late gene", gg.isLateGene("PIGV"));
+        assertEquals("Group 0 genes are not as expected. ", earlyg, gg.getGeneGroup(0));
+        assertEquals("Group 1 genes are not as expected. ", lateg, gg.getGeneGroup(1));
     }
 }

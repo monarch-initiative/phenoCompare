@@ -34,7 +34,7 @@ import java.util.zip.DataFormatException;
  *     @version 0.0.1
  */
 public class PhenoCompare {
-    private static final int NUM_GROUPS = 2;
+    static final int NUM_GROUPS = 2;
     private GeneGroups geneGroups; // groups of early and late genes
     private String genesPath;      // path for input file containing lists of genes for the patient groups
     private Ontology hpo;          // ontology of HPO terms
@@ -77,7 +77,7 @@ public class PhenoCompare {
      * including all nodes encountered between phenotypes mentioned in the patient's file and the root
      * node of the ontology.
      * @param p       patient whose phenotypes we are counting
-     * @param group   integer index for patient's group (0 -> group A, 1 -> group B)
+     * @param group   integer index for patient's group (0 .. NUM_GROUPS - 1)
      */
     private void countPatient(Patient p, int group) {
         Set<TermID> ancestors = new HashSet<>();
@@ -122,6 +122,7 @@ public class PhenoCompare {
      */
     private void createPatientGroups() throws IOException, DataFormatException, EmptyGroupException {
         String geneName;
+        int group;
         Patient pat;
         File patientsFile = new File(patientsPath);
         if (!patientsFile.exists()) {
@@ -135,25 +136,22 @@ public class PhenoCompare {
         while (scan.hasNextLine()) {
             pat = new Patient(scan.nextLine());
             geneName = pat.getGene();
-            if (geneGroups.isEarlyGene(geneName)) {
-                patientGroups[0].addPatient(pat);
+            group = geneGroups.whichGroup(geneName);
+            if (group > -1) {
+                patientGroups[group].addPatient(pat);
             }
-            else if (geneGroups.isLateGene(geneName)) {
-                patientGroups[1].addPatient(pat);
-            }
-            else {
+            else {  // group = -1, this patient has an unkown gene
                 throw new DataFormatException("[PhenoCompare.createPatientGroups] Unknown gene name: " +
                         geneName + System.lineSeparator());
             }
         }
 
-        // Check whether one or both patient groups is/are empty.
+        // Check whether one or more of the patient groups is/are empty.
         StringBuilder sb = new StringBuilder();
         for (int g = 0; g < NUM_GROUPS; g++) {
             if (patientGroups[g].isEmpty()) {
-                sb.append("[PhenoCompare.createPatientGroups] Empty patient group for mutations in ");
-                sb.append(g == 0 ? "early" : "late");
-                sb.append(" genes.");
+                sb.append("[PhenoCompare.createPatientGroups] Empty patient group ");
+                sb.append(g);
                 sb.append(System.lineSeparator());
             }
         }
@@ -326,7 +324,7 @@ public class PhenoCompare {
     /**
      * Increments the count mapped to HPO term tid for the specified patient group.
      *
-     * @param group  index for patient group (0 -> group A, 1 -> group B)
+     * @param group  index for patient group (0 .. NUM_GROUPS - 1)
      * @param tid    HPO term ID
      */
     private void updateCount(TermID tid, int group) {
