@@ -34,11 +34,13 @@ class GeneGroups {
         }
         Scanner scan = new Scanner(genesFile);
         String line;
+        for (int i = 0; i < NUM_GROUPS; i++) {
+            geneGroups[i] = new GeneGroup();
+        }
         int groupNum = 0;
         while (groupNum < NUM_GROUPS && scan.hasNextLine()) {
             line = scan.nextLine();
             if (!line.startsWith("#")) {     // # marks a header line or comment in the input file
-                geneGroups[groupNum] = new GeneGroup();
                 readGeneNames(line, geneGroups[groupNum]);
                 groupNum++;
             }

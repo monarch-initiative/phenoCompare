@@ -4,8 +4,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * GeneGroup is a set of gene names (Strings) that identify one group of patients (who have mutations in
- * one or more of the genes in this group).
+ * GeneGroup is a set of gene names (Strings) that corresponds to a group of patients who have mutations in
+ * genes from this group.
  * @author Hannah Blau (blauh)
  * @version 0.0.1
  * @since 30 Aug 2017
