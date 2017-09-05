@@ -1,6 +1,7 @@
 package org.monarchinitiative.phcompare;
 
 import ontologizer.ontology.TermID;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -22,23 +23,6 @@ import static org.junit.Assert.*;
  * @version 0.0.2
  */
 public class PatientTest {
-    private static BufferedReader goodAndBadPatients;
-    private static BufferedReader onlyGoodPatients;
-
-    @BeforeClass
-    public static void setUp() throws Exception {
-        goodAndBadPatients = new BufferedReader(new FileReader(
-                "src/test/resources/patientFiles/goodAndBadPatients.tsv"));
-        onlyGoodPatients = new BufferedReader(new FileReader(
-                "src/test/resources/patientFiles/onlyGoodPatients.tsv"));
-    }
-
-    @AfterClass
-    public static void tearDown() throws Exception {
-        goodAndBadPatients.close();
-        onlyGoodPatients.close();
-    }
-
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -46,6 +30,8 @@ public class PatientTest {
     public void testFormatError() throws Exception {
         String line;
 
+        BufferedReader goodAndBadPatients = new BufferedReader(new FileReader(
+                "src/test/resources/patientFiles/goodAndBadPatients.tsv"));
         thrown.expect(DataFormatException.class);
         thrown.expectMessage("Cannot parse patient record");
         while (goodAndBadPatients.ready()) {
@@ -54,12 +40,19 @@ public class PatientTest {
             line = goodAndBadPatients.readLine();
             Patient p = new Patient(line);
         }
+        goodAndBadPatients.close();
     }
 
     @Test
     public void testGetters() throws Exception {
+        BufferedReader onlyGoodPatients = new BufferedReader(new FileReader(
+                "src/test/resources/patientFiles/onlyGoodPatients.tsv"));
         String firstLine = onlyGoodPatients.readLine();
+        if (firstLine.startsWith("#"))
+            firstLine = onlyGoodPatients.readLine();
         Patient p = new Patient(firstLine);
+        onlyGoodPatients.close();
+
         Set<String> expected = new HashSet<>();
         expected.add("HP:0003155");
         expected.add("HP:0001252");
@@ -87,11 +80,15 @@ public class PatientTest {
 
     @Test
     public void testEquals() throws Exception {
-        for (int i = 0; i < 4; i++) {
+        BufferedReader onlyGoodPatients = new BufferedReader(new FileReader(
+                "src/test/resources/patientFiles/onlyGoodPatients.tsv"));
+        for (int i = 0; i < 7; i++) {
             onlyGoodPatients.readLine();
         }
-        // patient on sixth line of file
+        // patient on eighth line of file, after two comment lines and five patient records
         Patient p = new Patient(onlyGoodPatients.readLine());
+        onlyGoodPatients.close();
+
         Patient q = new Patient("",null);
         TreeSet<TermID> hpot = new TreeSet<>();
         hpot.add(new TermID("HP:0001804"));
@@ -113,6 +110,6 @@ public class PatientTest {
         assertFalse("Patient from file equals empty patient!" + System.lineSeparator() + p.toString(),
                 p.equals(q));
         assertTrue("Patient from file does not equal new patient with same elements." +
-                        System.lineSeparator() + p.toString() + r.toString(), p.equals(r));
+                System.lineSeparator() + p.toString() + r.toString(), p.equals(r));
     }
 }

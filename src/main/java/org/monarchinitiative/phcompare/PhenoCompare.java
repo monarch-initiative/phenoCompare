@@ -16,6 +16,7 @@ import ontologizer.io.obo.OBOParserFileInput;
 import ontologizer.ontology.Ontology;
 import ontologizer.ontology.TermContainer;
 import ontologizer.ontology.TermID;
+import org.monarchinitiative.phcompare.stats.HPOChiSquared;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -39,11 +40,13 @@ public class PhenoCompare {
     private String genesPath;      // path for input file containing lists of genes for the patient groups
     private Ontology hpo;          // ontology of HPO terms
     private String hpoPath;        // path to directory containing .obo file for HPO
+    // patientCounts maps from an HPO term to an array of the counts for each group of patients
+    private SortedMap<TermID, int[]> patientCounts;
     private PatientGroup[] patientGroups;    // array of patient groups for early, late gene mutations
     private String patientsPath;   // path for input file containing one line per patient
     private String resultsFile;    // path for output file
-    // patientCounts maps from an HPO term to an array of the counts for each group of patients
-    private SortedMap<TermID, int[]> patientCounts;
+    // termChiSq maps from an HPO term to the chi squared object for that term
+    private List<HPOChiSquared> termChiSq;
 
     private PhenoCompare() {
         hpo = null;
@@ -53,23 +56,31 @@ public class PhenoCompare {
             patientGroups[g] = new PatientGroup();
         }
         patientCounts = new TreeMap<>();
+        termChiSq = new ArrayList<>();
     }
 
     /**
-     * Calculates the chi squared statistic for each HPO term, based on counts of patients in each
-     * group who have/do not have that phenotype.
-     * @param countsForTermID array of int containing counts of patients in group A, group B that
-     *                        can be described with a particular HPO term
-     * @return double         Chi-squared statistic calculated from the patient counts for
-     *                        groups A and B
+     * Creates a HPOChiSquared object for each HPO term and adds it to the list termChiSq.
      */
-    private double calculateChiSq(int[] countsForTermID) {
+    private void calculateChiSq() {
+        for (TermID tid : patientCounts.keySet()) {
+            termChiSq.add(createChiSq(tid, patientCounts.get(tid)));
+        }
+    }
+
+    /**
+     * Creates a HPOChiSquared object for the HPO term, based on counts of patients in each
+     * group who have/do not have that phenotype.
+     * @param countsForTermID array of int containing counts of patients in each group
+     * @return ChiSquared     object containg Chi-squared statistic and its p value
+     */
+    private HPOChiSquared createChiSq(TermID hpoTerm, int[] countsForTermID) {
         long[][] csq = new long[NUM_GROUPS][2];
         for (int g = 0; g < NUM_GROUPS; g++) {
             csq[g][0] = countsForTermID[g];                              // have phenotype
             csq[g][1] = patientGroups[g].size() - countsForTermID[g];    // don't have phenotype
         }
-        return new ChiSquared(csq).getChiSquare();
+        return new HPOChiSquared(hpoTerm, csq);
     }
 
     /**
@@ -121,7 +132,7 @@ public class PhenoCompare {
      * @throws EmptyGroupException   if one or both patient groups is/are empty
      */
     private void createPatientGroups() throws IOException, DataFormatException, EmptyGroupException {
-        String geneName;
+        String geneName, line;
         int group;
         Patient pat;
         File patientsFile = new File(patientsPath);
@@ -134,15 +145,17 @@ public class PhenoCompare {
         // object and add it to the correct patient group according to which gene is mutated.
         Scanner scan = new Scanner(patientsFile);
         while (scan.hasNextLine()) {
-            pat = new Patient(scan.nextLine());
-            geneName = pat.getGene();
-            group = geneGroups.whichGroup(geneName);
-            if (group > -1) {
-                patientGroups[group].addPatient(pat);
-            }
-            else {  // group = -1, this patient has an unkown gene
-                throw new DataFormatException("[PhenoCompare.createPatientGroups] Unknown gene name: " +
-                        geneName + System.lineSeparator());
+            line = scan.nextLine();
+            if (!line.startsWith("#")) {     // # marks a header line or comment in the input file
+                pat = new Patient(line);
+                geneName = pat.getGene();
+                group = geneGroups.whichGroup(geneName);
+                if (group > -1) {
+                    patientGroups[group].addPatient(pat);
+                } else {  // group = -1, this patient has an unkown gene
+                    throw new DataFormatException("[PhenoCompare.createPatientGroups] Unknown gene name: " +
+                            geneName + System.lineSeparator());
+                }
             }
         }
 
@@ -171,15 +184,22 @@ public class PhenoCompare {
         int[] counts;
 
         BufferedWriter bw = new BufferedWriter(new FileWriter(outPath));
-        for (Map.Entry<TermID, int[]> entry : patientCounts.entrySet()) {
-            tid = entry.getKey();
-            counts = entry.getValue();
-
-            bw.write(String.format("%s \t%s", tid, hpo.getTerm(tid).getName().toString()));
+        // write header line
+        bw.write("#HPO TermId\tTerm Name\t");
+        for (int g = 1; g <= NUM_GROUPS; g++) {
+            bw.write(String.format("%s%d\t", "Group", g));
+        }
+        bw.write("ChiSq\tp Value");
+        bw.newLine();
+        // write one line for each HPO term
+        for (HPOChiSquared hcs : termChiSq) {
+            tid = hcs.getHPOtermID();
+            counts = patientCounts.get(tid);
+            bw.write(String.format("%s\t%s", tid, hpo.getTerm(tid).getName().toString()));
             for (int i = 0; i < NUM_GROUPS; i++) {
-                bw.write(String.format("\t%s: %5d", i == 0 ? "early" : "late", counts[i]));
+                bw.write(String.format("\t%5d", counts[i]));
             }
-            bw.write(String.format("\tChiSq: %7.3f", calculateChiSq(counts)));
+            bw.write(String.format("\t%7.3f\t%7.3f", hcs.getChiSquare(), hcs.getChiSquareP()));
             bw.newLine();
         }
         bw.close();
@@ -388,7 +408,13 @@ public class PhenoCompare {
         // 0 for each group.
         phenoC.countPatients();
 
-        // Display counts for each node of the ontology that has a non-zero count for one or more groups.
+        // For each HPO term whose expected frequency meets the minimum threshold, calculate the
+        // chi squared statistic.
+        phenoC.calculateChiSq();
+        phenoC.termChiSq.sort(null);
+
+        // Display counts and chi squared stats for each node of the ontology that meets the threshold for
+        // Chi Squared to be meaningful.
         try {
             phenoC.displayResults(phenoC.resultsFile);
         } catch (IOException e) {
