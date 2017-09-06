@@ -1,6 +1,6 @@
 package org.monarchinitiative.phcompare;
 
-import org.monarchinitiative.phcompare.stats.ChiSquared;
+import org.apache.commons.math3.exception.NumberIsTooSmallException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -36,16 +36,16 @@ import java.util.zip.DataFormatException;
  */
 public class PhenoCompare {
     static final int NUM_GROUPS = 2;
-    private GeneGroups geneGroups; // groups of early and late genes
+    private GeneGroups geneGroups; // groups of genes corresponding to disease categories
     private String genesPath;      // path for input file containing lists of genes for the patient groups
     private Ontology hpo;          // ontology of HPO terms
     private String hpoPath;        // path to directory containing .obo file for HPO
     // patientCounts maps from an HPO term to an array of the counts for each group of patients
     private SortedMap<TermID, int[]> patientCounts;
-    private PatientGroup[] patientGroups;    // array of patient groups for early, late gene mutations
+    private PatientGroup[] patientGroups;    // array of patient groups
     private String patientsPath;   // path for input file containing one line per patient
     private String resultsFile;    // path for output file
-    // termChiSq maps from an HPO term to the chi squared object for that term
+    // termChiSq is a list of objects that pair an HPO term to the Chi-squared statistic for that term
     private List<HPOChiSquared> termChiSq;
 
     private PhenoCompare() {
@@ -60,26 +60,52 @@ public class PhenoCompare {
     }
 
     /**
-     * Creates a HPOChiSquared object for each HPO term and adds it to the list termChiSq.
+     * Creates a HPOChiSquared object for each HPO term whose expected counts meet the
+     * minimum threshold. Adds the HPOChiSquared object to the list termChiSq.
      */
     private void calculateChiSq() {
+        HPOChiSquared hcs;
+
         for (TermID tid : patientCounts.keySet()) {
-            termChiSq.add(createChiSq(tid, patientCounts.get(tid)));
+            hcs = createChiSq(tid, patientCounts.get(tid));
+            if (hcs != null) {
+                termChiSq.add(hcs);
+            }
         }
     }
 
     /**
      * Creates a HPOChiSquared object for the HPO term, based on counts of patients in each
      * group who have/do not have that phenotype.
+     * @param hpoTerm         HPO termID
      * @param countsForTermID array of int containing counts of patients in each group
-     * @return ChiSquared     object containg Chi-squared statistic and its p value
+     * @return null           if one of expected counts is below threshold of 5
+     *         HPOChiSquared     otherwise, object containg HPO termID and Chi-squared statistic
      */
     private HPOChiSquared createChiSq(TermID hpoTerm, int[] countsForTermID) {
+        double expected;
+        int[] totalHaveOrDont = new int[2];          // column totals of matrix
+        int totalPatients;                           // grand total of all patients
         long[][] csq = new long[NUM_GROUPS][2];
         for (int g = 0; g < NUM_GROUPS; g++) {
             csq[g][0] = countsForTermID[g];                              // have phenotype
             csq[g][1] = patientGroups[g].size() - countsForTermID[g];    // don't have phenotype
+            totalHaveOrDont[0] += csq[g][0];
+            totalHaveOrDont[1] += csq[g][1];
         }
+        totalPatients = totalHaveOrDont[0] + totalHaveOrDont[1];
+
+        // Expected value for each cell of the matrix csq must be >= 5 for Chi-squared
+        // statistic to be meaningful
+        for (int g = 0; g < NUM_GROUPS; g++) {
+            for (int c = 0; c < 2; c++) {
+                expected = (countsForTermID[g] * totalHaveOrDont[c]) / (double) totalPatients;
+                if (expected < 5) {
+                    return null;
+                }
+            }
+        }
+
         return new HPOChiSquared(hpoTerm, csq);
     }
 
@@ -174,7 +200,7 @@ public class PhenoCompare {
     }
 
     /**
-     * Writes termID, term name, counts for each group of patients, and the chi squared statistic
+     * Writes termID, term name, counts for each group of patients, and the Chi-squared statistic
      * to specified output file.
      * @param outPath         path (including filename) for output file
      * @throws IOException    if problem writing to output file
@@ -409,12 +435,12 @@ public class PhenoCompare {
         phenoC.countPatients();
 
         // For each HPO term whose expected frequency meets the minimum threshold, calculate the
-        // chi squared statistic.
+        // Chi-squared statistic.
         phenoC.calculateChiSq();
         phenoC.termChiSq.sort(null);
 
-        // Display counts and chi squared stats for each node of the ontology that meets the threshold for
-        // Chi Squared to be meaningful.
+        // Display counts and Chi-squared stats for each node of the ontology that meets the threshold for
+        // Chi-squared to be meaningful.
         try {
             phenoC.displayResults(phenoC.resultsFile);
         } catch (IOException e) {
