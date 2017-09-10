@@ -12,7 +12,7 @@ import java.util.zip.DataFormatException;
  * @author Hannah Blau (blauh)
  * @version 0.0.1
  */
-class Patient {
+public class Patient {
     // Name of gene that is mutated in this patient
     private String gene = "";
     // Terms from Human Phenotype Ontology that describe this patient
@@ -101,6 +101,19 @@ class Patient {
         while (scan.hasNext()) {
             hpoTerms.add(new TermID(scan.next()));
         }
+    }
+
+    /**
+     * Computes the similarity metric (a double) between this Patient and Patient p.
+     * @param p          Patient to which similarity is computed
+     * @return double    similarity metric for this Patient with Patient p
+     */
+    public double similarity(Patient p) {
+        double sim = 0;
+        for (TermID tid : p.getHpoTerms())
+            if (hpoTerms.contains(tid))
+                sim++;
+        return sim / Math.max(hpoTerms.size(), p.getHpoTerms().size());
     }
 
     /**

@@ -17,6 +17,7 @@ import ontologizer.ontology.Ontology;
 import ontologizer.ontology.TermContainer;
 import ontologizer.ontology.TermID;
 import org.monarchinitiative.phcompare.stats.HPOChiSquared;
+import org.monarchinitiative.phcompare.stats.PatientSimilarity;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -43,6 +44,7 @@ public class PhenoCompare {
     // patientCounts maps from an HPO term to an array of the counts for each group of patients
     private SortedMap<TermID, int[]> patientCounts;
     private PatientGroup[] patientGroups;    // array of patient groups
+    private PatientSimilarity pSim;          // similarity matrix for all patients
     private String patientsPath;   // path for input file containing one line per patient
     private String resultsFile;    // path for output file
     // termChiSq is a list of objects that pair an HPO term to the Chi-squared statistic for that term
@@ -201,15 +203,17 @@ public class PhenoCompare {
 
     /**
      * Writes termID, term name, counts for each group of patients, and the Chi-squared statistic
-     * to specified output file.
-     * @param outPath         path (including filename) for output file
-     * @throws IOException    if problem writing to output file
+     * to output file specified as command line argument. Also writes similarity matrix to file
+     * named simMatrix in the same directory.
+     * @throws IOException    if problem writing to either output file
      */
-    private void displayResults(String outPath) throws IOException {
+    private void displayResults() throws IOException {
         TermID tid;
         int[] counts;
 
-        BufferedWriter bw = new BufferedWriter(new FileWriter(outPath));
+        File outFile = new File(resultsFile);
+        writeMatrix(new File(outFile.getParent(), "simMatrix"));
+        BufferedWriter bw = new BufferedWriter(new FileWriter(outFile));
         // write header line
         bw.write("#HPO TermId\tTerm Name\t");
         for (int g = 1; g <= NUM_GROUPS; g++) {
@@ -388,6 +392,31 @@ public class PhenoCompare {
     }
 
     /**
+     * Writes similarity matrix to specified output file. Columns are separated by spaces.
+     * @param outFile          file to which matrix is written
+     * @throws IOException     if problem writing to file
+     */
+    private void writeMatrix(File outFile) throws IOException {
+        BufferedWriter bw = new BufferedWriter(new FileWriter(outFile));
+        int dim;
+        double[][] matrix;
+        List<Patient> pats = new ArrayList<>(patientGroups[0].getPatients());
+        for (int g = 1; g < NUM_GROUPS; g++) {
+            pats.addAll(patientGroups[g].getPatients());
+        }
+        dim = pats.size();
+        PatientSimilarity pSim = new PatientSimilarity(pats);
+        matrix = pSim.getSimilarityMatrix();
+        for (int r = 0; r < dim; r++) {
+            for (int c = 0; c < dim; c++) {
+                bw.write(String.format("%7.2f", matrix[r][c]));
+            }
+            bw.newLine();
+        }
+        bw.close();
+    }
+
+    /**
      * Main method for PhenoCompare class. Parses the command line arguments to find directory information,
      * then creates the Ontology object for HPO from .obo file. Reads two groups (A, B) of patient files.
      * For each phenotype mentioned in the patient files, counts the number of patients in each group that
@@ -442,10 +471,9 @@ public class PhenoCompare {
         // Display counts and Chi-squared stats for each node of the ontology that meets the threshold for
         // Chi-squared to be meaningful.
         try {
-            phenoC.displayResults(phenoC.resultsFile);
+            phenoC.displayResults();
         } catch (IOException e) {
-            System.err.println("[PhenoCompare.main] Problem writing output file " + phenoC.resultsFile +
-                    System.lineSeparator());
+            System.err.println("[PhenoCompare.main] Problem writing output file" + System.lineSeparator());
             e.printStackTrace();
             System.exit(1);
         }
