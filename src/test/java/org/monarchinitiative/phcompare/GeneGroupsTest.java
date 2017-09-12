@@ -44,7 +44,6 @@ public class GeneGroupsTest {
                 0, ggs.whichGroup("PIGO"));
         assertEquals("whichGroup returns wrong group for PIGV",
                 1, ggs.whichGroup("PIGV"));
-        assertTrue(earlyg.contains("PIGG"));
         assertTrue(earlyg.contains("PIGM"));
         assertFalse(earlyg.contains("PIGV"));
         assertFalse(lateg.contains("PIGG"));
