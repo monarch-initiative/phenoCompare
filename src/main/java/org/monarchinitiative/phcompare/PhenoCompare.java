@@ -1,7 +1,5 @@
 package org.monarchinitiative.phcompare;
 
-import org.apache.commons.math3.exception.NumberIsTooSmallException;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -44,7 +42,6 @@ public class PhenoCompare {
     // patientCounts maps from an HPO term to an array of the counts for each group of patients
     private SortedMap<TermID, int[]> patientCounts;
     private PatientGroup[] patientGroups;    // array of patient groups
-    private PatientSimilarity pSim;          // similarity matrix for all patients
     private String patientsPath;   // path for input file containing one line per patient
     private String resultsFile;    // path for output file
     // termChiSq is a list of objects that pair an HPO term to the Chi-squared statistic for that term
@@ -203,8 +200,8 @@ public class PhenoCompare {
 
     /**
      * Writes termID, term name, counts for each group of patients, and the Chi-squared statistic
-     * to output file specified as command line argument. Also writes similarity matrix to file
-     * named simMatrix in the same directory.
+     * to output file specified as command line argument. Also writes dissimilarity matrix to file
+     * named dissim.tsv in the same directory.
      * @throws IOException    if problem writing to either output file
      */
     private void displayResults() throws IOException {
@@ -212,7 +209,7 @@ public class PhenoCompare {
         int[] counts;
 
         File outFile = new File(resultsFile);
-        writeMatrix(new File(outFile.getParent(), "simMatrix"));
+        writeDissimilarity(new File(outFile.getParent(), "dissim.tsv"));
         BufferedWriter bw = new BufferedWriter(new FileWriter(outFile));
         // write header line
         bw.write("#HPO TermId\tTerm Name\t");
@@ -392,27 +389,35 @@ public class PhenoCompare {
     }
 
     /**
-     * Writes similarity matrix to specified output file. Columns are separated by spaces.
+     * Converts similarity matrix into dissimilarity matrix as it writes values to specified output file.
+     * R clustering function requires a dissimilarity matrix. Columns are separated by tabs.
      * @param outFile          file to which matrix is written
      * @throws IOException     if problem writing to file
      */
-    private void writeMatrix(File outFile) throws IOException {
+    private void writeDissimilarity(File outFile) throws IOException {
+        StringBuilder sb = new StringBuilder();
         BufferedWriter bw = new BufferedWriter(new FileWriter(outFile));
-        int dim;
-        double[][] matrix;
+
+        // Combine patient groups together to get one list of all patients
         List<Patient> pats = new ArrayList<>(patientGroups[0].getPatients());
         for (int g = 1; g < NUM_GROUPS; g++) {
             pats.addAll(patientGroups[g].getPatients());
         }
-        dim = pats.size();
+
+        // compute similarity matrix for all patients
+        int dim = pats.size();
         PatientSimilarity pSim = new PatientSimilarity(pats);
-        matrix = pSim.getSimilarityMatrix();
+        double[][] matrix = pSim.getSimilarityMatrix();
+
+        // write dissimilarity matrix to outFile
         for (int r = 0; r < dim; r++) {
             for (int c = 0; c < dim; c++) {
-                bw.write(String.format("%7.2f", matrix[r][c]));
+                sb.append(String.format("%4.2f\t", 1.0 - matrix[r][c]));
             }
-            bw.newLine();
+            sb.deleteCharAt(sb.length() - 1);
+            sb.append(System.lineSeparator());
         }
+        bw.write(sb.toString());
         bw.close();
     }
 
