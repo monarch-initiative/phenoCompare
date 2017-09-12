@@ -48,6 +48,17 @@
             <version>3.6.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.phenomics</groupId>
+            <artifactId>ontolib-core</artifactId>
+            <version>0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.phenomics</groupId>
+            <artifactId>ontolib-io</artifactId>
+            <version>0.3</version>
+        </dependency>
+
 
     </dependencies>
 

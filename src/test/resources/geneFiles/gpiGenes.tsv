@@ -1,0 +1,6 @@
+#Synthesis of GPI Precursor Molecules
+PIGA    PIGC    PIGH    PIGO PIGP    PIGQ    PIGY PIGV PIGL PIGG PIGM
+#Transfer GPI anchor to protein
+#PIGT    PIGK    PIGS    PIGU    GPAA1
+#Modification of protein-bound GPI moiety
+PGAP1   PGAP3   PGAP2 PIGT    PIGK    PIGS    PIGU    GPAA1

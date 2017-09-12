@@ -34,7 +34,7 @@ import java.util.zip.DataFormatException;
  *     @version 0.0.1
  */
 public class PhenoCompare {
-    static final int NUM_GROUPS = 3;
+    static final int NUM_GROUPS = 2;
     private GeneGroups geneGroups; // groups of genes corresponding to disease categories
     private String genesPath;      // path for input file containing lists of genes for the patient groups
     private Ontology hpo;          // ontology of HPO terms
@@ -101,7 +101,7 @@ public class PhenoCompare {
                 expected = (countsForTermID[g] * totalHaveOrDont[c]) / (double) totalPatients;
                 if (expected < 5) {
                     return null;
-                }
+               }
             }
         }
 

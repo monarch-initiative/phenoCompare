@@ -1,7 +1,16 @@
 package org.monarchinitiative.phcompare.stats;
 
+import com.github.phenomics.ontolib.formats.hpo.HpoOntology;
+import com.github.phenomics.ontolib.formats.hpo.HpoTerm;
+import com.github.phenomics.ontolib.formats.hpo.HpoTermRelation;
+import com.github.phenomics.ontolib.io.obo.hpo.HpoOboParser;
+import com.github.phenomics.ontolib.ontology.data.Ontology;
+import com.github.phenomics.ontolib.ontology.similarity.JaccardSimilarity;
+import ontologizer.ontology.TermID;
 import org.monarchinitiative.phcompare.Patient;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -11,6 +20,12 @@ import java.util.List;
  */
 public class PatientSimilarity {
     private double[][] similarityMatrix;
+    /** Object to determine similarity between two patients by compairing the sets of HPO terms (as TermID objects)
+     * representing the phgenotypic profiles of the two patients.
+     */
+    private JaccardSimilarity<HpoTerm, HpoTermRelation> similarity=null;
+
+
 
     /**
      * Computes similarity matrix for a list of patients.
@@ -37,4 +52,36 @@ public class PatientSimilarity {
     public double[][] getSimilarityMatrix() {
         return similarityMatrix;
     }
+
+
+
+    public double getJaccardSimilarity(List<com.github.phenomics.ontolib.ontology.data.TermId> patient1, List<com.github.phenomics.ontolib.ontology.data.TermId> patient2) {
+       return this.similarity.computeScore(patient1, patient2);
+    }
+
+
+
+    public void setupJaccard(String hpopath) {
+        Ontology<HpoTerm, HpoTermRelation> ontology = parseOntology(hpopath);
+        this.similarity =   new JaccardSimilarity<>(ontology);
+
+    }
+
+
+    public Ontology<HpoTerm, HpoTermRelation> parseOntology(String HPOpath) {
+        HpoOntology hpo;
+        Ontology<HpoTerm, HpoTermRelation> abnormalPhenoSubOntology =null;
+        try {
+            HpoOboParser hpoOboParser = new HpoOboParser(new File(HPOpath));
+            hpo = hpoOboParser.parse();
+            abnormalPhenoSubOntology = hpo.getPhenotypicAbnormalitySubOntology();
+        } catch (IOException e) {
+//            logger.error(String.format("Unable to parse HPO OBO file at %s", HPOpath ));
+//            logger.error(e,e);
+            System.exit(1);
+        }
+        return abnormalPhenoSubOntology;
+    }
+
+
 }
