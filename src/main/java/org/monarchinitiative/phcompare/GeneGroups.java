@@ -9,9 +9,8 @@ import java.util.TreeSet;
 import static org.monarchinitiative.phcompare.PhenoCompare.NUM_GROUPS;
 
 /**
- * GeneGroups reads from a file of gene information to create multiple GeneGroup objects.
- * sets of patients to be compared by {@link PhenoCompare}. Gene names are Strings. The file of gene names
- * contains two lines, one for each set of gene names. The gene name file is in tsv format.
+ * GeneGroups reads from a file of gene information to create multiple GeneGroup objects. The file of
+ * gene names contains one line for each gene group. Gene names are Strings.
  * @author Hannah Blau (blauh)
  * @version 0.0.1
  * @since 14 Aug 2017
@@ -84,13 +83,13 @@ class GeneGroups {
     }
 
     /**
-     * Reads a line containing multiple gene names separated by tab characters, adds each gene name to
+     * Reads a line containing multiple gene names separated by whitespace, adds each gene name to
      * the specified set.
      * @param line      line of input to be parsed
      * @param geneG     GeneGroup (set of gene names)
      */
     private void readGeneNames(String line, GeneGroup geneG) {
-        Scanner scn = new Scanner(line).useDelimiter("\\t");
+        Scanner scn = new Scanner(line);
         while (scn.hasNext()) {
             geneG.addGene(scn.next());
         }
