@@ -27,18 +27,19 @@ import java.util.*;
 import java.util.zip.DataFormatException;
 
 /**
- *  PhenoCompare compares two groups of patients to judge their overlap/divergence in the Human Phenotype
- *  Ontology.  PhenoCompare calculates for each node of HPO, the number of patients in each of the two groups
- *  who exhibit a phenotype covered by that node. Takes into account the type hierarchy.
+ *  PhenoCompare compares several groups of patients to judge their overlap/divergence in the Human Phenotype
+ *  Ontology.  PhenoCompare calculates for each node of HPO, the number of patients in each of the groups
+ *  who exhibit a phenotype covered by that node. Takes into account the type hierarchy. Then applies a
+ *  chi-squared test to determine for which HPO terms is there any significant difference among the groups.
  *     @author Hannah Blau (blauh)
  *     @version 0.0.1
  */
 public class PhenoCompare {
-    static final int NUM_GROUPS = 2;
     private GeneGroups geneGroups; // groups of genes corresponding to disease categories
     private String genesPath;      // path for input file containing lists of genes for the patient groups
     private Ontology hpo;          // ontology of HPO terms
     private String hpoPath;        // path to directory containing .obo file for HPO
+    private int numGroups;                 // number of gene groups (and hence patient groups)
     // patientCounts maps from an HPO term to an array of the counts for each group of patients
     private SortedMap<TermID, int[]> patientCounts;
     private PatientGroup[] patientGroups;    // array of patient groups
@@ -47,13 +48,10 @@ public class PhenoCompare {
     // termChiSq is a list of objects that pair an HPO term to the Chi-squared statistic for that term
     private List<HPOChiSquared> termChiSq;
 
-    private PhenoCompare() {
+    private PhenoCompare(String[] args) {
         hpo = null;
-        hpoPath = genesPath = patientsPath = resultsFile = "";
-        patientGroups = new PatientGroup[NUM_GROUPS];
-        for (int g = 0; g < NUM_GROUPS; g++) {
-            patientGroups[g] = new PatientGroup();
-        }
+        // Initialize hpoPath, genesPath, patientsPath, and resultsFile from the command line arguments
+        parseCommandLine(args);
         patientCounts = new TreeMap<>();
         termChiSq = new ArrayList<>();
     }
@@ -85,8 +83,8 @@ public class PhenoCompare {
         double expected;
         int[] totalHaveOrDont = new int[2];          // column totals of matrix
         int totalPatients;                           // grand total of all patients
-        long[][] csq = new long[NUM_GROUPS][2];
-        for (int g = 0; g < NUM_GROUPS; g++) {
+        long[][] csq = new long[numGroups][2];
+        for (int g = 0; g < numGroups; g++) {
             csq[g][0] = countsForTermID[g];                              // have phenotype
             csq[g][1] = patientGroups[g].size() - countsForTermID[g];    // don't have phenotype
             totalHaveOrDont[0] += csq[g][0];
@@ -96,7 +94,7 @@ public class PhenoCompare {
 
         // Expected value for each cell of the matrix csq must be >= 5 for Chi-squared
         // statistic to be meaningful
-        for (int g = 0; g < NUM_GROUPS; g++) {
+        for (int g = 0; g < numGroups; g++) {
             for (int c = 0; c < 2; c++) {
                 expected = (countsForTermID[g] * totalHaveOrDont[c]) / (double) totalPatients;
                 if (expected < 5) {
@@ -113,7 +111,7 @@ public class PhenoCompare {
      * including all nodes encountered between phenotypes mentioned in the patient's file and the root
      * node of the ontology.
      * @param p       patient whose phenotypes we are counting
-     * @param group   integer index for patient's group (0 .. NUM_GROUPS - 1)
+     * @param group   integer index for patient's group (0 .. numGroups - 1)
      */
     private void countPatient(Patient p, int group) {
         Set<TermID> ancestors = new HashSet<>();
@@ -143,7 +141,7 @@ public class PhenoCompare {
      * a count of 0 for all patient groups.
      */
     private void countPatients() {
-        for (int g = 0; g < NUM_GROUPS; g++) {
+        for (int g = 0; g < numGroups; g++) {
             for (Patient p : patientGroups[g].getPatients()) {
                 countPatient(p, g);
             }
@@ -166,6 +164,12 @@ public class PhenoCompare {
                     patientsPath);
         }
 
+        // Initialize patient groups.
+        patientGroups = new PatientGroup[numGroups];
+        for (int g = 0; g < numGroups; g++) {
+            patientGroups[g] = new PatientGroup();
+        }
+
         // Read patients file line by line; each line is one patient record. Create a patient
         // object and add it to the correct patient group according to which gene is mutated.
         Scanner scan = new Scanner(patientsFile);
@@ -186,7 +190,7 @@ public class PhenoCompare {
 
         // Check whether one or more of the patient groups is/are empty.
         StringBuilder sb = new StringBuilder();
-        for (int g = 0; g < NUM_GROUPS; g++) {
+        for (int g = 0; g < numGroups; g++) {
             if (patientGroups[g].isEmpty()) {
                 sb.append("[PhenoCompare.createPatientGroups] Empty patient group ");
                 sb.append(g);
@@ -213,7 +217,7 @@ public class PhenoCompare {
         BufferedWriter bw = new BufferedWriter(new FileWriter(outFile));
         // write header line
         bw.write("#HPO TermId\tTerm Name\t");
-        for (int g = 1; g <= NUM_GROUPS; g++) {
+        for (int g = 1; g <= numGroups; g++) {
             bw.write(String.format("%s%d\t", "Group", g));
         }
         bw.write("ChiSq\tp Value");
@@ -223,7 +227,7 @@ public class PhenoCompare {
             tid = hcs.getHPOtermID();
             counts = patientCounts.get(tid);
             bw.write(String.format("%s\t%s", tid, hpo.getTerm(tid).getName().toString()));
-            for (int i = 0; i < NUM_GROUPS; i++) {
+            for (int i = 0; i < numGroups; i++) {
                 bw.write(String.format("\t%5d", counts[i]));
             }
             bw.write(String.format("\t%7.3f\t%7.3f", hcs.getChiSquare(), hcs.getChiSquareP()));
@@ -371,7 +375,7 @@ public class PhenoCompare {
     /**
      * Increments the count mapped to HPO term tid for the specified patient group.
      *
-     * @param group  index for patient group (0 .. NUM_GROUPS - 1)
+     * @param group  index for patient group (0 .. numGroups - 1)
      * @param tid    HPO term ID
      */
     private void updateCount(TermID tid, int group) {
@@ -382,7 +386,7 @@ public class PhenoCompare {
         else {
             // First time we have seen this termID, create a new map entry for it and record count of 1 for
             // specified group.
-            int[] counts = new int[NUM_GROUPS];
+            int[] counts = new int[numGroups];
             counts[group]++;
             patientCounts.put(tid, counts);
         }
@@ -400,7 +404,7 @@ public class PhenoCompare {
 
         // Combine patient groups together to get one list of all patients
         List<Patient> pats = new ArrayList<>(patientGroups[0].getPatients());
-        for (int g = 1; g < NUM_GROUPS; g++) {
+        for (int g = 1; g < numGroups; g++) {
             pats.addAll(patientGroups[g].getPatients());
         }
 
@@ -422,17 +426,17 @@ public class PhenoCompare {
     }
 
     /**
-     * Main method for PhenoCompare class. Parses the command line arguments to find directory information,
-     * then creates the Ontology object for HPO from .obo file. Reads two groups (A, B) of patient files.
-     * For each phenotype mentioned in the patient files, counts the number of patients in each group that
-     * exhibit that phenotype, while also updating counts for all ancestors of the phenotype in the HPO DAG.
-     * Calculates Chi-squared statistic for each HPO term with counts > 0 and writes results to
-     * user-specified output file.
+     * Main method for PhenoCompare class. The constructor parses command line arguments to find
+     * input file and directory information. Creates the Ontology object for HPO from .obo file. Reads
+     * groups of genes from genes file, then groups of patients from patients file. For each phenotype
+     * mentioned in the patient files, counts the number of patients in each group who exhibit that
+     * phenotype, while also updating counts for all ancestors of the phenotype in the HPO DAG.
+     * Calculates Chi-squared statistic for each HPO term that has sufficiently high expected counts.
+     * Writes results to user-specified output file.
      * @param args     command line arguments typed by user
      */
     public static void main(String[] args) {
-        PhenoCompare phenoC = new PhenoCompare();
-        phenoC.parseCommandLine(args);
+        PhenoCompare phenoC = new PhenoCompare(args);
 
         // Load ontology from file.
         try {
@@ -447,15 +451,16 @@ public class PhenoCompare {
             System.exit(1);
         }
 
-        // Form two groups of genes corresponding to the two groups of patients
+        // Read genes file to form groups of genes
         try {
             phenoC.geneGroups = new GeneGroups(phenoC.genesPath);
+            phenoC.numGroups = phenoC.geneGroups.howManyGroups();
         } catch (IOException | EmptyGroupException e) {
             e.printStackTrace();
             System.exit(1);
         }
 
-        // Read file of patient records and create patient groups.
+        // Read file of patient records and create patient groups corresponding to gene groups.
         try {
             phenoC.createPatientGroups();
         } catch (DataFormatException | IOException | EmptyGroupException e) {

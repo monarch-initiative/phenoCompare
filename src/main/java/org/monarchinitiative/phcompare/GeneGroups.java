@@ -2,27 +2,23 @@ package org.monarchinitiative.phcompare;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.TreeSet;
-
-import static org.monarchinitiative.phcompare.PhenoCompare.NUM_GROUPS;
+import java.util.*;
 
 /**
  * GeneGroups reads from a file of gene information to create multiple GeneGroup objects. The file of
- * gene names contains one line for each gene group. Gene names are Strings.
+ * gene names contains one line for each gene group (and comments if desired). Gene names are Strings.
  * @author Hannah Blau (blauh)
  * @version 0.0.1
  * @since 14 Aug 2017
  */
 class GeneGroups {
-    private GeneGroup[] geneGroups = new GeneGroup[NUM_GROUPS];
+    private List<GeneGroup> geneGroups = new ArrayList<>();
 
     /**
      * Reads multiple lists of gene names from specified file and creates corresponding GeneGroup objects
      * @param path              file containing lists of genes
      * @throws IOException      if file cannot be found
-     * @throws EmptyGroupException  if after reading file, there's an empty gene group
+     * @throws EmptyGroupException  if no gene groups in the file
      */
     GeneGroups(String path) throws IOException, EmptyGroupException {
         File genesFile = new File(path);
@@ -32,26 +28,23 @@ class GeneGroups {
                     System.lineSeparator());
         }
         Scanner scan = new Scanner(genesFile);
+
         String line;
-        for (int i = 0; i < NUM_GROUPS; i++) {
-            geneGroups[i] = new GeneGroup();
-        }
-        int groupNum = 0;
-        while (groupNum < NUM_GROUPS && scan.hasNextLine()) {
+        GeneGroup g;
+        while (scan.hasNextLine()) {
             line = scan.nextLine();
-            if (!line.startsWith("#")) {     // # marks a header line or comment in the input file
-                readGeneNames(line, geneGroups[groupNum]);
-                groupNum++;
+            // skip this line if it is a comment (marked with #) or a blank line
+            if (!(line.startsWith("#") || line.isEmpty())) {
+                g = new GeneGroup();
+                readGeneNames(line, g);
+                geneGroups.add(g);
             }
         }
         scan.close();
-        for (int i = 0; i < NUM_GROUPS; i++) {
-            // a geneGroup could wind up empty if genesFile does not contain enough lines, or if
-            // it contains a line with no tokens
-            if (geneGroups[i].isEmpty()) {
-                throw new EmptyGroupException("[GeneGroups.GeneGroups] Empty group of genes from file " +
-                        genesFile + System.lineSeparator());
-            }
+
+        if (geneGroups.isEmpty()) { // nothing but blank lines and comments in this file!
+            throw new EmptyGroupException("[GeneGroups.GeneGroups] No gene groups found in file " +
+                    genesFile + System.lineSeparator());
         }
     }
 
@@ -61,10 +54,18 @@ class GeneGroups {
      * @return GeneGroup        GeneGroup corresponding to groupNum, or null if groupNum is out of range
      */
     GeneGroup getGeneGroup(int groupNum) {
-        if (groupNum > -1 && groupNum < NUM_GROUPS) {
-            return geneGroups[groupNum];
+        if (groupNum > -1 && groupNum < geneGroups.size()) {
+            return geneGroups.get(groupNum);
         }
         else return null;
+    }
+
+    /**
+     * Returns number of gene groups in this object.
+     * @return int    number of gene groups
+     */
+    int howManyGroups() {
+        return geneGroups.size();
     }
 
     /**
@@ -73,8 +74,8 @@ class GeneGroups {
      * @return int       number of the GeneGroup that contains this geneName, or -1 if no such group
      */
     int whichGroup(String geneName) {
-        for (int i = 0; i < NUM_GROUPS; i++) {
-            if (geneGroups[i].contains(geneName)) {
+        for (int i = 0; i < geneGroups.size(); i++) {
+            if (geneGroups.get(i).contains(geneName)) {
                 return i;
             }
         }

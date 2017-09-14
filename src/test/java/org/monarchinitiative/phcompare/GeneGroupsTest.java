@@ -5,8 +5,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
-import java.util.Set;
-import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -31,21 +29,23 @@ public class GeneGroupsTest {
     @Test
     public void testBadFileFormat() throws Exception {
         thrown.expect(EmptyGroupException.class);
-        thrown.expectMessage("Empty group of genes");
-        GeneGroups gg = new GeneGroups("src/test/resources/geneFiles/badGenes.tsv");
+        thrown.expectMessage("No gene groups found in file ");
+        GeneGroups gg = new GeneGroups("src/test/resources/geneFiles/badGenes.txt");
     }
 
     @Test
     public void testNormalGeneFile() throws Exception {
-        GeneGroups ggs = new GeneGroups("src/test/resources/geneFiles/goodGenes.tsv");
+        GeneGroups ggs = new GeneGroups("src/test/resources/geneFiles/goodGenes.txt");
+        assertEquals("Number of groups is wrong", 3, ggs.howManyGroups());
         GeneGroup earlyg = ggs.getGeneGroup(0);
-        GeneGroup lateg = ggs.getGeneGroup(1);
+        GeneGroup midg = ggs.getGeneGroup(1);
+        GeneGroup lateg = ggs.getGeneGroup(2);
         assertEquals("whichGroup returns wrong group for PIGO",
                 0, ggs.whichGroup("PIGO"));
         assertEquals("whichGroup returns wrong group for PIGV",
                 1, ggs.whichGroup("PIGV"));
         assertTrue(earlyg.contains("PIGM"));
         assertFalse(earlyg.contains("PIGV"));
-        assertFalse(lateg.contains("PIGG"));
+        assertTrue(lateg.contains("PIGG"));
     }
 }
