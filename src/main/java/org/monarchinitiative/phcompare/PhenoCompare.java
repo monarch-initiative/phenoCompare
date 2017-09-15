@@ -1,5 +1,10 @@
 package org.monarchinitiative.phcompare;
 
+import com.github.phenomics.ontolib.formats.hpo.HpoOntology;
+import com.github.phenomics.ontolib.formats.hpo.HpoTerm;
+import com.github.phenomics.ontolib.formats.hpo.HpoTermRelation;
+import com.github.phenomics.ontolib.io.obo.hpo.HpoOboParser;
+import com.github.phenomics.ontolib.ontology.data.TermId;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -8,12 +13,12 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import ontologizer.io.obo.OBOParser;
-import ontologizer.io.obo.OBOParserException;
-import ontologizer.io.obo.OBOParserFileInput;
-import ontologizer.ontology.Ontology;
-import ontologizer.ontology.TermContainer;
-import ontologizer.ontology.TermID;
+//import ontologizer.io.obo.OBOParser;
+//import ontologizer.io.obo.OBOParserException;
+//import ontologizer.io.obo.OBOParserFileInput;
+//import ontologizer.ontology.Ontology;
+//import ontologizer.ontology.TermContainer;
+//import ontologizer.ontology.TermID;
 import org.monarchinitiative.phcompare.stats.HPOChiSquared;
 import org.monarchinitiative.phcompare.stats.PatientSimilarity;
 
@@ -37,19 +42,23 @@ import java.util.zip.DataFormatException;
 public class PhenoCompare {
     private GeneGroups geneGroups; // groups of genes corresponding to disease categories
     private String genesPath;      // path for input file containing lists of genes for the patient groups
-    private Ontology hpo;          // ontology of HPO terms
+//    private Ontology hpo;          // ontology of HPO terms
     private String hpoPath;        // path to directory containing .obo file for HPO
     private int numGroups;                 // number of gene groups (and hence patient groups)
     // patientCounts maps from an HPO term to an array of the counts for each group of patients
-    private SortedMap<TermID, int[]> patientCounts;
+    private SortedMap<TermId, int[]> patientCounts;
     private PatientGroup[] patientGroups;    // array of patient groups
     private String patientsPath;   // path for input file containing one line per patient
     private String resultsFile;    // path for output file
     // termChiSq is a list of objects that pair an HPO term to the Chi-squared statistic for that term
     private List<HPOChiSquared> termChiSq;
+    /** The fully parsed HPO Ontology from ontolib */
+    static com.github.phenomics.ontolib.ontology.data.Ontology<HpoTerm, HpoTermRelation> ontology=null;
+
+    static private Map<TermId,HpoTerm> termMap=null;
 
     private PhenoCompare(String[] args) {
-        hpo = null;
+
         // Initialize hpoPath, genesPath, patientsPath, and resultsFile from the command line arguments
         parseCommandLine(args);
         patientCounts = new TreeMap<>();
@@ -63,7 +72,7 @@ public class PhenoCompare {
     private void calculateChiSq() {
         HPOChiSquared hcs;
 
-        for (TermID tid : patientCounts.keySet()) {
+        for (TermId tid : patientCounts.keySet()) {
             hcs = createChiSq(tid, patientCounts.get(tid));
             if (hcs != null) {
                 termChiSq.add(hcs);
@@ -79,7 +88,7 @@ public class PhenoCompare {
      * @return null           if one of expected counts is below threshold of 5
      *         HPOChiSquared     otherwise, object containg HPO termID and Chi-squared statistic
      */
-    private HPOChiSquared createChiSq(TermID hpoTerm, int[] countsForTermID) {
+    private HPOChiSquared createChiSq(TermId hpoTerm, int[] countsForTermID) {
         double expected;
         int[] totalHaveOrDont = new int[2];          // column totals of matrix
         int totalPatients;                           // grand total of all patients
@@ -114,13 +123,14 @@ public class PhenoCompare {
      * @param group   integer index for patient's group (0 .. numGroups - 1)
      */
     private void countPatient(Patient p, int group) {
-        Set<TermID> ancestors = new HashSet<>();
-        for (TermID tid : p.getHpoTerms()) {
+        Set<TermId> ancestors = new HashSet<>();
+        for (TermId tid : p.getHpoTerms()) {
             // getTermsOfInducedGraph returns a set of TermIDs for ancestors of tid
             try {
                 // Merging sets of TermIDs eliminates duplicates if a given ontology node appears
                 // in the induced graph for more than one of patient's HPO terms.
-                ancestors.addAll(hpo.getTermsOfInducedGraph(null, tid));
+//                ancestors.addAll(hpo.getTermsOfInducedGraph(null, tid));
+                ancestors.addAll(ontology.getAncestorTermIds( tid));
             }
             // If tid is no longer in the ontology, getTermsOfInducedGraph results in
             // IllegalArgumentException.
@@ -130,7 +140,7 @@ public class PhenoCompare {
         }
         // Increment the count for the group containing this patient in all the ontology nodes that
         // cover the patient's reported phenotypes.
-        for (TermID ancestor : ancestors) {
+        for (TermId ancestor : ancestors) {
             updateCount(ancestor, group);
         }
     }
@@ -209,7 +219,7 @@ public class PhenoCompare {
      * @throws IOException    if problem writing to either output file
      */
     private void displayResults() throws IOException {
-        TermID tid;
+        TermId tid;
         int[] counts;
 
         File outFile = new File(resultsFile);
@@ -226,9 +236,11 @@ public class PhenoCompare {
         for (HPOChiSquared hcs : termChiSq) {
             tid = hcs.getHPOtermID();
             counts = patientCounts.get(tid);
-            bw.write(String.format("%s\t%s", tid, hpo.getTerm(tid).getName().toString()));
+//            bw.write(String.format("%s\t%s", tid, hpo.getTerm(tid).getName().toString()));
+//            HpoTerm t = termMap.get(tid);
+            bw.write(String.format("%s\t%s", tid.getIdWithPrefix(), termMap.get(tid).getName()));
             for (int i = 0; i < numGroups; i++) {
-                bw.write(String.format("\t%5d", counts[i]));
+                bw.write(String.format("\t%5d/%d", counts[i],patientGroups[i].size()));
             }
             bw.write(String.format("\t%7.3f\t%7.3f", hcs.getChiSquare(), hcs.getChiSquareP()));
             bw.newLine();
@@ -335,6 +347,26 @@ public class PhenoCompare {
         }
     }
 
+
+    private static com.github.phenomics.ontolib.ontology.data.Ontology<HpoTerm, HpoTermRelation> getOntolibOntology(String HPOpath) {
+        HpoOntology hpo;
+        com.github.phenomics.ontolib.ontology.data.Ontology<HpoTerm, HpoTermRelation> abnormalPhenoSubOntology = null;
+        try {
+            HpoOboParser hpoOboParser = new HpoOboParser(new File(HPOpath));
+            hpo = hpoOboParser.parse();
+            abnormalPhenoSubOntology = hpo.getPhenotypicAbnormalitySubOntology();
+        } catch (IOException e) {
+//            logger.error(String.format("Unable to parse HPO OBO file at %s", HPOpath ));
+//            logger.error(e,e);
+            System.exit(1);
+        }
+        return abnormalPhenoSubOntology;
+    }
+
+
+
+
+
     /**
      * Code inherited from Sebastian Bauer (?) to read specified .obo file and create the corresponding
      * Ontology object.
@@ -343,19 +375,19 @@ public class PhenoCompare {
      * @return Ontology  the Ontology object created from .obo file
      *
      */
-    private static Ontology parseObo(String pathObo) throws IOException, OBOParserException {
-        System.err.println("Reading ontology from OBO file " + pathObo + " ...");
-        OBOParser parser = new OBOParser(new OBOParserFileInput(pathObo));
-        String parseResult = parser.doParse();
-
-        System.err.println("Information about parse result:");
-        System.err.println(parseResult);
-        TermContainer termContainer =
-                new TermContainer(parser.getTermMap(), parser.getFormatVersion(), parser.getDate());
-        final Ontology ontology = Ontology.create(termContainer);
-        System.err.println("=> done reading OBO file");
-        return ontology;
-    }
+//    private static Ontology parseObo(String pathObo) throws IOException, OBOParserException {
+//        System.err.println("Reading ontology from OBO file " + pathObo + " ...");
+//        OBOParser parser = new OBOParser(new OBOParserFileInput(pathObo));
+//        String parseResult = parser.doParse();
+//
+//        System.err.println("Information about parse result:");
+//        System.err.println(parseResult);
+//        TermContainer termContainer =
+//                new TermContainer(parser.getTermMap(), parser.getFormatVersion(), parser.getDate());
+//        final Ontology ontology = Ontology.create(termContainer);
+//        System.err.println("=> done reading OBO file");
+//        return ontology;
+//    }
 
     /**
      * Parses the command line arguments typed by user to look for the required (not help) options
@@ -378,7 +410,7 @@ public class PhenoCompare {
      * @param group  index for patient group (0 .. numGroups - 1)
      * @param tid    HPO term ID
      */
-    private void updateCount(TermID tid, int group) {
+    private void updateCount(TermId tid, int group) {
         if (patientCounts.containsKey(tid)) {
             // Have already seen this termID before, just increment existing array element.
             patientCounts.get(tid)[group]++;
@@ -410,7 +442,7 @@ public class PhenoCompare {
 
         // compute similarity matrix for all patients
         int dim = pats.size();
-        PatientSimilarity pSim = new PatientSimilarity(pats);
+        PatientSimilarity pSim = new PatientSimilarity(pats,ontology);
         double[][] matrix = pSim.getSimilarityMatrix();
 
         // write dissimilarity matrix to outFile
@@ -438,18 +470,22 @@ public class PhenoCompare {
     public static void main(String[] args) {
         PhenoCompare phenoC = new PhenoCompare(args);
 
-        // Load ontology from file.
-        try {
-            phenoC.hpo = parseObo(phenoC.hpoPath);
-        } catch (IOException e) {
-            System.err.println("[PhenoCompare.main] Problem reading OBO file" + System.lineSeparator());
-            e.printStackTrace();
-            System.exit(1);
-        } catch (OBOParserException e) {
-            System.err.println("[PhenoCompare.main] Problem parsing OBO file" + System.lineSeparator());
-            e.printStackTrace();
-            System.exit(1);
-        }
+//        // Load ontology from file.
+//        try {
+//            phenoC.hpo = parseObo(phenoC.hpoPath);
+//        } catch (IOException e) {
+//            System.err.println("[PhenoCompare.main] Problem reading OBO file" + System.lineSeparator());
+//            e.printStackTrace();
+//            System.exit(1);
+//        } catch (OBOParserException e) {
+//            System.err.println("[PhenoCompare.main] Problem parsing OBO file" + System.lineSeparator());
+//            e.printStackTrace();
+//            System.exit(1);
+//        }
+
+
+        phenoC.ontology= getOntolibOntology(phenoC.hpoPath);
+        termMap=ontology.getTermMap();
 
         // Read genes file to form groups of genes
         try {

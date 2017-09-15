@@ -6,7 +6,6 @@ import com.github.phenomics.ontolib.formats.hpo.HpoTermRelation;
 import com.github.phenomics.ontolib.io.obo.hpo.HpoOboParser;
 import com.github.phenomics.ontolib.ontology.data.Ontology;
 import com.github.phenomics.ontolib.ontology.similarity.JaccardSimilarity;
-import ontologizer.ontology.TermID;
 import org.monarchinitiative.phcompare.Patient;
 
 import java.io.File;
@@ -33,14 +32,16 @@ public class PatientSimilarity {
      * is symmetric, so half of the matrix does not need to be calculated.
      * @param Patients        List of Patients for which pairwise similarity metric is computed.
      */
-    public PatientSimilarity(List<Patient> Patients) {
+    public PatientSimilarity(List<Patient> Patients,Ontology<HpoTerm, HpoTermRelation> ontology) {
         int dim = Patients.size();
+        this.similarity =   new JaccardSimilarity<>(ontology);
         similarityMatrix = new double[dim][dim];
         for (int r = 0; r < dim; r++) {
             similarityMatrix[r][r] = 1.0;
             for (int c = 0; c < r; c++) {
                 similarityMatrix[r][c] = similarityMatrix[c][r] =
-                        Patients.get(r).similarity(Patients.get(c));
+//                        Patients.get(r).similarity(Patients.get(c));
+                getJaccardSimilarity(Patients.get(r).getListOfHpoTerms() , Patients.get(c).getListOfHpoTerms());
             }
         }
     }
@@ -61,27 +62,25 @@ public class PatientSimilarity {
 
 
 
-    public void setupJaccard(String hpopath) {
-        Ontology<HpoTerm, HpoTermRelation> ontology = parseOntology(hpopath);
-        this.similarity =   new JaccardSimilarity<>(ontology);
+//    public void setupJaccard(Ontology<HpoTerm, HpoTermRelation> ontology) {
+//        this.similarity =   new JaccardSimilarity<>(ontology);
+//    }
+//
 
-    }
-
-
-    public Ontology<HpoTerm, HpoTermRelation> parseOntology(String HPOpath) {
-        HpoOntology hpo;
-        Ontology<HpoTerm, HpoTermRelation> abnormalPhenoSubOntology =null;
-        try {
-            HpoOboParser hpoOboParser = new HpoOboParser(new File(HPOpath));
-            hpo = hpoOboParser.parse();
-            abnormalPhenoSubOntology = hpo.getPhenotypicAbnormalitySubOntology();
-        } catch (IOException e) {
-//            logger.error(String.format("Unable to parse HPO OBO file at %s", HPOpath ));
-//            logger.error(e,e);
-            System.exit(1);
-        }
-        return abnormalPhenoSubOntology;
-    }
+//    public Ontology<HpoTerm, HpoTermRelation> parseOntology(String HPOpath) {
+//        HpoOntology hpo;
+//        Ontology<HpoTerm, HpoTermRelation> abnormalPhenoSubOntology =null;
+//        try {
+//            HpoOboParser hpoOboParser = new HpoOboParser(new File(HPOpath));
+//            hpo = hpoOboParser.parse();
+//            abnormalPhenoSubOntology = hpo.getPhenotypicAbnormalitySubOntology();
+//        } catch (IOException e) {
+////            logger.error(String.format("Unable to parse HPO OBO file at %s", HPOpath ));
+////            logger.error(e,e);
+//            System.exit(1);
+//        }
+//        return abnormalPhenoSubOntology;
+//    }
 
 
 }

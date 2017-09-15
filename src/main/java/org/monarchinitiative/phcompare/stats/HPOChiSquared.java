@@ -1,5 +1,6 @@
 package org.monarchinitiative.phcompare.stats;
-import ontologizer.ontology.TermID;
+import com.github.phenomics.ontolib.ontology.data.TermId;
+
 
 import static org.apache.commons.math3.stat.inference.TestUtils.chiSquare;
 import static org.apache.commons.math3.stat.inference.TestUtils.chiSquareTest;
@@ -12,10 +13,10 @@ import static org.apache.commons.math3.stat.inference.TestUtils.chiSquareTest;
 public class HPOChiSquared implements Comparable<HPOChiSquared> {
     private double chiSquare;    // chi-squared statistic
     private double chiSquareP;   // p-value associated with the chi-squared statistic for this HPO term
-    private TermID HPOtermID;    // HPO term for which this is the chi-squared statistic
+    private TermId HPOtermID;    // HPO term for which this is the chi-squared statistic
 //    private long observed[][];   // observed counts for patients who have, do not have this HPO term
 
-    public HPOChiSquared(TermID hpoTerm, long[][] observed) {
+    public HPOChiSquared(TermId hpoTerm, long[][] observed) {
         chiSquare = chiSquare(observed);
         chiSquareP = chiSquareTest(observed);
         HPOtermID = hpoTerm;
@@ -46,7 +47,7 @@ public class HPOChiSquared implements Comparable<HPOChiSquared> {
 
     public double getChiSquareP() { return chiSquareP; }
 
-    public TermID getHPOtermID() { return HPOtermID; }
+    public TermId getHPOtermID() { return HPOtermID; }
 
     @Override
     public int hashCode() {

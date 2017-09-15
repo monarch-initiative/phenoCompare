@@ -1,10 +1,12 @@
 package org.monarchinitiative.phcompare;
 
-import ontologizer.ontology.TermID;
+//import ontologizer.ontology.TermID;
+import com.github.phenomics.ontolib.ontology.data.ImmutableTermPrefix;
+import com.github.phenomics.ontolib.ontology.data.ImmutableTermId;
+import com.github.phenomics.ontolib.ontology.data.TermPrefix;
+import com.github.phenomics.ontolib.ontology.data.TermId;
 
-import java.util.Scanner;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.zip.DataFormatException;
 
 /**
@@ -16,7 +18,9 @@ public class Patient {
     // Name of gene that is mutated in this patient
     private String gene = "";
     // Terms from Human Phenotype Ontology that describe this patient
-    private Set<TermID> hpoTerms;
+    private Set<TermId> hpoTerms;
+
+    private TermPrefix hpoprefix=new ImmutableTermPrefix("HP");
 
     /**
      * Constructor extracts the gene name and HPO term IDs from the patient record
@@ -50,7 +54,7 @@ public class Patient {
      * This constructor useful for test classes.
      * @param terms    TreeSet of TermIDs for HPO terms describing this patient
      */
-    Patient(String g, TreeSet<TermID> terms) {
+    Patient(String g, TreeSet<TermId> terms) {
         gene = g;
         if (terms == null) {
             hpoTerms = new TreeSet<>();
@@ -80,7 +84,10 @@ public class Patient {
     /**
      * @return    Set of HPO TermIDs for the terms listed in the patient's record
      */
-    Set<TermID> getHpoTerms() { return hpoTerms; }
+    Set<TermId> getHpoTerms() { return hpoTerms; }
+
+
+    public List<TermId> getListOfHpoTerms() { return new ArrayList<>(hpoTerms);}
 
     /**
      * Relies on the hashcode of the TreeSet class.
@@ -99,7 +106,16 @@ public class Patient {
     private void parseHPOterms(String listOfTerms) {
         Scanner scan = new Scanner(listOfTerms).useDelimiter(";");
         while (scan.hasNext()) {
-            hpoTerms.add(new TermID(scan.next()));
+            String hpostring=scan.next();
+            int i=hpostring.indexOf(":");
+            if (i<0) {
+                System.err.println("ERROR -- Could not parse "+hpostring+" because we did not find a :");
+                return;
+            } else {
+                hpostring=hpostring.substring(i+1);
+            }
+            TermId id = new ImmutableTermId(hpoprefix,hpostring);
+            hpoTerms.add(id);
         }
     }
 
@@ -110,7 +126,7 @@ public class Patient {
      */
     public double similarity(Patient p) {
         double sim = 0;
-        for (TermID tid : p.getHpoTerms())
+        for (TermId tid : p.getHpoTerms())
             if (hpoTerms.contains(tid))
                 sim++;
         return sim / Math.max(hpoTerms.size(), p.getHpoTerms().size());
@@ -126,7 +142,7 @@ public class Patient {
         sb.append(gene);
         sb.append("; HPO Terms = ");
         sb.append(System.lineSeparator());
-        for (TermID t : getHpoTerms()) {
+        for (TermId t : getHpoTerms()) {
             sb.append("\t");
             sb.append(t.toString());
             sb.append(System.lineSeparator());

@@ -29,18 +29,7 @@
             <artifactId>commons-cli</artifactId>
             <version>1.4</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/de.ontologizer/ontologizerlib-core -->
-        <dependency>
-            <groupId>de.ontologizer</groupId>
-            <artifactId>ontologizerlib-core</artifactId>
-            <version>0.1</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/de.ontologizer/ontologizerlib-io -->
-        <dependency>
-            <groupId>de.ontologizer</groupId>
-            <artifactId>ontologizerlib-io</artifactId>
-            <version>0.1</version>
-        </dependency>
+
 
         <dependency>
             <groupId>org.apache.commons</groupId>

@@ -1,7 +1,10 @@
 package org.monarchinitiative.phcompare;
 
-import ontologizer.ontology.TermID;
 
+import com.github.phenomics.ontolib.ontology.data.ImmutableTermId;
+import com.github.phenomics.ontolib.ontology.data.ImmutableTermPrefix;
+import com.github.phenomics.ontolib.ontology.data.TermId;
+import com.github.phenomics.ontolib.ontology.data.TermPrefix;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -71,7 +74,7 @@ public class PatientTest {
         expected.add("HP:0000637");
 
         Set<String> pTerms = new HashSet<>();
-        for (TermID t : p.getHpoTerms()) {
+        for (TermId t : p.getHpoTerms()) {
             pTerms.add(t.toString());
         }
         assertEquals( "Gene name read from file is not as expected", "PIGO", p.getGene());
@@ -90,19 +93,20 @@ public class PatientTest {
         onlyGoodPatients.close();
 
         Patient q = new Patient("",null);
-        TreeSet<TermID> hpot = new TreeSet<>();
-        hpot.add(new TermID("HP:0001804"));
-        hpot.add(new TermID("HP:0000455"));
-        hpot.add(new TermID("HP:0001821"));
-        hpot.add(new TermID("HP:0003155"));
-        hpot.add(new TermID("HP:0000316"));
-        hpot.add(new TermID("HP:0000126"));
-        hpot.add(new TermID("HP:0200007"));
-        hpot.add(new TermID("HP:0010804"));
-        hpot.add(new TermID("HP:0000431"));
-        hpot.add(new TermID("HP:0000175"));
-        hpot.add(new TermID("HP:0001629"));
-        hpot.add(new TermID("HP:0000072"));
+        TreeSet<TermId> hpot = new TreeSet<>();
+        TermPrefix hpoprefix=new ImmutableTermPrefix("HP");
+        hpot.add(new ImmutableTermId(hpoprefix,"0001804"));
+        hpot.add(new ImmutableTermId(hpoprefix,"0000455"));
+        hpot.add(new ImmutableTermId(hpoprefix,"0001821"));
+        hpot.add(new ImmutableTermId(hpoprefix,"0003155"));
+        hpot.add(new ImmutableTermId(hpoprefix,"0000316"));
+        hpot.add(new ImmutableTermId(hpoprefix,"0000126"));
+        hpot.add(new ImmutableTermId(hpoprefix,"0200007"));
+        hpot.add(new ImmutableTermId(hpoprefix,"0010804"));
+        hpot.add(new ImmutableTermId(hpoprefix,"0000431"));
+        hpot.add(new ImmutableTermId(hpoprefix,"0000175"));
+        hpot.add(new ImmutableTermId(hpoprefix,"0001629"));
+        hpot.add(new ImmutableTermId(hpoprefix,"0000072"));
         Patient r = new Patient("PIGV", hpot);
 
         assertFalse("Patient from file equals array of int!" + System.lineSeparator() + p.toString(),

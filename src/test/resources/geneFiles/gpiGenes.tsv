@@ -1,6 +1,6 @@
-#Synthesis of GPI Precursor Molecules
-PIGA    PIGC    PIGH    PIGO PIGP    PIGQ    PIGY PIGV PIGL PIGG PIGM
-#Transfer GPI anchor to protein
-#PIGT    PIGK    PIGS    PIGU    GPAA1
+#Synthesis
+DPM2 PIGY PIGA PIGC PIGH PIGP PIGQ PIGL PIGM PIGX PIGV PIGN PIGB PIGO PIGF PIGG
+#Transamidase
+PIGT    PIGK    PIGS    PIGU    GPAA1
 #Modification of protein-bound GPI moiety
-PGAP1   PGAP3   PGAP2 PIGT    PIGK    PIGS    PIGU    GPAA1
+PGAP1   PGAP3   PGAP2 PGAP5
