@@ -75,7 +75,7 @@ public class PatientTest {
 
         Set<String> pTerms = new HashSet<>();
         for (TermId t : p.getHpoTerms()) {
-            pTerms.add(t.toString());
+            pTerms.add(t.getIdWithPrefix());
         }
         assertEquals( "Gene name read from file is not as expected", "PIGO", p.getGene());
         assertEquals("HPO terms read from file are not as expected", expected, pTerms);

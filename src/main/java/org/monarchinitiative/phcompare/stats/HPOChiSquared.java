@@ -1,7 +1,6 @@
 package org.monarchinitiative.phcompare.stats;
 import com.github.phenomics.ontolib.ontology.data.TermId;
 
-
 import static org.apache.commons.math3.stat.inference.TestUtils.chiSquare;
 import static org.apache.commons.math3.stat.inference.TestUtils.chiSquareTest;
 
@@ -13,25 +12,28 @@ import static org.apache.commons.math3.stat.inference.TestUtils.chiSquareTest;
 public class HPOChiSquared implements Comparable<HPOChiSquared> {
     private double chiSquare;    // chi-squared statistic
     private double chiSquareP;   // p-value associated with the chi-squared statistic for this HPO term
-    private TermId HPOtermID;    // HPO term for which this is the chi-squared statistic
+    private TermId HPOTermId;    // HPO term for which this is the chi-squared statistic
 //    private long observed[][];   // observed counts for patients who have, do not have this HPO term
 
     public HPOChiSquared(TermId hpoTerm, long[][] observed) {
         chiSquare = chiSquare(observed);
         chiSquareP = chiSquareTest(observed);
-        HPOtermID = hpoTerm;
+        HPOTermId = hpoTerm;
     }
 
     /**
      * Compares the argument to this HPOChiSquared object. Orders first by chiSquare value, then by
-     * HPOtermID.
+     * HPOTermId.
      * @param hcs     the HPOChiSquared object to which this object is compared
      * @return int    0 if they are equal; negative if this precedes (is less than) hcs,
      *                positive if hcs precedes (is less than) this
+     * @throws        IllegalArgumentException if argument is null
      */
-    public int compareTo(HPOChiSquared hcs) {
+    public int compareTo(HPOChiSquared hcs) throws IllegalArgumentException {
+        if (hcs == null)
+            throw new IllegalArgumentException("[HPOChiSquared.compareTo] Cannot compare to null object");
         int cmp = Double.compare(this.chiSquare, hcs.chiSquare);
-        return cmp != 0 ? cmp : HPOtermID.compareTo(hcs.HPOtermID);
+        return cmp != 0 ? cmp : HPOTermId.getId().compareTo(hcs.HPOTermId.getId());
     }
 
     @Override
@@ -40,14 +42,15 @@ public class HPOChiSquared implements Comparable<HPOChiSquared> {
         if (o == null || getClass() != o.getClass()) return false;
 
         HPOChiSquared that = (HPOChiSquared) o;
-        return  Double.compare(that.chiSquare, chiSquare)==0 && HPOtermID.equals(that.HPOtermID);
+        return  Double.compare(chiSquare, that.chiSquare) == 0 &&
+                HPOTermId.getIdWithPrefix().equals(that.HPOTermId.getIdWithPrefix());
     }
 
     public double getChiSquare() { return chiSquare; }
 
     public double getChiSquareP() { return chiSquareP; }
 
-    public TermId getHPOtermID() { return HPOtermID; }
+    public TermId getHPOTermId() { return HPOTermId; }
 
     @Override
     public int hashCode() {
@@ -55,7 +58,7 @@ public class HPOChiSquared implements Comparable<HPOChiSquared> {
         long temp;
         temp = Double.doubleToLongBits(chiSquare);
         result = (int) (temp ^ (temp >>> 32));
-        result = 31 * result + HPOtermID.hashCode();
+        result = 31 * result + HPOTermId.hashCode();
         return result;
     }
 }

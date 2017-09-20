@@ -20,7 +20,7 @@ public class Patient {
     // Terms from Human Phenotype Ontology that describe this patient
     private Set<TermId> hpoTerms;
 
-    private TermPrefix hpoprefix=new ImmutableTermPrefix("HP");
+    public static TermPrefix HPOPREFIX = new ImmutableTermPrefix("HP");
 
     /**
      * Constructor extracts the gene name and HPO term IDs from the patient record
@@ -114,7 +114,7 @@ public class Patient {
             } else {
                 hpostring=hpostring.substring(i+1);
             }
-            TermId id = new ImmutableTermId(hpoprefix,hpostring);
+            TermId id = new ImmutableTermId(HPOPREFIX,hpostring);
             hpoTerms.add(id);
         }
     }

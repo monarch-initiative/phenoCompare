@@ -53,7 +53,7 @@ public class PhenoCompare {
     // termChiSq is a list of objects that pair an HPO term to the Chi-squared statistic for that term
     private List<HPOChiSquared> termChiSq;
     /** The fully parsed HPO Ontology from ontolib */
-    static com.github.phenomics.ontolib.ontology.data.Ontology<HpoTerm, HpoTermRelation> ontology=null;
+    private static com.github.phenomics.ontolib.ontology.data.Ontology<HpoTerm, HpoTermRelation> ontology=null;
 
     static private Map<TermId,HpoTerm> termMap=null;
 
@@ -234,7 +234,7 @@ public class PhenoCompare {
         bw.newLine();
         // write one line for each HPO term
         for (HPOChiSquared hcs : termChiSq) {
-            tid = hcs.getHPOtermID();
+            tid = hcs.getHPOTermId();
             counts = patientCounts.get(tid);
 //            bw.write(String.format("%s\t%s", tid, hpo.getTerm(tid).getName().toString()));
 //            HpoTerm t = termMap.get(tid);
@@ -242,7 +242,7 @@ public class PhenoCompare {
             for (int i = 0; i < numGroups; i++) {
                 bw.write(String.format("\t%5d/%d", counts[i],patientGroups[i].size()));
             }
-            bw.write(String.format("\t%7.3f\t%7.3f", hcs.getChiSquare(), hcs.getChiSquareP()));
+            bw.write(String.format("\t%7.3f\t%9.5f", hcs.getChiSquare(), hcs.getChiSquareP()));
             bw.newLine();
         }
         bw.close();
@@ -363,11 +363,7 @@ public class PhenoCompare {
         return abnormalPhenoSubOntology;
     }
 
-
-
-
-
-    /**
+    /*
      * Code inherited from Sebastian Bauer (?) to read specified .obo file and create the corresponding
      * Ontology object.
      *
@@ -484,7 +480,7 @@ public class PhenoCompare {
 //        }
 
 
-        phenoC.ontology= getOntolibOntology(phenoC.hpoPath);
+        ontology= getOntolibOntology(phenoC.hpoPath);
         termMap=ontology.getTermMap();
 
         // Read genes file to form groups of genes
