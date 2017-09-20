@@ -15,8 +15,10 @@ import java.util.zip.DataFormatException;
  * @version 0.0.1
  */
 public class Patient {
+    // Identifier for this patient
+    private String pid;
     // Name of gene that is mutated in this patient
-    private String gene = "";
+    private String gene;
     // Terms from Human Phenotype Ontology that describe this patient
     private Set<TermId> hpoTerms;
 
@@ -29,10 +31,14 @@ public class Patient {
      * @throws DataFormatException   if gene name and/or HPO terms are not as expected
      */
     Patient(String line) throws DataFormatException {
+        pid = gene = "";
         hpoTerms = new TreeSet<>();
 
         Scanner scan = new Scanner(line).useDelimiter("\\t");
-        // Gene name is in first column.
+        // Patient Id is in first column.
+        if (scan.hasNext())
+            pid = scan.next();
+        // Gene name is in second column.
         if (scan.hasNext())
             gene = scan.next();
         // Skip over the three intervening columns until you reach the list of HPO term ids.
@@ -44,7 +50,7 @@ public class Patient {
             parseHPOterms(scan.next());
         }
         scan.close();
-        if (gene.equals("") || hpoTerms.isEmpty()) {
+        if (pid.equals("") || gene.equals("") || hpoTerms.isEmpty()) {
             throw new DataFormatException("[Patient.Patient] Cannot parse patient record: " +
                     line + System.lineSeparator());
         }
@@ -54,7 +60,8 @@ public class Patient {
      * This constructor useful for test classes.
      * @param terms    TreeSet of TermIDs for HPO terms describing this patient
      */
-    Patient(String g, TreeSet<TermId> terms) {
+    Patient(String id, String g, TreeSet<TermId> terms) {
+        pid = id;
         gene = g;
         if (terms == null) {
             hpoTerms = new TreeSet<>();
@@ -63,7 +70,8 @@ public class Patient {
     }
 
     /**
-     * Two Patient objects are considered equal if they have the same gene name and same set of HPO terms.
+     * Two Patient objects are considered equal if they have the same id, same gene name,
+     * and same set of HPO terms.
      * @param o    object to which this patient is compared
      * @return     true if this patient and the object o are equal, false otherwise
      */
@@ -73,8 +81,13 @@ public class Patient {
         if (o == null || getClass() != o.getClass()) return false;
 
         Patient patient = (Patient) o;
-        return gene.equals(patient.gene) && hpoTerms.equals(patient.hpoTerms);
+        return pid.equals(patient.pid) && gene.equals(patient.gene) && hpoTerms.equals(patient.hpoTerms);
     }
+
+    /**
+     * @return    String containing the patient id listed in the patient's record
+     */
+    String getPid() { return pid; }
 
     /**
      * @return    String containing name of the gene listed in the patient's record
@@ -86,16 +99,19 @@ public class Patient {
      */
     Set<TermId> getHpoTerms() { return hpoTerms; }
 
-
     public List<TermId> getListOfHpoTerms() { return new ArrayList<>(hpoTerms);}
 
     /**
-     * Relies on the hashcode of the TreeSet class.
+     * Relies on the hashcode of the String and TreeSet classes. Assumes all instance variables
+     * are non-null.
      * @return     hash value for this Patient.
      */
     @Override
     public int hashCode() {
-        return getHpoTerms().hashCode();
+        int result = pid.hashCode();
+        result = 31 * result + gene.hashCode();
+        result = 31 * result + hpoTerms.hashCode();
+        return result;
     }
 
     /**
@@ -120,25 +136,14 @@ public class Patient {
     }
 
     /**
-     * Computes the similarity metric (a double) between this Patient and Patient p.
-     * @param p          Patient to which similarity is computed
-     * @return double    similarity metric for this Patient with Patient p
-     */
-    public double similarity(Patient p) {
-        double sim = 0;
-        for (TermId tid : p.getHpoTerms())
-            if (hpoTerms.contains(tid))
-                sim++;
-        return sim / Math.max(hpoTerms.size(), p.getHpoTerms().size());
-    }
-
-    /**
-     * Lists the gene and HPO term IDs of this Patient.
+     * Lists the patient id, gene, and HPO term IDs of this Patient.
      * @return     String containing textual representation of Patient object.
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Patient: Gene = ");
+        StringBuilder sb = new StringBuilder("Patient: Id = ");
+        sb.append(pid);
+        sb.append("; Gene = ");
         sb.append(gene);
         sb.append("; HPO Terms = ");
         sb.append(System.lineSeparator());

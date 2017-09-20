@@ -240,7 +240,7 @@ public class PhenoCompare {
 //            HpoTerm t = termMap.get(tid);
             bw.write(String.format("%s\t%s", tid.getIdWithPrefix(), termMap.get(tid).getName()));
             for (int i = 0; i < numGroups; i++) {
-                bw.write(String.format("\t%5d/%d", counts[i],patientGroups[i].size()));
+                bw.write(String.format("\t%5d/%d", counts[i], patientGroups[i].size()));
             }
             bw.write(String.format("\t%7.3f\t%9.5f", hcs.getChiSquare(), hcs.getChiSquareP()));
             bw.newLine();
