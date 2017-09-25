@@ -441,12 +441,17 @@ public class PhenoCompare {
         PatientSimilarity pSim = new PatientSimilarity(pats,ontology);
         double[][] matrix = pSim.getSimilarityMatrix();
 
+        // write header line for dissimilarity matrix
+        // map Patient::getPid on pats, append to sb
+        for (Patient p : pats)
+            sb.append(String.format("\t%s", p.getPid()));
+        sb.append(System.lineSeparator());
+
         // write dissimilarity matrix to outFile
         for (int r = 0; r < dim; r++) {
             for (int c = 0; c < dim; c++) {
-                sb.append(String.format("%4.2f\t", 1.0 - matrix[r][c]));
+                sb.append(String.format("\t%4.2f", 1.0 - matrix[r][c]));
             }
-            sb.deleteCharAt(sb.length() - 1);
             sb.append(System.lineSeparator());
         }
         bw.write(sb.toString());
