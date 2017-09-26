@@ -12,6 +12,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 //import ontologizer.io.obo.OBOParser;
 //import ontologizer.io.obo.OBOParserException;
@@ -52,6 +54,9 @@ public class PhenoCompare {
     private String resultsFile;    // path for output file
     // termChiSq is a list of objects that pair an HPO term to the Chi-squared statistic for that term
     private List<HPOChiSquared> termChiSq;
+
+    private static final Logger logger = LogManager.getLogger();
+
     /** The fully parsed HPO Ontology from ontolib */
     private static com.github.phenomics.ontolib.ontology.data.Ontology<HpoTerm, HpoTermRelation> ontology=null;
 
@@ -125,18 +130,9 @@ public class PhenoCompare {
     private void countPatient(Patient p, int group) {
         Set<TermId> ancestors = new HashSet<>();
         for (TermId tid : p.getHpoTerms()) {
-            // getTermsOfInducedGraph returns a set of TermIDs for ancestors of tid
-            try {
                 // Merging sets of TermIDs eliminates duplicates if a given ontology node appears
                 // in the induced graph for more than one of patient's HPO terms.
-//                ancestors.addAll(hpo.getTermsOfInducedGraph(null, tid));
                 ancestors.addAll(ontology.getAncestorTermIds( tid));
-            }
-            // If tid is no longer in the ontology, getTermsOfInducedGraph results in
-            // IllegalArgumentException.
-            catch (IllegalArgumentException e) {
-                System.err.println(e.getMessage());
-            }
         }
         // Increment the count for the group containing this patient in all the ontology nodes that
         // cover the patient's reported phenotypes.
@@ -347,7 +343,6 @@ public class PhenoCompare {
         }
     }
 
-
     private static com.github.phenomics.ontolib.ontology.data.Ontology<HpoTerm, HpoTermRelation> getOntolibOntology(String HPOpath) {
         HpoOntology hpo;
         com.github.phenomics.ontolib.ontology.data.Ontology<HpoTerm, HpoTermRelation> abnormalPhenoSubOntology = null;
@@ -356,8 +351,7 @@ public class PhenoCompare {
             hpo = hpoOboParser.parse();
             abnormalPhenoSubOntology = hpo.getPhenotypicAbnormalitySubOntology();
         } catch (IOException e) {
-//            logger.error(String.format("Unable to parse HPO OBO file at %s", HPOpath ));
-//            logger.error(e,e);
+            logger.fatal(String.format("Unable to parse HPO OBO file at %s%n%s", HPOpath, e));
             System.exit(1);
         }
         return abnormalPhenoSubOntology;
