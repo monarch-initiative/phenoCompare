@@ -5,6 +5,8 @@ import com.github.phenomics.ontolib.ontology.data.ImmutableTermPrefix;
 import com.github.phenomics.ontolib.ontology.data.ImmutableTermId;
 import com.github.phenomics.ontolib.ontology.data.TermPrefix;
 import com.github.phenomics.ontolib.ontology.data.TermId;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.zip.DataFormatException;
@@ -23,6 +25,7 @@ public class Patient {
     private Set<TermId> hpoTerms;
 
     public static TermPrefix HPOPREFIX = new ImmutableTermPrefix("HP");
+    private static final Logger logger = LogManager.getLogger();
 
     /**
      * Constructor extracts the gene name and HPO term IDs from the patient record
@@ -51,8 +54,7 @@ public class Patient {
         }
         scan.close();
         if (pid.equals("") || gene.equals("") || hpoTerms.isEmpty()) {
-            throw new DataFormatException("[Patient.Patient] Cannot parse patient record: " +
-                    line + System.lineSeparator());
+            throw new DataFormatException("[Patient.Patient] Cannot parse patient record:\n" + line);
         }
     }
 
@@ -125,7 +127,7 @@ public class Patient {
             String hpostring=scan.next();
             int i=hpostring.indexOf(":");
             if (i<0) {
-                System.err.println("ERROR -- Could not parse "+hpostring+" because we did not find a :");
+                logger.error("ERROR -- Could not parse "+hpostring+" because we did not find a :");
                 return;
             } else {
                 hpostring=hpostring.substring(i+1);

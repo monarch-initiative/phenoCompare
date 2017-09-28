@@ -44,7 +44,7 @@ import java.util.zip.DataFormatException;
 public class PhenoCompare {
     private GeneGroups geneGroups; // groups of genes corresponding to disease categories
     private String genesPath;      // path for input file containing lists of genes for the patient groups
-//    private Ontology hpo;          // ontology of HPO terms
+    //    private Ontology hpo;          // ontology of HPO terms
     private String hpoPath;        // path to directory containing .obo file for HPO
     private int numGroups;                 // number of gene groups (and hence patient groups)
     // patientCounts maps from an HPO term to an array of the counts for each group of patients
@@ -113,7 +113,7 @@ public class PhenoCompare {
                 expected = (countsForTermID[g] * totalHaveOrDont[c]) / (double) totalPatients;
                 if (expected < 5) {
                     return null;
-               }
+                }
             }
         }
 
@@ -130,9 +130,9 @@ public class PhenoCompare {
     private void countPatient(Patient p, int group) {
         Set<TermId> ancestors = new HashSet<>();
         for (TermId tid : p.getHpoTerms()) {
-                // Merging sets of TermIDs eliminates duplicates if a given ontology node appears
-                // in the induced graph for more than one of patient's HPO terms.
-                ancestors.addAll(ontology.getAncestorTermIds( tid));
+            // Merging sets of TermIDs eliminates duplicates if a given ontology node appears
+            // in the induced graph for more than one of patient's HPO terms.
+            ancestors.addAll(ontology.getAncestorTermIds( tid));
         }
         // Increment the count for the group containing this patient in all the ontology nodes that
         // cover the patient's reported phenotypes.
@@ -156,11 +156,10 @@ public class PhenoCompare {
 
     /**
      * Each group of patients is created from patient records in the patients file.
-     * @throws DataFormatException   if thrown by Patient constructor
      * @throws IOException           if problem opening or reading patients file
      * @throws EmptyGroupException   if one or both patient groups is/are empty
      */
-    private void createPatientGroups() throws IOException, DataFormatException, EmptyGroupException {
+    private void createPatientGroups() throws IOException, EmptyGroupException {
         String geneName, line;
         int group;
         Patient pat;
@@ -178,33 +177,41 @@ public class PhenoCompare {
 
         // Read patients file line by line; each line is one patient record. Create a patient
         // object and add it to the correct patient group according to which gene is mutated.
+        // If cannot parse the patient record or gene name is not recognizable, skip
+        // over that line and log a warning message.
         Scanner scan = new Scanner(patientsFile);
         while (scan.hasNextLine()) {
             line = scan.nextLine();
             if (!line.startsWith("#")) {     // # marks a header line or comment in the input file
-                pat = new Patient(line);
-                geneName = pat.getGene();
-                group = geneGroups.whichGroup(geneName);
-                if (group > -1) {
-                    patientGroups[group].addPatient(pat);
-                } else {  // group = -1, this patient has an unkown gene
-                    throw new DataFormatException("[PhenoCompare.createPatientGroups] Unknown gene name: " +
-                            geneName + System.lineSeparator());
+                try {
+                    pat = new Patient(line);
+                    geneName = pat.getGene();
+                    group = geneGroups.whichGroup(geneName);
+                    if (group > -1) {
+                        patientGroups[group].addPatient(pat);
+                    }
+                    else {  // group = -1, this patient has an unknown gene
+                        throw new DataFormatException("[PhenoCompare.createPatientGroups] Unknown gene name: " +
+                                geneName);
+                    }
+                }
+                catch (DataFormatException e) {
+                    logger.warn(e.getMessage());
                 }
             }
         }
 
         // Check whether one or more of the patient groups is/are empty.
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("[PhenoCompare.createPatientGroups] Empty patient group(s)");
+        boolean emptyGroup = false;
         for (int g = 0; g < numGroups; g++) {
             if (patientGroups[g].isEmpty()) {
-                sb.append("[PhenoCompare.createPatientGroups] Empty patient group ");
-                sb.append(g);
-                sb.append(System.lineSeparator());
+                emptyGroup = true;
+                sb.append(String.format(" %d,", g));
             }
         }
-        if (sb.length() > 0) {
-            throw new EmptyGroupException(sb.toString());
+        if (emptyGroup) {
+            throw new EmptyGroupException(sb.substring(0, sb.lastIndexOf(",")));
         }
     }
 
@@ -478,7 +485,7 @@ public class PhenoCompare {
 //            System.exit(1);
 //        }
 
-
+        logger.info("Starting PhenoCompare");
         ontology= getOntolibOntology(phenoC.hpoPath);
         termMap=ontology.getTermMap();
 
@@ -487,15 +494,15 @@ public class PhenoCompare {
             phenoC.geneGroups = new GeneGroups(phenoC.genesPath);
             phenoC.numGroups = phenoC.geneGroups.howManyGroups();
         } catch (IOException | EmptyGroupException e) {
-            e.printStackTrace();
+            logger.fatal(e.getMessage(), e);
             System.exit(1);
         }
 
         // Read file of patient records and create patient groups corresponding to gene groups.
         try {
             phenoC.createPatientGroups();
-        } catch (DataFormatException | IOException | EmptyGroupException e) {
-            e.printStackTrace();
+        } catch (IOException | EmptyGroupException e) {
+            logger.fatal(e.getMessage(), e);
             System.exit(1);
         }
 
@@ -514,8 +521,7 @@ public class PhenoCompare {
         try {
             phenoC.displayResults();
         } catch (IOException e) {
-            System.err.println("[PhenoCompare.main] Problem writing output file" + System.lineSeparator());
-            e.printStackTrace();
+            logger.fatal("[PhenoCompare.main] Problem writing output file " + phenoC.resultsFile, e);
             System.exit(1);
         }
     }
