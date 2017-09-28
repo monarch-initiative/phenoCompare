@@ -191,8 +191,9 @@ public class PhenoCompare {
                         patientGroups[group].addPatient(pat);
                     }
                     else {  // group = -1, this patient has an unknown gene
-                        throw new DataFormatException("[PhenoCompare.createPatientGroups] Unknown gene name: " +
-                                geneName);
+                        throw new DataFormatException(String.format(
+                                "[PhenoCompare.createPatientGroups] Patient %s has an unrecognized gene: %s",
+                                pat.getPid(), geneName));
                     }
                 }
                 catch (DataFormatException e) {
@@ -485,7 +486,7 @@ public class PhenoCompare {
 //            System.exit(1);
 //        }
 
-        logger.info("Starting PhenoCompare");
+//        logger.info("Starting PhenoCompare");
         ontology= getOntolibOntology(phenoC.hpoPath);
         termMap=ontology.getTermMap();
 
@@ -494,7 +495,7 @@ public class PhenoCompare {
             phenoC.geneGroups = new GeneGroups(phenoC.genesPath);
             phenoC.numGroups = phenoC.geneGroups.howManyGroups();
         } catch (IOException | EmptyGroupException e) {
-            logger.fatal(e.getMessage(), e);
+            logger.fatal("", e);
             System.exit(1);
         }
 
@@ -502,7 +503,7 @@ public class PhenoCompare {
         try {
             phenoC.createPatientGroups();
         } catch (IOException | EmptyGroupException e) {
-            logger.fatal(e.getMessage(), e);
+            logger.fatal("", e);
             System.exit(1);
         }
 
@@ -521,7 +522,7 @@ public class PhenoCompare {
         try {
             phenoC.displayResults();
         } catch (IOException e) {
-            logger.fatal("[PhenoCompare.main] Problem writing output file " + phenoC.resultsFile, e);
+            logger.fatal("[PhenoCompare.main] Problem writing output file", e);
             System.exit(1);
         }
     }
