@@ -7,7 +7,7 @@
 # requires the cluster library (https://CRAN.R-project.org/package=cluster)
 # returns the clustering object
 
-rcp <- function(inputPath) {
+rcp <- function(inputPath, outputPath) {
   library("cluster")
   
   dissfrm <- read.table(inputPath, header = TRUE)
@@ -16,6 +16,8 @@ rcp <- function(inputPath) {
   # default method is "average"; other choices are "complete", "flexible", "gaverage", "single", "ward", "weighted"  
   # "flexible" and "gaverage" require par.method argument
   ahclus <- agnes(as.dist(dissmat), diss = TRUE)
-  plot(ahclus)
+#  pdf(outputPath)
+  plot(ahclus, pin = c(10, 5))
+#  dev.off()
   return(ahclus)
 }
