@@ -24,8 +24,7 @@ class GeneGroups {
         File genesFile = new File(path);
 
         if (!genesFile.exists()) {
-            throw new IOException("[GeneGroups.GeneGroups] Cannot find genes file " + path +
-                    System.lineSeparator());
+            throw new IOException("[GeneGroups.GeneGroups] Cannot find genes file " + path);
         }
         Scanner scan = new Scanner(genesFile);
 
@@ -43,8 +42,7 @@ class GeneGroups {
         scan.close();
 
         if (geneGroups.isEmpty()) { // nothing but blank lines and comments in this file!
-            throw new EmptyGroupException("[GeneGroups.GeneGroups] No gene groups found in file " +
-                    genesFile + System.lineSeparator());
+            throw new EmptyGroupException("[GeneGroups.GeneGroups] No gene groups found in file " + genesFile);
         }
     }
 

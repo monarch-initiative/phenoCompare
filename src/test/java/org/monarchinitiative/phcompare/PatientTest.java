@@ -19,6 +19,7 @@ import java.util.TreeSet;
 import java.util.zip.DataFormatException;
 
 import static org.junit.Assert.*;
+import static org.monarchinitiative.phcompare.Patient.HPOPREFIX;
 
 /**
  * Tests for the Patient class.
@@ -75,7 +76,7 @@ public class PatientTest {
 
         Set<String> pTerms = new HashSet<>();
         for (TermId t : p.getHpoTerms()) {
-            pTerms.add(t.toString());
+            pTerms.add(t.getIdWithPrefix());
         }
         assertEquals( "Gene name read from file is not as expected", "PIGO", p.getGene());
         assertEquals("HPO terms read from file are not as expected", expected, pTerms);
@@ -92,22 +93,21 @@ public class PatientTest {
         Patient p = new Patient(onlyGoodPatients.readLine());
         onlyGoodPatients.close();
 
-        Patient q = new Patient("",null);
+        Patient q = new Patient("", "",null);
         TreeSet<TermId> hpot = new TreeSet<>();
-        TermPrefix hpoprefix=new ImmutableTermPrefix("HP");
-        hpot.add(new ImmutableTermId(hpoprefix,"0001804"));
-        hpot.add(new ImmutableTermId(hpoprefix,"0000455"));
-        hpot.add(new ImmutableTermId(hpoprefix,"0001821"));
-        hpot.add(new ImmutableTermId(hpoprefix,"0003155"));
-        hpot.add(new ImmutableTermId(hpoprefix,"0000316"));
-        hpot.add(new ImmutableTermId(hpoprefix,"0000126"));
-        hpot.add(new ImmutableTermId(hpoprefix,"0200007"));
-        hpot.add(new ImmutableTermId(hpoprefix,"0010804"));
-        hpot.add(new ImmutableTermId(hpoprefix,"0000431"));
-        hpot.add(new ImmutableTermId(hpoprefix,"0000175"));
-        hpot.add(new ImmutableTermId(hpoprefix,"0001629"));
-        hpot.add(new ImmutableTermId(hpoprefix,"0000072"));
-        Patient r = new Patient("PIGV", hpot);
+        hpot.add(new ImmutableTermId(HPOPREFIX,"0001804"));
+        hpot.add(new ImmutableTermId(HPOPREFIX,"0000455"));
+        hpot.add(new ImmutableTermId(HPOPREFIX,"0001821"));
+        hpot.add(new ImmutableTermId(HPOPREFIX,"0003155"));
+        hpot.add(new ImmutableTermId(HPOPREFIX,"0000316"));
+        hpot.add(new ImmutableTermId(HPOPREFIX,"0000126"));
+        hpot.add(new ImmutableTermId(HPOPREFIX,"0200007"));
+        hpot.add(new ImmutableTermId(HPOPREFIX,"0010804"));
+        hpot.add(new ImmutableTermId(HPOPREFIX,"0000431"));
+        hpot.add(new ImmutableTermId(HPOPREFIX,"0000175"));
+        hpot.add(new ImmutableTermId(HPOPREFIX,"0001629"));
+        hpot.add(new ImmutableTermId(HPOPREFIX,"0000072"));
+        Patient r = new Patient("P6-PIGV","PIGV", hpot);
 
         assertFalse("Patient from file equals array of int!" + System.lineSeparator() + p.toString(),
                 p.equals(new int[] {1, 2, 3}));

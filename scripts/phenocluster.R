@@ -1,6 +1,6 @@
 # phenocluster.R
 # author: Hannah Blau
-# last modified on: 11 Sep 2017
+# last modified on: 24 Sep 2017
 
 # Function rcp *r*eads an n x n dissimilarity matrix, *c*lusters the data, and *p*lots the resulting clustering.
 # Its paramter is a string giving the path to the input file containing the dissimilarity values.
@@ -10,7 +10,7 @@
 rcp <- function(inputPath) {
   library("cluster")
   
-  dissfrm <- read.table(inputPath)
+  dissfrm <- read.table(inputPath, header = TRUE)
   dissmat <- as.matrix(dissfrm)
   # agglomerative hierarchical clustering, diss argument tells agnes we are passing a dissimilarity matrix
   # default method is "average"; other choices are "complete", "flexible", "gaverage", "single", "ward", "weighted"  
