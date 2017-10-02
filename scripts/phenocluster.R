@@ -16,8 +16,8 @@ rcp <- function(inputPath, outputPath) {
   # default method is "average"; other choices are "complete", "flexible", "gaverage", "single", "ward", "weighted"  
   # "flexible" and "gaverage" require par.method argument
   ahclus <- agnes(as.dist(dissmat), diss = TRUE)
-#  pdf(outputPath)
+  pdf(outputPath, width = 17)
   plot(ahclus, pin = c(10, 5))
-#  dev.off()
+  dev.off()
   return(ahclus)
 }
