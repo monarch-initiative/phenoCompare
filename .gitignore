@@ -23,3 +23,8 @@ hs_err_pid*
 
 .idea/
 phenoCompare.iml
+
+# R project files
+*.Rproj
+.Rhistory
+.Rproj.user/
