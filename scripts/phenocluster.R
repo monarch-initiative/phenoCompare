@@ -35,7 +35,8 @@ rcp <- function(inputFile, outputDirectory) {
     dir.create(outputDirectory)
   
   pdf(paste(outputDirectory, "agnes8.pdf", sep = "/"), width = 18)
-  plot(dend)
+  plot(dend, main = "Hierarchical clustering, average method, 8 clusters",
+       sub = "green for early genes, blue for late genes")
   dev.off()
   
   # pam (partitioning around medoids clustering, related to k-means but you can start with a dissimilarity matrix
@@ -47,7 +48,8 @@ rcp <- function(inputFile, outputDirectory) {
     
     # labels = 2, cex.txt = 0.4 to check all the point labels
     clusplot(dissdist, pamclus$clustering, diss = TRUE, color = TRUE, lines = 0, labels = 4, col.clus = five.colors,
-             main = paste0("Partitioning Around Medoids, k = ", i), col.p = genes.color(names(pamclus$clustering)))
+             main = paste0("Partitioning Around Medoids, k = ", i), 
+             sub = "green for early genes, blue for late genes", col.p = genes.color(names(pamclus$clustering)))
     dev.off()
   }
   
@@ -74,7 +76,8 @@ rcp <- function(inputFile, outputDirectory) {
   pdf(paste(outputDirectory, "cms.pdf", sep = "/"), width = 10, height = 10)
   x <- mds$points[,1]
   y <- mds$points[,2]
-  plot(x, y, xlab = "Coordinate 1", ylab = "Coordinate 2", main = "Classical MDS", asp = 1, type = "n")
+  plot(x, y, xlab = "Coordinate 1", ylab = "Coordinate 2", main = "Classical MDS", 
+       sub = "green for early genes, blue for late genes", asp = 1, type = "n")
   text(x, y, labels = labels(dissdist), cex=.6, col = genes.color(labels(dissdist)))    
   #  points(x, y,  col = genes.color(labels(dissdist)), pch = 20)
   dev.off()
