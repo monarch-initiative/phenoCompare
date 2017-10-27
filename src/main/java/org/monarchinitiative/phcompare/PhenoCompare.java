@@ -515,6 +515,8 @@ public class PhenoCompare {
         // For each HPO term whose expected frequency meets the minimum threshold, calculate the
         // Chi-squared statistic.
         phenoC.calculateChiSq();
+        // sort the Chi-squared values so that the most significant results (higher Chi-squared)
+        // are earlier in the list.
         phenoC.termChiSq.sort(Comparator.reverseOrder());
 
         // Display counts and Chi-squared stats for each node of the ontology that meets the threshold for
