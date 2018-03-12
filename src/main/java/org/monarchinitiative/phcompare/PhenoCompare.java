@@ -473,19 +473,6 @@ public class PhenoCompare {
     public static void main(String[] args) {
         PhenoCompare phenoC = new PhenoCompare(args);
 
-//        // Load ontology from file.
-//        try {
-//            phenoC.hpo = parseObo(phenoC.hpoPath);
-//        } catch (IOException e) {
-//            System.err.println("[PhenoCompare.main] Problem reading OBO file" + System.lineSeparator());
-//            e.printStackTrace();
-//            System.exit(1);
-//        } catch (OBOParserException e) {
-//            System.err.println("[PhenoCompare.main] Problem parsing OBO file" + System.lineSeparator());
-//            e.printStackTrace();
-//            System.exit(1);
-//        }
-
 //        logger.info("Starting PhenoCompare");
         ontology= getOntolibOntology(phenoC.hpoPath);
         termMap=ontology.getTermMap();

@@ -1,6 +1,5 @@
 package org.monarchinitiative.phcompare;
 
-
 import com.github.phenomics.ontolib.ontology.data.ImmutableTermId;
 import com.github.phenomics.ontolib.ontology.data.ImmutableTermPrefix;
 import com.github.phenomics.ontolib.ontology.data.TermId;
@@ -37,12 +36,14 @@ public class PatientTest {
         BufferedReader goodAndBadPatients = new BufferedReader(new FileReader(
                 "src/test/resources/patientFiles/goodAndBadPatients.tsv"));
         thrown.expect(DataFormatException.class);
-        thrown.expectMessage("Cannot parse patient record");
+        thrown.expectMessage("Wrong number of fields in patient record");
         while (goodAndBadPatients.ready()) {
-            // third line of this file contains a patient record with no HPO terms
+            // third entry of this file contains a patient record with no HPO terms
             // should throw a DataFormatException when we try to create a Patient from that line
             line = goodAndBadPatients.readLine();
-            Patient p = new Patient(line);
+            if (!line.startsWith("#")) {
+                Patient p = new Patient(line);
+            }
         }
         goodAndBadPatients.close();
     }
@@ -57,28 +58,37 @@ public class PatientTest {
         Patient p = new Patient(firstLine);
         onlyGoodPatients.close();
 
+        // P1-PIGN	PIGN	24852103	Brady	Brady;2014;PIGN;Patient	18:59777066C>T[homozygous,splicingsplicing|5ss|disrupted]	HP:0001626;HP:0002089;HP:0001831;HP:0030030;HP:0000054;HP:0000175;HP:0000110;HP:0012165;HP:0002623;HP:0002566;HP:0000028;HP:0001060;HP:0025193;HP:0003244;HP:0000776;HP:0000316;HP:0000445;HP:0000377;HP:0000463;HP:0000271
         Set<String> expected = new HashSet<>();
-        expected.add("HP:0003155");
-        expected.add("HP:0001252");
-        expected.add("HP:0001263");
-        expected.add("HP:0010804");
-        expected.add("HP:0002025");
+        expected.add("HP:0000028");
+        expected.add("HP:0000054");
+        expected.add("HP:0000110");
+        expected.add("HP:0000175");
+        expected.add("HP:0000271");
         expected.add("HP:0000316");
-        expected.add("HP:0001250");
-        expected.add("HP:0004322");
-        expected.add("HP:0000750");
-        expected.add("HP:0001270");
-        expected.add("HP:0000455");
-        expected.add("HP:0000431");
-        expected.add("HP:0006118");
-        expected.add("HP:0000076");
-        expected.add("HP:0000637");
+        expected.add("HP:0000377");
+        expected.add("HP:0000445");
+        expected.add("HP:0000463");
+        expected.add("HP:0000776");
+        expected.add("HP:0001060");
+        expected.add("HP:0001626");
+        expected.add("HP:0001831");
+        expected.add("HP:0002089");
+        expected.add("HP:0002566");
+        expected.add("HP:0002623");
+        expected.add("HP:0003244");
+        expected.add("HP:0012165");
+        expected.add("HP:0025193");
+        expected.add("HP:0030030");
 
         Set<String> pTerms = new HashSet<>();
         for (TermId t : p.getHpoTerms()) {
             pTerms.add(t.getIdWithPrefix());
         }
-        assertEquals( "Gene name read from file is not as expected", "PIGO", p.getGene());
+        assertEquals("Patient id read from file is not as expected", "P1-PIGN", p.getPid());
+        assertEquals("Gene name read from file is not as expected", "PIGN", p.getGene());
+        assertEquals("PubMed ID read from file is not as expected", "24852103", p.getPmid());
+        assertEquals("Id-summary read from file is not as expected", "Brady;2014;PIGN;Patient", p.getIdSummary());
         assertEquals("HPO terms read from file are not as expected", expected, pTerms);
     }
 
@@ -89,25 +99,23 @@ public class PatientTest {
         for (int i = 0; i < 7; i++) {
             onlyGoodPatients.readLine();
         }
-        // patient on eighth line of file, after two comment lines and five patient records
+        // patient on eighth line of file
+        // P7-PIGG	PIGG	26996948	Makrythanasis	Makrythanasis;2016;PIGG;JP01	4:517638C>T[homozygous,codingcoding|missense]	HP:0001250;HP:0004396;HP:0001263;HP:0000750;HP:0001252;HP:0001321;HP:0001510;HP:0002059;HP:0000717
         Patient p = new Patient(onlyGoodPatients.readLine());
         onlyGoodPatients.close();
 
-        Patient q = new Patient("", "",null);
+        Patient q = new Patient("", "", "", "", null);
         TreeSet<TermId> hpot = new TreeSet<>();
-        hpot.add(new ImmutableTermId(HPOPREFIX,"0001804"));
-        hpot.add(new ImmutableTermId(HPOPREFIX,"0000455"));
-        hpot.add(new ImmutableTermId(HPOPREFIX,"0001821"));
-        hpot.add(new ImmutableTermId(HPOPREFIX,"0003155"));
-        hpot.add(new ImmutableTermId(HPOPREFIX,"0000316"));
-        hpot.add(new ImmutableTermId(HPOPREFIX,"0000126"));
-        hpot.add(new ImmutableTermId(HPOPREFIX,"0200007"));
-        hpot.add(new ImmutableTermId(HPOPREFIX,"0010804"));
-        hpot.add(new ImmutableTermId(HPOPREFIX,"0000431"));
-        hpot.add(new ImmutableTermId(HPOPREFIX,"0000175"));
-        hpot.add(new ImmutableTermId(HPOPREFIX,"0001629"));
-        hpot.add(new ImmutableTermId(HPOPREFIX,"0000072"));
-        Patient r = new Patient("P6-PIGV","PIGV", hpot);
+        hpot.add(new ImmutableTermId(HPOPREFIX,"0000717"));
+        hpot.add(new ImmutableTermId(HPOPREFIX,"0000750"));
+        hpot.add(new ImmutableTermId(HPOPREFIX,"0001250"));
+        hpot.add(new ImmutableTermId(HPOPREFIX,"0001252"));
+        hpot.add(new ImmutableTermId(HPOPREFIX,"0001263"));
+        hpot.add(new ImmutableTermId(HPOPREFIX,"0001321"));
+        hpot.add(new ImmutableTermId(HPOPREFIX,"0001510"));
+        hpot.add(new ImmutableTermId(HPOPREFIX,"0002059"));
+        hpot.add(new ImmutableTermId(HPOPREFIX,"0004396"));
+        Patient r = new Patient("P7-PIGG","PIGG", "26996948", "Makrythanasis;2016;PIGG;JP01", hpot);
 
         assertFalse("Patient from file equals array of int!" + System.lineSeparator() + p.toString(),
                 p.equals(new int[] {1, 2, 3}));

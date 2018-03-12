@@ -1,6 +1,5 @@
 package org.monarchinitiative.phcompare;
 
-//import ontologizer.ontology.TermID;
 import com.github.phenomics.ontolib.ontology.data.ImmutableTermPrefix;
 import com.github.phenomics.ontolib.ontology.data.ImmutableTermId;
 import com.github.phenomics.ontolib.ontology.data.TermPrefix;
@@ -12,7 +11,14 @@ import java.util.*;
 import java.util.zip.DataFormatException;
 
 /**
- * A patient consists of a gene name (the mutated gene) and a collection of HPO term IDs.
+ * A patient consists of a short id, a gene name (the mutated gene), PubMed ID, a longer id summary,
+ * and a collection of HPO term IDs. The first, second, third, fifth, and seventh fields of the
+ * patients file.
+ *
+ * Sample record from the patients file:
+ * #ID	#SYMBOL	PMID	F_AUTH	ID_SUMMARY	VARIANTS	HPO
+ * P9-PIGV	PIGV	24129430	Horn	Horn;2014;PIGV;Patient 5	1:27121547C>A[homozygous,codingcoding|missense]	HP:0000750;HP:0011344;HP:0001792;HP:0009381;HP:0003155;HP:0010804;HP:0000283;HP:0009882;HP:0001831;HP:0000271;HP:0001336
+ *
  * @author Hannah Blau (blauh)
  * @version 0.0.1
  */
@@ -21,6 +27,11 @@ public class Patient {
     private String pid;
     // Name of gene that is mutated in this patient
     private String gene;
+    // PubMed ID of the paper describing this patient
+    private String pmid;
+    // Id summary for this patient (reference to paper describing the case, affected gene, and
+    // name of the individual family member)
+    private String idSummary;
     // Terms from Human Phenotype Ontology that describe this patient
     private Set<TermId> hpoTerms;
 
@@ -28,43 +39,42 @@ public class Patient {
     private static final Logger logger = LogManager.getLogger();
 
     /**
-     * Constructor extracts the gene name and HPO term IDs from the patient record
+     * Constructor extracts the patient id, gene name, id summary, and HPO term IDs from the patient record
      * (one line of the patients file).
      * @param line                   line of text for this patient in the patients file
-     * @throws DataFormatException   if gene name and/or HPO terms are not as expected
+     * @throws DataFormatException   if fields are not as expected
      */
     Patient(String line) throws DataFormatException {
-        pid = gene = "";
+        pid = gene = pmid = idSummary = "";
         hpoTerms = new TreeSet<>();
 
-        Scanner scan = new Scanner(line).useDelimiter("\\t");
-        // Patient Id is in first column.
-        if (scan.hasNext())
-            pid = scan.next();
-        // Gene name is in second column.
-        if (scan.hasNext())
-            gene = scan.next();
-        // Skip over the three intervening columns until you reach the list of HPO term ids.
-        for (int i = 0; i < 3 && scan.hasNext(); i++) {
-            scan.next();
-        }
-        // Read list of HPO terms up to end of line.
-        if (scan.hasNext()) {
-            parseHPOterms(scan.next());
-        }
-        scan.close();
-        if (pid.equals("") || gene.equals("") || hpoTerms.isEmpty()) {
+        String[] fields = line.split("\t");
+        if (fields.length != 7)
+            throw new DataFormatException("[Patient.Patient] Wrong number of fields in patient record:\n" + line);
+        pid = fields[0];
+        gene = fields[1];
+        pmid = fields[2];
+        idSummary = fields[4];
+        parseHPOterms(fields[6]);
+        if (pid.equals("") || gene.equals("") || pmid.equals("") || idSummary.equals("") ||
+                hpoTerms.isEmpty()) {
             throw new DataFormatException("[Patient.Patient] Cannot parse patient record:\n" + line);
         }
     }
 
     /**
      * This constructor useful for test classes.
+     * @param id       patient id field
+     * @param g        gene name field
+     * @param pm       PubMed ID field
+     * @param summary  id summary field
      * @param terms    TreeSet of TermIDs for HPO terms describing this patient
      */
-    Patient(String id, String g, TreeSet<TermId> terms) {
+    Patient(String id, String g, String pm, String summary, TreeSet<TermId> terms) {
         pid = id;
         gene = g;
+        pmid = pm;
+        idSummary = summary;
         if (terms == null) {
             hpoTerms = new TreeSet<>();
         }
@@ -72,8 +82,8 @@ public class Patient {
     }
 
     /**
-     * Two Patient objects are considered equal if they have the same id, same gene name,
-     * and same set of HPO terms.
+     * Two Patient objects are considered equal if they have the same patient id, same gene name,
+     * same PubMed ID, and same set of HPO terms.
      * @param o    object to which this patient is compared
      * @return     true if this patient and the object o are equal, false otherwise
      */
@@ -83,7 +93,8 @@ public class Patient {
         if (o == null || getClass() != o.getClass()) return false;
 
         Patient patient = (Patient) o;
-        return pid.equals(patient.pid) && gene.equals(patient.gene) && hpoTerms.equals(patient.hpoTerms);
+        return pid.equals(patient.pid) && gene.equals(patient.gene) &&
+                pmid.equals(patient.pmid) && hpoTerms.equals(patient.hpoTerms);
     }
 
     /**
@@ -95,6 +106,16 @@ public class Patient {
      * @return    String containing name of the gene listed in the patient's record
      */
     String getGene() { return gene; }
+
+    /**
+     * @return    String containing PubMed ID listed in the patient's record
+     */
+    String getPmid() { return pmid; }
+
+    /**
+     * @return    String containing id summary listed in the patient's record
+     */
+    String getIdSummary() { return idSummary; }
 
     /**
      * @return    Set of HPO TermIDs for the terms listed in the patient's record
@@ -112,6 +133,8 @@ public class Patient {
     public int hashCode() {
         int result = pid.hashCode();
         result = 31 * result + gene.hashCode();
+        result = 31 * result + pmid.hashCode();
+        result = 31 * result + idSummary.hashCode();
         result = 31 * result + hpoTerms.hashCode();
         return result;
     }
@@ -122,15 +145,15 @@ public class Patient {
      * @param listOfTerms    String consisting of HPO term IDs separated by semicolons
      */
     private void parseHPOterms(String listOfTerms) {
-        Scanner scan = new Scanner(listOfTerms).useDelimiter(";");
-        while (scan.hasNext()) {
-            String hpostring=scan.next();
-            int i=hpostring.indexOf(":");
-            if (i<0) {
-                logger.error("ERROR -- Could not parse "+hpostring+" because we did not find a :");
+        String[] hpoTermIds = listOfTerms.split(";");
+
+        for (String hpostring : hpoTermIds) {
+            int i = hpostring.indexOf(":");
+            if (i < 0) {
+                logger.error("ERROR -- Could not parse " + hpostring+" because we did not find a :");
                 return;
             } else {
-                hpostring=hpostring.substring(i+1);
+                hpostring = hpostring.substring(i+1);
             }
             TermId id = new ImmutableTermId(HPOPREFIX,hpostring);
             hpoTerms.add(id);
@@ -147,6 +170,10 @@ public class Patient {
         sb.append(pid);
         sb.append("; Gene = ");
         sb.append(gene);
+        sb.append("; PMID = ");
+        sb.append(pmid);
+        sb.append("; IdSummary = ");
+        sb.append(idSummary);
         sb.append("; HPO Terms = ");
         sb.append(System.lineSeparator());
         for (TermId t : getHpoTerms()) {
