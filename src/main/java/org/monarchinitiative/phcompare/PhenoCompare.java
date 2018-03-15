@@ -73,14 +73,31 @@ public class PhenoCompare {
     /**
      * Creates a HPOChiSquared object for each HPO term whose expected counts meet the
      * minimum threshold. Adds the HPOChiSquared object to the list termChiSq.
+     * When all Chi-squared comparisons are complete, computes Bonferroni correction
+     * for the p-values and retains only those terms for which the corrected p-value
+     * is <= .05.
      */
     private void calculateChiSq() {
         HPOChiSquared hcs;
+        int numComparisons = 0;
 
         for (TermId tid : patientCounts.keySet()) {
             hcs = createChiSq(tid, patientCounts.get(tid));
             if (hcs != null) {
                 termChiSq.add(hcs);
+                numComparisons++;
+            }
+        }
+
+        // Iterate through the termChiSq list. For each element, calculate the corrected P value
+        // according to number of comparisons performed. Toss out any HPOChiSquared object whose
+        // corrected P value exceeds the threshold of 0.05.
+
+        Iterator<HPOChiSquared> iter = termChiSq.iterator();
+        while (iter.hasNext()) {
+            HPOChiSquared chi = iter.next();
+            if (chi.correctPvalue(numComparisons) > 0.05) {
+                iter.remove();
             }
         }
     }
@@ -222,7 +239,7 @@ public class PhenoCompare {
      * named dissim.tsv in the same directory.
      * @throws IOException    if problem writing to either output file
      */
-    private void displayResults() throws IOException {
+    private void displayResults() throws IOException, DataFormatException {
         TermId tid;
         int[] counts;
 
@@ -234,7 +251,7 @@ public class PhenoCompare {
         for (int g = 1; g <= numGroups; g++) {
             bw.write(String.format("%s%d\t", "Group", g));
         }
-        bw.write("ChiSq\tp Value");
+        bw.write("ChiSq\tUncorr p Value\tCorr p Value");
         bw.newLine();
         // write one line for each HPO term
         for (HPOChiSquared hcs : termChiSq) {
@@ -246,7 +263,8 @@ public class PhenoCompare {
             for (int i = 0; i < numGroups; i++) {
                 bw.write(String.format("\t%5d/%d", counts[i], patientGroups[i].size()));
             }
-            bw.write(String.format("\t%7.3f\t%9.5f", hcs.getChiSquare(), hcs.getChiSquareP()));
+            bw.write(String.format("\t%7.3f\t%9.5f\t%9.5f", hcs.getChiSquare(), hcs.getChiSquareP(),
+                    hcs.getCorrectedP()));
             bw.newLine();
         }
         bw.close();
@@ -474,8 +492,8 @@ public class PhenoCompare {
         PhenoCompare phenoC = new PhenoCompare(args);
 
 //        logger.info("Starting PhenoCompare");
-        ontology= getOntolibOntology(phenoC.hpoPath);
-        termMap=ontology.getTermMap();
+        ontology = getOntolibOntology(phenoC.hpoPath);
+        termMap = ontology.getTermMap();
 
         // Read genes file to form groups of genes
         try {
@@ -510,6 +528,9 @@ public class PhenoCompare {
         // Chi-squared to be meaningful.
         try {
             phenoC.displayResults();
+        } catch (DataFormatException e) {
+            logger.fatal("[PhenoCompare.main] Problem with Bonferroni correction", e);
+            System.exit(1);
         } catch (IOException e) {
             logger.fatal("[PhenoCompare.main] Problem writing output file", e);
             System.exit(1);
