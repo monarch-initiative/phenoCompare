@@ -15,12 +15,6 @@ import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-//import ontologizer.io.obo.OBOParser;
-//import ontologizer.io.obo.OBOParserException;
-//import ontologizer.io.obo.OBOParserFileInput;
-//import ontologizer.ontology.Ontology;
-//import ontologizer.ontology.TermContainer;
-//import ontologizer.ontology.TermID;
 import org.monarchinitiative.phcompare.stats.HPOChiSquared;
 import org.monarchinitiative.phcompare.stats.PatientSimilarity;
 
@@ -149,7 +143,7 @@ public class PhenoCompare {
         for (TermId tid : p.getHpoTerms()) {
             // Merging sets of TermIDs eliminates duplicates if a given ontology node appears
             // in the induced graph for more than one of patient's HPO terms.
-            ancestors.addAll(ontology.getAncestorTermIds( tid));
+            ancestors.addAll(ontology.getAncestorTermIds(tid));
         }
         // Increment the count for the group containing this patient in all the ontology nodes that
         // cover the patient's reported phenotypes.
