@@ -233,7 +233,7 @@ public class PhenoCompare {
      * named dissim.tsv in the same directory.
      * @throws IOException    if problem writing to either output file
      */
-    private void displayResults() throws IOException, DataFormatException {
+    private void displayResults() throws IOException {
         TermId tid;
         int[] counts;
 
@@ -251,8 +251,6 @@ public class PhenoCompare {
         for (HPOChiSquared hcs : termChiSq) {
             tid = hcs.getHPOTermId();
             counts = patientCounts.get(tid);
-//            bw.write(String.format("%s\t%s", tid, hpo.getTerm(tid).getName().toString()));
-//            HpoTerm t = termMap.get(tid);
             bw.write(String.format("%s\t%s", tid.getIdWithPrefix(), termMap.get(tid).getName()));
             for (int i = 0; i < numGroups; i++) {
                 bw.write(String.format("\t%5d/%d", counts[i], patientGroups[i].size()));
@@ -522,9 +520,6 @@ public class PhenoCompare {
         // Chi-squared to be meaningful.
         try {
             phenoC.displayResults();
-        } catch (DataFormatException e) {
-            logger.fatal("[PhenoCompare.main] Problem with Bonferroni correction", e);
-            System.exit(1);
         } catch (IOException e) {
             logger.fatal("[PhenoCompare.main] Problem writing output file", e);
             System.exit(1);
