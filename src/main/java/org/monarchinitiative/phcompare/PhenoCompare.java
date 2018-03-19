@@ -40,9 +40,9 @@ public class PhenoCompare {
     private String genesPath;      // path for input file containing lists of genes for the patient groups
     //    private Ontology hpo;          // ontology of HPO terms
     private String hpoPath;        // path to directory containing .obo file for HPO
+    // hpoPatientSubgroups maps from an HPO term to an array of the patient subgroups covered by that term
+    private SortedMap<TermId, PatientGroup[]> hpoPatientSubgroups;
     private int numGroups;                 // number of gene groups (and hence patient groups)
-    // patientCounts maps from an HPO term to an array of the counts for each group of patients
-    private SortedMap<TermId, int[]> patientCounts;
     private PatientGroup[] patientGroups;    // array of patient groups
     private String patientsPath;   // path for input file containing one line per patient
     private String resultsFile;    // path for output file
@@ -60,7 +60,7 @@ public class PhenoCompare {
 
         // Initialize hpoPath, genesPath, patientsPath, and resultsFile from the command line arguments
         parseCommandLine(args);
-        patientCounts = new TreeMap<>();
+        hpoPatientSubgroups = new TreeMap<>();
         termChiSq = new ArrayList<>();
     }
 
@@ -74,9 +74,14 @@ public class PhenoCompare {
     private void calculateChiSq() {
         HPOChiSquared hcs;
         int numComparisons = 0;
+        int[] patientCounts = new int[numGroups];
 
-        for (TermId tid : patientCounts.keySet()) {
-            hcs = createChiSq(tid, patientCounts.get(tid));
+        for (TermId tid : hpoPatientSubgroups.keySet()) {
+            for (int i = 0; i < numGroups; i++) {
+                // construct array of subgroup sizes for the HPO term tid
+                patientCounts[i] = hpoPatientSubgroups.get(tid)[i].size();
+            }
+            hcs = createChiSq(tid, patientCounts);
             if (hcs != null) {
                 termChiSq.add(hcs);
                 numComparisons++;
@@ -132,23 +137,23 @@ public class PhenoCompare {
     }
 
     /**
-     * For an individual patient, increments the counts for all phenotypes exhibited by the patient,
-     * including all nodes encountered between phenotypes mentioned in the patient's file and the root
-     * node of the ontology.
-     * @param p       patient whose phenotypes we are counting
+     * For an individual patient, adds patient to appropriate patient subgroup for each phenotype
+     * exhibited by the patient. This includes all nodes encountered between phenotypes mentioned
+     * in the patient's file and the root node of the ontology.
+     * @param p       patient whose phenotypes we are recording
      * @param group   integer index for patient's group (0 .. numGroups - 1)
      */
-    private void countPatient(Patient p, int group) {
+    private void recordPatientPhenotypes(Patient p, int group) {
         Set<TermId> ancestors = new HashSet<>();
         for (TermId tid : p.getHpoTerms()) {
             // Merging sets of TermIDs eliminates duplicates if a given ontology node appears
             // in the induced graph for more than one of patient's HPO terms.
             ancestors.addAll(ontology.getAncestorTermIds(tid));
         }
-        // Increment the count for the group containing this patient in all the ontology nodes that
+        // Add patient to list for the appropriate group in all the ontology nodes that
         // cover the patient's reported phenotypes.
         for (TermId ancestor : ancestors) {
-            updateCount(ancestor, group);
+            updatePatientSubgroups(ancestor, p, group);
         }
     }
 
@@ -160,7 +165,7 @@ public class PhenoCompare {
     private void countPatients() {
         for (int g = 0; g < numGroups; g++) {
             for (Patient p : patientGroups[g].getPatients()) {
-                countPatient(p, g);
+                recordPatientPhenotypes(p, g);
             }
         }
     }
@@ -235,7 +240,7 @@ public class PhenoCompare {
      */
     private void displayResults() throws IOException {
         TermId tid;
-        int[] counts;
+        PatientGroup[] subgroups;
 
         File outFile = new File(resultsFile);
         writeDissimilarity(new File(outFile.getParent(), "dissim.tsv"));
@@ -250,10 +255,10 @@ public class PhenoCompare {
         // write one line for each HPO term
         for (HPOChiSquared hcs : termChiSq) {
             tid = hcs.getHPOTermId();
-            counts = patientCounts.get(tid);
+            subgroups = hpoPatientSubgroups.get(tid);
             bw.write(String.format("%s\t%s", tid.getIdWithPrefix(), termMap.get(tid).getName()));
             for (int i = 0; i < numGroups; i++) {
-                bw.write(String.format("\t%5d/%d", counts[i], patientGroups[i].size()));
+                bw.write(String.format("\t%5d/%d", subgroups[i].size(), patientGroups[i].size()));
             }
             bw.write(String.format("\t%7.3f\t%9.5f\t%9.5f", hcs.getChiSquare(), hcs.getChiSquareP(),
                     hcs.getCorrectedP()));
@@ -413,22 +418,26 @@ public class PhenoCompare {
     }
 
     /**
-     * Increments the count mapped to HPO term tid for the specified patient group.
+     * Adds patient to the appropriate subgroup for specified HPO term tid.
      *
      * @param group  index for patient group (0 .. numGroups - 1)
+     * @param pat    patient for which we are recording phenotypes
      * @param tid    HPO term ID
      */
-    private void updateCount(TermId tid, int group) {
-        if (patientCounts.containsKey(tid)) {
-            // Have already seen this termID before, just increment existing array element.
-            patientCounts.get(tid)[group]++;
+    private void updatePatientSubgroups(TermId tid, Patient pat, int group) {
+        if (hpoPatientSubgroups.containsKey(tid)) {
+            // Have already seen this termID before, just add new patient to existing group.
+            hpoPatientSubgroups.get(tid)[group].addPatient(pat);
         }
         else {
-            // First time we have seen this termID, create a new map entry for it and record count of 1 for
-            // specified group.
-            int[] counts = new int[numGroups];
-            counts[group]++;
-            patientCounts.put(tid, counts);
+            // First time we have seen this termID. Initialize patient subgroups, add pat to correct
+            // subgroup, and add new termID to mapping.
+            PatientGroup[] subgroups = new PatientGroup[numGroups];
+            for (int i = 0; i < numGroups; i++) {
+                subgroups[i] = new PatientGroup();
+            }
+            subgroups[group].addPatient(pat);
+            hpoPatientSubgroups.put(tid, subgroups);
         }
     }
 
