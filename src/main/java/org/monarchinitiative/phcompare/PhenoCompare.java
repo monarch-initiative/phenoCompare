@@ -4,6 +4,7 @@ import com.github.phenomics.ontolib.formats.hpo.HpoOntology;
 import com.github.phenomics.ontolib.formats.hpo.HpoTerm;
 import com.github.phenomics.ontolib.formats.hpo.HpoTermRelation;
 import com.github.phenomics.ontolib.io.obo.hpo.HpoOboParser;
+import com.github.phenomics.ontolib.ontology.data.Ontology;
 import com.github.phenomics.ontolib.ontology.data.TermId;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -38,12 +39,11 @@ import java.util.zip.DataFormatException;
 public class PhenoCompare {
     private GeneGroups geneGroups; // groups of genes corresponding to disease categories
     private String genesPath;      // path for input file containing lists of genes for the patient groups
-    //    private Ontology hpo;          // ontology of HPO terms
     private String hpoPath;        // path to directory containing .obo file for HPO
     // hpoPatientSubgroups maps from an HPO term to an array of the patient subgroups covered by that term
     private SortedMap<TermId, PatientGroup[]> hpoPatientSubgroups;
     private int numGroups;                 // number of gene groups (and hence patient groups)
-    private PatientGroup[] patientGroups;    // array of patient groups
+    private PatientGroup[] patientGroups;  // array of patient groups
     private String patientsPath;   // path for input file containing one line per patient
     private String resultsPath;    // path for output file
     // termChiSq is a list of objects that pair an HPO term to the Chi-squared statistic for that term
@@ -232,46 +232,6 @@ public class PhenoCompare {
         }
     }
 
-    /**
-     * Writes dissimilarity matrix to file named dissim.tsv in results directory specified on the
-     * command line. Writes Chi-squared statistic and p values to file named results.tsv in the
-     * same directory.
-     * @throws IOException    if problem writing to either output file
-     */
-    private void displayResults() throws IOException {
-        TermId tid;
-        PatientGroup[] subgroups;
-        File resultsDir = new File(resultsPath);
-        File chiSquaredFile = new File(resultsDir, "chiSquared.tsv");
-        File dissimFile = new File(resultsDir, "dissim.tsv");
-
-        if (resultsDir.exists() || resultsDir.mkdirs()) {
-            chiSquaredFile.createNewFile();
-            dissimFile.createNewFile();
-            writeDissimilarity(dissimFile);
-            BufferedWriter bw = new BufferedWriter(new FileWriter(chiSquaredFile));
-            // write header line
-            bw.write("#HPO TermId\tTerm Name\t");
-            for (int g = 1; g <= numGroups; g++) {
-                bw.write(String.format("%s%d\t", "Group", g));
-            }
-            bw.write("ChiSq\tUncorr p Value\tCorr p Value");
-            bw.newLine();
-            // write one line for each HPO term
-            for (HPOChiSquared hcs : termChiSq) {
-                tid = hcs.getHPOTermId();
-                subgroups = hpoPatientSubgroups.get(tid);
-                bw.write(String.format("%s\t%s", tid.getIdWithPrefix(), termMap.get(tid).getName()));
-                for (int i = 0; i < numGroups; i++) {
-                    bw.write(String.format("\t%5d/%d", subgroups[i].size(), patientGroups[i].size()));
-                }
-                bw.write(String.format("\t%7.3f\t%9.5f\t%9.5f", hcs.getChiSquare(), hcs.getChiSquareP(),
-                        hcs.getCorrectedP()));
-                bw.newLine();
-            }
-            bw.close();
-        }
-    }
 
     /**
      * Checks path string and adds a final separator character if not already there.
@@ -294,6 +254,34 @@ public class PhenoCompare {
             System.exit(1);
         }
         return abnormalPhenoSubOntology;
+    }
+
+    public SortedMap<TermId, PatientGroup[]> getHpoPatientSubgroups() {
+        return hpoPatientSubgroups;
+    }
+
+    public int getNumGroups() {
+        return numGroups;
+    }
+
+    public static Ontology<HpoTerm, HpoTermRelation> getOntology() {
+        return ontology;
+    }
+
+    public PatientGroup[] getPatientGroups() {
+        return patientGroups;
+    }
+
+    public String getResultsPath() {
+        return resultsPath;
+    }
+
+    public List<HPOChiSquared> getTermChiSq() {
+        return termChiSq;
+    }
+
+    public static Map<TermId, HpoTerm> getTermMap() {
+        return termMap;
     }
 
     /**
@@ -448,44 +436,6 @@ public class PhenoCompare {
     }
 
     /**
-     * Converts similarity matrix into dissimilarity matrix as it writes values to specified output file.
-     * R clustering function requires a dissimilarity matrix. Columns are separated by tabs.
-     * @param outFile          file to which matrix is written
-     * @throws IOException     if problem writing to file
-     */
-    private void writeDissimilarity(File outFile) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        BufferedWriter bw = new BufferedWriter(new FileWriter(outFile));
-
-        // Combine patient groups together to get one list of all patients
-        List<Patient> pats = new ArrayList<>(patientGroups[0].getPatients());
-        for (int g = 1; g < numGroups; g++) {
-            pats.addAll(patientGroups[g].getPatients());
-        }
-
-        // compute similarity matrix for all patients
-        int dim = pats.size();
-        PatientSimilarity pSim = new PatientSimilarity(pats,ontology);
-        double[][] matrix = pSim.getSimilarityMatrix();
-
-        // write header line for dissimilarity matrix
-        // map Patient::getPid on pats, append to sb
-        for (Patient p : pats)
-            sb.append(String.format("\t%s", p.getPid()));
-        sb.append(System.lineSeparator());
-
-        // write dissimilarity matrix to outFile
-        for (int r = 0; r < dim; r++) {
-            for (int c = 0; c < dim; c++) {
-                sb.append(String.format("\t%4.2f", 1.0 - matrix[r][c]));
-            }
-            sb.append(System.lineSeparator());
-        }
-        bw.write(sb.toString());
-        bw.close();
-    }
-
-    /**
      * Main method for PhenoCompare class. The constructor parses command line arguments to find
      * input file and directory information. Creates the Ontology object for HPO from .obo file. Reads
      * groups of genes from genes file, then groups of patients from patients file. For each phenotype
@@ -497,6 +447,7 @@ public class PhenoCompare {
      */
     public static void main(String[] args) {
         PhenoCompare phenoC = new PhenoCompare(args);
+        OutputMgr omgr = new OutputMgr(phenoC);
 
 //        logger.info("Starting PhenoCompare");
         ontology = getOntolibOntology(phenoC.hpoPath);
@@ -531,10 +482,11 @@ public class PhenoCompare {
         // are earlier in the list.
         phenoC.termChiSq.sort(Comparator.reverseOrder());
 
-        // Display counts and Chi-squared stats for each node of the ontology that meets the threshold for
-        // Chi-squared to be meaningful.
+        // Output counts and Chi-squared stats for each node of the ontology that meets the threshold for
+        // Chi-squared to be meaningful. Write dissimilarity matrix.
         try {
-            phenoC.displayResults();
+            omgr.writeChiSquared();
+            omgr.writeDissim();
         } catch (IOException e) {
             logger.fatal("[PhenoCompare.main] Problem writing output file", e);
             System.exit(1);
