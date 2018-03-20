@@ -45,7 +45,7 @@ public class PhenoCompare {
     private int numGroups;                 // number of gene groups (and hence patient groups)
     private PatientGroup[] patientGroups;    // array of patient groups
     private String patientsPath;   // path for input file containing one line per patient
-    private String resultsFile;    // path for output file
+    private String resultsPath;    // path for output file
     // termChiSq is a list of objects that pair an HPO term to the Chi-squared statistic for that term
     private List<HPOChiSquared> termChiSq;
 
@@ -58,7 +58,7 @@ public class PhenoCompare {
 
     private PhenoCompare(String[] args) {
 
-        // Initialize hpoPath, genesPath, patientsPath, and resultsFile from the command line arguments
+        // Initialize hpoPath, genesPath, patientsPath, and resultsPath from the command line arguments
         parseCommandLine(args);
         hpoPatientSubgroups = new TreeMap<>();
         termChiSq = new ArrayList<>();
@@ -233,38 +233,44 @@ public class PhenoCompare {
     }
 
     /**
-     * Writes termID, term name, counts for each group of patients, and the Chi-squared statistic
-     * to output file specified as command line argument. Also writes dissimilarity matrix to file
-     * named dissim.tsv in the same directory.
+     * Writes dissimilarity matrix to file named dissim.tsv in results directory specified on the
+     * command line. Writes Chi-squared statistic and p values to file named results.tsv in the
+     * same directory.
      * @throws IOException    if problem writing to either output file
      */
     private void displayResults() throws IOException {
         TermId tid;
         PatientGroup[] subgroups;
+        File resultsDir = new File(resultsPath);
+        File chiSquaredFile = new File(resultsDir, "chiSquared.tsv");
+        File dissimFile = new File(resultsDir, "dissim.tsv");
 
-        File outFile = new File(resultsFile);
-        writeDissimilarity(new File(outFile.getParent(), "dissim.tsv"));
-        BufferedWriter bw = new BufferedWriter(new FileWriter(outFile));
-        // write header line
-        bw.write("#HPO TermId\tTerm Name\t");
-        for (int g = 1; g <= numGroups; g++) {
-            bw.write(String.format("%s%d\t", "Group", g));
-        }
-        bw.write("ChiSq\tUncorr p Value\tCorr p Value");
-        bw.newLine();
-        // write one line for each HPO term
-        for (HPOChiSquared hcs : termChiSq) {
-            tid = hcs.getHPOTermId();
-            subgroups = hpoPatientSubgroups.get(tid);
-            bw.write(String.format("%s\t%s", tid.getIdWithPrefix(), termMap.get(tid).getName()));
-            for (int i = 0; i < numGroups; i++) {
-                bw.write(String.format("\t%5d/%d", subgroups[i].size(), patientGroups[i].size()));
+        if (resultsDir.exists() || resultsDir.mkdirs()) {
+            chiSquaredFile.createNewFile();
+            dissimFile.createNewFile();
+            writeDissimilarity(dissimFile);
+            BufferedWriter bw = new BufferedWriter(new FileWriter(chiSquaredFile));
+            // write header line
+            bw.write("#HPO TermId\tTerm Name\t");
+            for (int g = 1; g <= numGroups; g++) {
+                bw.write(String.format("%s%d\t", "Group", g));
             }
-            bw.write(String.format("\t%7.3f\t%9.5f\t%9.5f", hcs.getChiSquare(), hcs.getChiSquareP(),
-                    hcs.getCorrectedP()));
+            bw.write("ChiSq\tUncorr p Value\tCorr p Value");
             bw.newLine();
+            // write one line for each HPO term
+            for (HPOChiSquared hcs : termChiSq) {
+                tid = hcs.getHPOTermId();
+                subgroups = hpoPatientSubgroups.get(tid);
+                bw.write(String.format("%s\t%s", tid.getIdWithPrefix(), termMap.get(tid).getName()));
+                for (int i = 0; i < numGroups; i++) {
+                    bw.write(String.format("\t%5d/%d", subgroups[i].size(), patientGroups[i].size()));
+                }
+                bw.write(String.format("\t%7.3f\t%9.5f\t%9.5f", hcs.getChiSquare(), hcs.getChiSquareP(),
+                        hcs.getCorrectedP()));
+                bw.newLine();
+            }
+            bw.close();
         }
-        bw.close();
     }
 
     /**
@@ -274,6 +280,20 @@ public class PhenoCompare {
      */
     private String fixFinalSeparator(String path) {
         return path.endsWith(File.separator) ? path : path + File.separator;
+    }
+
+    private static com.github.phenomics.ontolib.ontology.data.Ontology<HpoTerm, HpoTermRelation> getOntolibOntology(String HPOpath) {
+        HpoOntology hpo;
+        com.github.phenomics.ontolib.ontology.data.Ontology<HpoTerm, HpoTermRelation> abnormalPhenoSubOntology = null;
+        try {
+            HpoOboParser hpoOboParser = new HpoOboParser(new File(HPOpath));
+            hpo = hpoOboParser.parse();
+            abnormalPhenoSubOntology = hpo.getPhenotypicAbnormalitySubOntology();
+        } catch (IOException e) {
+            logger.fatal(String.format("Unable to parse HPO OBO file at %s%n%s", HPOpath, e));
+            System.exit(1);
+        }
+        return abnormalPhenoSubOntology;
     }
 
     /**
@@ -319,10 +339,10 @@ public class PhenoCompare {
                 .build();
         Option resultsOpt = Option.builder("r")
                 .longOpt("results")
-                .desc("results file")
+                .desc("directory for results")
                 .hasArg()
                 .optionalArg(false)
-                .argName("path")
+                .argName("directory")
                 .required()
                 .build();
         Options helpOptions = new Options();
@@ -366,20 +386,6 @@ public class PhenoCompare {
         }
     }
 
-    private static com.github.phenomics.ontolib.ontology.data.Ontology<HpoTerm, HpoTermRelation> getOntolibOntology(String HPOpath) {
-        HpoOntology hpo;
-        com.github.phenomics.ontolib.ontology.data.Ontology<HpoTerm, HpoTermRelation> abnormalPhenoSubOntology = null;
-        try {
-            HpoOboParser hpoOboParser = new HpoOboParser(new File(HPOpath));
-            hpo = hpoOboParser.parse();
-            abnormalPhenoSubOntology = hpo.getPhenotypicAbnormalitySubOntology();
-        } catch (IOException e) {
-            logger.fatal(String.format("Unable to parse HPO OBO file at %s%n%s", HPOpath, e));
-            System.exit(1);
-        }
-        return abnormalPhenoSubOntology;
-    }
-
     /*
      * Code inherited from Sebastian Bauer (?) to read specified .obo file and create the corresponding
      * Ontology object.
@@ -414,7 +420,7 @@ public class PhenoCompare {
         genesPath = cmdl.getOptionValue("g");
         hpoPath = fixFinalSeparator(cmdl.getOptionValue("o")) + "hp.obo";
         patientsPath = cmdl.getOptionValue("p");
-        resultsFile = cmdl.getOptionValue("r");
+        resultsPath = fixFinalSeparator(cmdl.getOptionValue("r"));
     }
 
     /**
