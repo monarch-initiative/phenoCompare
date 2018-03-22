@@ -137,27 +137,6 @@ public class PhenoCompare {
     }
 
     /**
-     * For an individual patient, adds patient to appropriate patient subgroup for each phenotype
-     * exhibited by the patient. This includes all nodes encountered between phenotypes mentioned
-     * in the patient's file and the root node of the ontology.
-     * @param p       patient whose phenotypes we are recording
-     * @param group   integer index for patient's group (0 .. numGroups - 1)
-     */
-    private void recordPatientPhenotypes(Patient p, int group) {
-        Set<TermId> ancestors = new HashSet<>();
-        for (TermId tid : p.getHpoTerms()) {
-            // Merging sets of TermIDs eliminates duplicates if a given ontology node appears
-            // in the induced graph for more than one of patient's HPO terms.
-            ancestors.addAll(ontology.getAncestorTermIds(tid));
-        }
-        // Add patient to list for the appropriate group in all the ontology nodes that
-        // cover the patient's reported phenotypes.
-        for (TermId ancestor : ancestors) {
-            updatePatientSubgroups(ancestor, p, group);
-        }
-    }
-
-    /**
      * For each group of patients, counts how many patients exhibit phenotype associated with
      * each node of ontology. HPO terms that do not appear in any patient file are implicitly given
      * a count of 0 for all patient groups.
@@ -409,6 +388,27 @@ public class PhenoCompare {
         hpoPath = fixFinalSeparator(cmdl.getOptionValue("o")) + "hp.obo";
         patientsPath = cmdl.getOptionValue("p");
         resultsPath = fixFinalSeparator(cmdl.getOptionValue("r"));
+    }
+
+    /**
+     * For an individual patient, adds patient to appropriate patient subgroup for each phenotype
+     * exhibited by the patient. This includes all nodes encountered between phenotypes mentioned
+     * in the patient's file and the root node of the ontology.
+     * @param p       patient whose phenotypes we are recording
+     * @param group   integer index for patient's group (0 .. numGroups - 1)
+     */
+    private void recordPatientPhenotypes(Patient p, int group) {
+        Set<TermId> ancestors = new HashSet<>();
+        for (TermId tid : p.getHpoTerms()) {
+            // Merging sets of TermIDs eliminates duplicates if a given ontology node appears
+            // in the induced graph for more than one of patient's HPO terms.
+            ancestors.addAll(ontology.getAncestorTermIds(tid));
+        }
+        // Add patient to list for the appropriate group in all the ontology nodes that
+        // cover the patient's reported phenotypes.
+        for (TermId ancestor : ancestors) {
+            updatePatientSubgroups(ancestor, p, group);
+        }
     }
 
     /**
