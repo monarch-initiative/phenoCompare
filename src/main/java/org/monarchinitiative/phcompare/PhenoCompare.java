@@ -53,15 +53,16 @@ public class PhenoCompare {
 
     /** The fully parsed HPO Ontology from ontolib */
     private static com.github.phenomics.ontolib.ontology.data.Ontology<HpoTerm, HpoTermRelation> ontology=null;
+    private static Map<TermId,HpoTerm> termMap=null;
 
-    static private Map<TermId,HpoTerm> termMap=null;
-
-    private PhenoCompare(String[] args) {
-
+    PhenoCompare(String[] args) {
         // Initialize hpoPath, genesPath, patientsPath, and resultsPath from the command line arguments
         parseCommandLine(args);
         hpoPatientSubgroups = new TreeMap<>();
         termChiSq = new ArrayList<>();
+        // Initialize static fields
+        ontology = getOntolibOntology(hpoPath);
+        termMap = ontology.getTermMap();
     }
 
     /**
@@ -450,8 +451,8 @@ public class PhenoCompare {
         OutputMgr omgr = new OutputMgr(phenoC);
 
 //        logger.info("Starting PhenoCompare");
-        ontology = getOntolibOntology(phenoC.hpoPath);
-        termMap = ontology.getTermMap();
+//        ontology = getOntolibOntology(phenoC.hpoPath);
+//        termMap = ontology.getTermMap();
 
         // Read genes file to form groups of genes
         try {

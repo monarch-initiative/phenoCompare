@@ -47,7 +47,7 @@ public class OutputMgr {
      * @return Set<TermId>    set containing all terms from hpoTerms that are descendants (subtypes) of
      *                        target, including those that are identical to target.
      */
-    private Set<TermId> findSubtypes(Set<TermId> hpoTerms, TermId target) {
+    Set<TermId> findSubtypes(Set<TermId> hpoTerms, TermId target) {
         Set<TermId> subtypes = new TreeSet<>();
         Ontology<HpoTerm, HpoTermRelation> ontology = PhenoCompare.getOntology();
         for (TermId tid : hpoTerms) {
