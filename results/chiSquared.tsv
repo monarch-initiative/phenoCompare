@@ -1,0 +1,12 @@
+#HPO TermId	Term Name	Group1	Group2	ChiSq	Uncorr p Value	Corr p Value
+HP:0001270	Motor delay	   21/89	   30/49	 19.205	  0.00001	  0.00062
+HP:0012379	Abnormal enzyme/coenzyme activity	   31/89	   36/49	 18.887	  0.00001	  0.00074
+HP:0004379	Abnormality of alkaline phosphatase activity	   31/89	   36/49	 18.887	  0.00001	  0.00074
+HP:0000366	Abnormality of the nose	   24/89	   30/49	 15.571	  0.00008	  0.00421
+HP:0012759	Neurodevelopmental abnormality	   64/89	   48/49	 14.024	  0.00018	  0.00957
+HP:0000422	Abnormality of the nasal bridge	   18/89	   25/49	 13.972	  0.00019	  0.00984
+HP:0000478	Abnormality of the eye	   36/89	   36/49	 13.808	  0.00020	  0.01073
+HP:0009121	Abnormal axial skeleton morphology	   34/89	   34/49	 12.296	  0.00045	  0.02406
+HP:0012758	Neurodevelopmental delay	   55/89	   44/49	 12.219	  0.00047	  0.02508
+HP:0000929	Abnormality of the skull	   33/89	   33/49	 11.603	  0.00066	  0.03490
+HP:0001939	Abnormality of metabolism/homeostasis	   45/89	   39/49	 11.181	  0.00083	  0.04379
