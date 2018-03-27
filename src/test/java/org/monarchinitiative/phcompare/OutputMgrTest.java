@@ -1,21 +1,14 @@
 package org.monarchinitiative.phcompare;
 
-import com.github.phenomics.ontolib.formats.hpo.HpoTerm;
-import com.github.phenomics.ontolib.formats.hpo.HpoTermRelation;
-import com.github.phenomics.ontolib.io.obo.hpo.HpoOboParser;
 import com.github.phenomics.ontolib.ontology.data.ImmutableTermId;
-import com.github.phenomics.ontolib.ontology.data.Ontology;
 import com.github.phenomics.ontolib.ontology.data.TermId;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.monarchinitiative.phcompare.Patient.HPOPREFIX;
 
 /**
@@ -27,7 +20,7 @@ public class OutputMgrTest {
 
     @Test
     public void findSubtypesTest() {
-        String[] args = {"-o", "src/test/resources/", "-p", "patfile", "-g", "genefile", "-r", "outfile"};
+        String[] args = {"-o", "src/main/resources/", "-p", "patfile", "-g", "genefile", "-r", "outfile"};
         PhenoCompare phc = new PhenoCompare(args);
         OutputMgr omgr = new OutputMgr(phc);
 
