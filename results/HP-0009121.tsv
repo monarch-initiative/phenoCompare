@@ -104,11 +104,11 @@
 2	Pagnamenta;2017;PGAP3;257982	https://www.ncbi.nlm.nih.gov/pubmed/28327575	PGAP3	HP:0002751	Kyphoscoliosis
 2	Pagnamenta;2017;PGAP3;257982	https://www.ncbi.nlm.nih.gov/pubmed/28327575	PGAP3	HP:0002938	Lumbar hyperlordosis
 2	Pagnamenta;2017;PGAP3;257982	https://www.ncbi.nlm.nih.gov/pubmed/28327575	PGAP3	HP:0004619	Lumbar kyphoscoliosis
-2	Kvarnung;2013;PIGT;null	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0000248	Brachycephaly
-2	Kvarnung;2013;PIGT;null	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0000256	Macrocephaly
-2	Kvarnung;2013;PIGT;null	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0002648	Abnormality of calvarial morphology
-2	Kvarnung;2013;PIGT;null	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0002650	Scoliosis
-2	Kvarnung;2013;PIGT;null	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0004443	Lambdoidal craniosynostosis
+2	Kvarnung;2013;PIGT;Patient V-2	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0000248	Brachycephaly
+2	Kvarnung;2013;PIGT;Patient V-2	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0000256	Macrocephaly
+2	Kvarnung;2013;PIGT;Patient V-2	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0002648	Abnormality of calvarial morphology
+2	Kvarnung;2013;PIGT;Patient V-2	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0002650	Scoliosis
+2	Kvarnung;2013;PIGT;Patient V-2	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0004443	Lambdoidal craniosynostosis
 2	Nampoothiri;2017;PGAP3;Younger sister	https://www.ncbi.nlm.nih.gov/pubmed/28794914	PGAP3	HP:0000278	Retrognathia
 2	Nampoothiri;2017;PGAP3;Younger sister	https://www.ncbi.nlm.nih.gov/pubmed/28794914	PGAP3	HP:0005484	Postnatal microcephaly
 2	Kvarnung;2013;PIGT;Patient V-1	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0000248	Brachycephaly
