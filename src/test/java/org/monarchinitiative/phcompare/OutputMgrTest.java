@@ -65,29 +65,75 @@ public class OutputMgrTest {
         terms.add(abnVitD);
 
         Set<TermId> subtypes = omgr.findSubtypes(terms, abnMetabolism);
-        assertFalse("AbnMetabolism contains glaucoma",
+        assertFalse("AbnMetabolism subsumes glaucoma but should not",
                 subtypes.contains(glaucoma));
-        assertFalse("AbnMetabolism contains abnormality of endocrine system",
+        assertFalse("AbnMetabolism subsumes abnormality of endocrine system but should not",
                 subtypes.contains(abnEndocrine));
-        assertTrue("AbnMetabolism does not contain abnormality of metabolism/homeostatis",
+        assertTrue("AbnMetabolism does not subsume abnormality of metabolism/homeostatis but it should",
                 subtypes.contains(abnMetabolism));
-        assertTrue("AbnMetabolism does not contain abnormality of urine homeostasis",
+        assertTrue("AbnMetabolism does not subsume abnormality of urine homeostasis but it should",
                 subtypes.contains(abnUrineHomeo));
-        assertTrue("AbnMetabolism does not contain hyperuricosuria",
+        assertTrue("AbnMetabolism does not subsume hyperuricosuria but it should",
                 subtypes.contains(hyperuricosuria));
-        assertFalse("AbnMetabolism contains increased intraocular pressure",
+        assertFalse("AbnMetabolism subsumes increased intraocular pressure but should not",
                 subtypes.contains(incIntraocular));
-        assertFalse("AbnMetabolism contains abnormality of urinary system physiology",
+        assertFalse("AbnMetabolism subsumes abnormality of urinary system physiology but should not",
                 subtypes.contains(abnUrinarySys));
-        assertFalse("AbnMetabolism contains abnormal eye physiology",
+        assertFalse("AbnMetabolism subsumes abnormal eye physiology but should not",
                 subtypes.contains(abnEyePhys));
-        assertTrue("AbnMetabolism does not contain bacteriuria",
+        assertTrue("AbnMetabolism does not subsume bacteriuria but it should",
                 subtypes.contains(bacteriuria));
-        assertFalse("AbnMetabolism contains abnormal intraocular pressure",
+        assertFalse("AbnMetabolism subsumes abnormal intraocular pressure but should not",
                 subtypes.contains(abnIntraocular));
-        assertTrue("AbnMetabolism does not contain abnormailty of vitamin D metabolism",
+        assertTrue("AbnMetabolism does not subsume abnormality of vitamin D metabolism but it should",
                 subtypes.contains(abnVitD));
 
-//        subtypes = omgr.findSubtypes(terms, abnEyePhys);
+        subtypes = omgr.findSubtypes(terms, abnEyePhys);
+        assertTrue("AbnEyePhys does not subsume glaucoma but it should",
+                subtypes.contains(glaucoma));
+        assertFalse("AbnEyePhys subsumes abnormality of endocrine system but should not",
+                subtypes.contains(abnEndocrine));
+        assertFalse("AbnEyePhys subsumes abnormality of metabolism/homeostatis but should not",
+                subtypes.contains(abnMetabolism));
+        assertFalse("AbnEyePhys subsumes abnormality of urine homeostasis but should not",
+                subtypes.contains(abnUrineHomeo));
+        assertFalse("AbnEyePhys subsumes hyperuricosuria but should not",
+                subtypes.contains(hyperuricosuria));
+        assertTrue("AbnEyePhys does not subsume increased intraocular pressure but it should",
+                subtypes.contains(incIntraocular));
+        assertFalse("AbnEyePhys subsumes abnormality of urinary system physiology but should not",
+                subtypes.contains(abnUrinarySys));
+        assertTrue("AbnEyePhys does not subsume abnormal eye physiology but it should",
+                subtypes.contains(abnEyePhys));
+        assertFalse("AbnEyePhys subsumes bacteriuria but should not",
+                subtypes.contains(bacteriuria));
+        assertTrue("AbnEyePhys does not subsume abnormal intraocular pressure but it should",
+                subtypes.contains(abnIntraocular));
+        assertFalse("AbnEyePhys subsumes abnormality of vitamin D metabolism but should not",
+                subtypes.contains(abnVitD));
+        
+        subtypes = omgr.findSubtypes(terms, abnUrineHomeo);
+        assertFalse("AbnUrineHomeo subsumes glaucoma but should not",
+                subtypes.contains(glaucoma));
+        assertFalse("AbnUrineHomeo subsumes abnormality of endocrine system but should not",
+                subtypes.contains(abnEndocrine));
+        assertFalse("AbnUrineHomeo subsumes abnormality of metabolism/homeostatis but should not",
+                subtypes.contains(abnMetabolism));
+        assertTrue("AbnUrineHomeo does not subsume abnormality of urine homeostasis but it should",
+                subtypes.contains(abnUrineHomeo));
+        assertTrue("AbnUrineHomeo does not subsume hyperuricosuria but it should",
+                subtypes.contains(hyperuricosuria));
+        assertFalse("AbnUrineHomeo subsumes increased intraocular pressure but should not",
+                subtypes.contains(incIntraocular));
+        assertFalse("AbnUrineHomeo subsumes abnormality of urinary system physiology but should not",
+                subtypes.contains(abnUrinarySys));
+        assertFalse("AbnUrineHomeo subsumes abnormal eye physiology but should not",
+                subtypes.contains(abnEyePhys));
+        assertTrue("AbnUrineHomeo does not subsume bacteriuria but it should",
+                subtypes.contains(bacteriuria));
+        assertFalse("AbnUrineHomeo subsumes abnormal intraocular pressure but should not",
+                subtypes.contains(abnIntraocular));
+        assertFalse("AbnUrineHomeo subsumes abnormality of vitamin D metabolism but should not",
+                subtypes.contains(abnVitD));
     }
 }

@@ -45,7 +45,7 @@ public class OutputMgr {
      * @param hpoTerms        set of HPO Term Ids
      * @param target          potential ancestor (supertype) of terms in hpoTerms
      * @return Set<TermId>    set containing all terms from hpoTerms that are descendants (subtypes) of
-     *                        target, including those that are identical to target.
+     *                        target, including any that is identical to target.
      */
     Set<TermId> findSubtypes(Set<TermId> hpoTerms, TermId target) {
         Set<TermId> subtypes = new TreeSet<>();
