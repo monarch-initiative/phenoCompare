@@ -17,11 +17,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import org.monarchinitiative.phcompare.stats.HPOChiSquared;
-import org.monarchinitiative.phcompare.stats.PatientSimilarity;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -52,8 +49,8 @@ public class PhenoCompare {
     private static final Logger logger = LogManager.getLogger();
 
     /** The fully parsed HPO Ontology from ontolib */
-    private static com.github.phenomics.ontolib.ontology.data.Ontology<HpoTerm, HpoTermRelation> ontology=null;
-    private static Map<TermId,HpoTerm> termMap=null;
+    private static Ontology<HpoTerm, HpoTermRelation> ontology=null;
+    private static Map<TermId,HpoTerm> termMap;
 
     PhenoCompare(String[] args) {
         // Initialize hpoPath, genesPath, patientsPath, and resultsPath from the command line arguments
@@ -222,9 +219,9 @@ public class PhenoCompare {
         return path.endsWith(File.separator) ? path : path + File.separator;
     }
 
-    private static com.github.phenomics.ontolib.ontology.data.Ontology<HpoTerm, HpoTermRelation> getOntolibOntology(String HPOpath) {
+    private static Ontology<HpoTerm, HpoTermRelation> getOntolibOntology(String HPOpath) {
         HpoOntology hpo;
-        com.github.phenomics.ontolib.ontology.data.Ontology<HpoTerm, HpoTermRelation> abnormalPhenoSubOntology = null;
+        Ontology<HpoTerm, HpoTermRelation> abnormalPhenoSubOntology = null;
         try {
             HpoOboParser hpoOboParser = new HpoOboParser(new File(HPOpath));
             hpo = hpoOboParser.parse();

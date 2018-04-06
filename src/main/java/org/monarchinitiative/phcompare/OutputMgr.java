@@ -27,10 +27,10 @@ import java.util.*;
  *    --- detail files for each of the HPO terms to record which patients fell into each of the patient groups
  *    for that term.
  */
-public class OutputMgr {
-    private static final Logger logger = LogManager.getLogger();
-    private static PhenoCompare phenoC;
-    private static File resultsDir;
+class OutputMgr {
+//    private static final Logger logger = LogManager.getLogger();
+    private PhenoCompare phenoC;
+    private File resultsDir;
 
     OutputMgr(PhenoCompare ph) {
         phenoC = ph;
@@ -47,7 +47,7 @@ public class OutputMgr {
      * @return Set<TermId>    set containing all terms from hpoTerms that are descendants (subtypes) of
      *                        target, including any that is identical to target.
      */
-    Set<TermId> findSubtypes(Set<TermId> hpoTerms, TermId target) {
+    protected Set<TermId> findSubtypes(Set<TermId> hpoTerms, TermId target) {
         Set<TermId> subtypes = new TreeSet<>();
         Ontology<HpoTerm, HpoTermRelation> ontology = PhenoCompare.getOntology();
         for (TermId tid : hpoTerms) {
@@ -83,7 +83,7 @@ public class OutputMgr {
      * Writes detail file for each HPO term listing patients that fall under that term.
      * @throws IOException    if problem writing to any output file
      */
-    void writeChiSquared() throws IOException {
+    protected void writeChiSquared() throws IOException {
         File chiSquaredFile = new File(resultsDir, "chiSquared.tsv");
         int nGroups = phenoC.getNumGroups();
         Map<TermId, PatientGroup[]> hpoPatientSubgroups = phenoC.getHpoPatientSubgroups();
@@ -131,7 +131,7 @@ public class OutputMgr {
      * R clustering function requires a dissimilarity matrix. Columns are separated by tabs.
      * @throws IOException     if problem writing to file
      */
-    void writeDissim() throws IOException {
+    protected void writeDissim() throws IOException {
         File dissimFile = new File(resultsDir, "dissim.tsv");
         StringBuilder sb = new StringBuilder();
         BufferedWriter bw = new BufferedWriter(new FileWriter(dissimFile));
