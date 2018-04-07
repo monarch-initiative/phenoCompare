@@ -4,6 +4,7 @@ import com.github.phenomics.ontolib.ontology.data.ImmutableTermId;
 import com.github.phenomics.ontolib.ontology.data.TermId;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,7 +20,7 @@ import static org.monarchinitiative.phcompare.Patient.HPOPREFIX;
 public class OutputMgrTest {
 
     @Test
-    public void findSubtypesTest() {
+    public void findSubtypesTest() throws Exception {
         String[] args = {"-o", "src/main/resources/", "-p", "patfile", "-g", "genefile", "-r", "outfile"};
         PhenoCompare phc = new PhenoCompare(args);
         OutputMgr omgr = new OutputMgr(phc);

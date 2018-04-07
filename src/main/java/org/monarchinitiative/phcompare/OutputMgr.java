@@ -5,8 +5,6 @@ import com.github.phenomics.ontolib.formats.hpo.HpoTermRelation;
 import com.github.phenomics.ontolib.ontology.data.Ontology;
 import com.github.phenomics.ontolib.ontology.data.TermId;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.monarchinitiative.phcompare.stats.HPOChiSquared;
 import org.monarchinitiative.phcompare.stats.PatientSimilarity;
 
@@ -47,7 +45,7 @@ class OutputMgr {
      * @return Set<TermId>    set containing all terms from hpoTerms that are descendants (subtypes) of
      *                        target, including any that is identical to target.
      */
-    protected Set<TermId> findSubtypes(Set<TermId> hpoTerms, TermId target) {
+    Set<TermId> findSubtypes(Set<TermId> hpoTerms, TermId target) {
         Set<TermId> subtypes = new TreeSet<>();
         Ontology<HpoTerm, HpoTermRelation> ontology = PhenoCompare.getOntology();
         for (TermId tid : hpoTerms) {
@@ -68,14 +66,20 @@ class OutputMgr {
     private BufferedWriter initDetailFile(String tidAsString, String termName) throws IOException {
         File termDetailFile = new File(resultsDir,
                 tidAsString.replace(':', '-') + ".tsv");
-        termDetailFile.createNewFile();
-        BufferedWriter bw = new BufferedWriter(new FileWriter(termDetailFile));
-        // write header lines in the term detail file
-        bw.write("# " + tidAsString + " " + termName);
-        bw.newLine();
-        bw.write("# GroupNum\tId Summary\tPubMed\tGene\tHPO term\tTerm name");
-        bw.newLine();
-        return bw;
+
+        try {
+            termDetailFile.createNewFile();
+            BufferedWriter bw = new BufferedWriter(new FileWriter(termDetailFile));
+            // write header lines in the term detail file
+            bw.write("# " + tidAsString + " " + termName);
+            bw.newLine();
+            bw.write("# GroupNum\tId Summary\tPubMed\tGene\tHPO term\tTerm name");
+            bw.newLine();
+            return bw;
+        } catch (IOException e) {
+            throw new IOException("[OutputMgr.initDetailFile] Problem with output file " +
+                    termDetailFile.getAbsolutePath(), e);
+        }
     }
 
     /**
@@ -83,7 +87,7 @@ class OutputMgr {
      * Writes detail file for each HPO term listing patients that fall under that term.
      * @throws IOException    if problem writing to any output file
      */
-    protected void writeChiSquared() throws IOException {
+    void writeChiSquared() throws IOException {
         File chiSquaredFile = new File(resultsDir, "chiSquared.tsv");
         int nGroups = phenoC.getNumGroups();
         Map<TermId, PatientGroup[]> hpoPatientSubgroups = phenoC.getHpoPatientSubgroups();
@@ -93,36 +97,40 @@ class OutputMgr {
         TermId tid;
         String tidString, termName;
 
-        chiSquaredFile.createNewFile();
-        BufferedWriter chisq = new BufferedWriter(new FileWriter(chiSquaredFile));
-        // write header line
-        chisq.write("#HPO TermId\tTerm Name\t");
-        for (int g = 1; g <= nGroups; g++) {
-            chisq.write(String.format("%s%d\t", "Group", g));
-        }
-        chisq.write("ChiSq\tUncorr p Value\tCorr p Value");
-        chisq.newLine();
-        // write one line for each HPO term in the Chi-squared file
-        // write term detail file for each HPO term with listing of patients in each subgroup
-        // who fall under that term
-        for (HPOChiSquared hcs : phenoC.getTermChiSq()) {
-            tid = hcs.getHPOTermId();
-            tidString = tid.getIdWithPrefix();
-            termName = termMap.get(tid).getName();
-            subgroups = hpoPatientSubgroups.get(tid);
-
-            BufferedWriter termDetail = initDetailFile(tidString, termName);
-            chisq.write(String.format("%s\t%s", tidString, termName));
-            for (int i = 0; i < nGroups; i++) {
-                chisq.write(String.format("\t%5d/%d", subgroups[i].size(), patientGroups[i].size()));
-                writeSubgroupDetail(termDetail, i + 1, subgroups[i], tid);
+        try {
+            chiSquaredFile.createNewFile();
+            BufferedWriter chisq = new BufferedWriter(new FileWriter(chiSquaredFile));
+            // write header line
+            chisq.write("#HPO TermId\tTerm Name\t");
+            for (int g = 1; g <= nGroups; g++) {
+                chisq.write(String.format("%s%d\t", "Group", g));
             }
-            chisq.write(String.format("\t%7.3f\t%9.5f\t%9.5f", hcs.getChiSquare(), hcs.getChiSquareP(),
-                    hcs.getCorrectedP()));
+            chisq.write("ChiSq\tUncorr p Value\tCorr p Value");
             chisq.newLine();
-            termDetail.close();
+            // write one line for each HPO term in the Chi-squared file
+            // write term detail file for each HPO term with listing of patients in each subgroup
+            // who fall under that term
+            for (HPOChiSquared hcs : phenoC.getTermChiSq()) {
+                tid = hcs.getHPOTermId();
+                tidString = tid.getIdWithPrefix();
+                termName = termMap.get(tid).getName();
+                subgroups = hpoPatientSubgroups.get(tid);
+
+                BufferedWriter termDetail = initDetailFile(tidString, termName);
+                chisq.write(String.format("%s\t%s", tidString, termName));
+                for (int i = 0; i < nGroups; i++) {
+                    chisq.write(String.format("\t%5d/%d", subgroups[i].size(), patientGroups[i].size()));
+                    writeSubgroupDetail(termDetail, i + 1, subgroups[i], tid);
+                }
+                chisq.write(String.format("\t%7.3f\t%9.5f\t%9.5f", hcs.getChiSquare(), hcs.getChiSquareP(),
+                        hcs.getCorrectedP()));
+                chisq.newLine();
+                termDetail.close();
+            }
+            chisq.close();
+        } catch (IOException e) {
+            throw new IOException("[OutputMgr.writeChiSquared] Problem with output file. ", e);
         }
-        chisq.close();
     }
 
     /**
@@ -131,40 +139,45 @@ class OutputMgr {
      * R clustering function requires a dissimilarity matrix. Columns are separated by tabs.
      * @throws IOException     if problem writing to file
      */
-    protected void writeDissim() throws IOException {
+    void writeDissim() throws IOException {
         File dissimFile = new File(resultsDir, "dissim.tsv");
         StringBuilder sb = new StringBuilder();
         BufferedWriter bw = new BufferedWriter(new FileWriter(dissimFile));
 
-        dissimFile.createNewFile();
-        PatientGroup[] patientGroups = phenoC.getPatientGroups();
+        try {
+            dissimFile.createNewFile();
+            PatientGroup[] patientGroups = phenoC.getPatientGroups();
 
-        // Combine patient groups together to get one list of all patients
-        List<Patient> pats = new ArrayList<>(patientGroups[0].getPatients());
-        for (int g = 1; g < phenoC.getNumGroups(); g++) {
-            pats.addAll(patientGroups[g].getPatients());
-        }
-
-        // compute similarity matrix for all patients
-        int dim = pats.size();
-        PatientSimilarity pSim = new PatientSimilarity(pats, PhenoCompare.getOntology());
-        double[][] matrix = pSim.getSimilarityMatrix();
-
-        // write header line for dissimilarity matrix
-        // map Patient::getPid on pats, append to sb
-        for (Patient p : pats)
-            sb.append(String.format("\t%s", p.getPid()));
-        sb.append(System.lineSeparator());
-
-        // write dissimilarity matrix to outFile
-        for (int r = 0; r < dim; r++) {
-            for (int c = 0; c < dim; c++) {
-                sb.append(String.format("\t%4.2f", 1.0 - matrix[r][c]));
+            // Combine patient groups together to get one list of all patients
+            List<Patient> pats = new ArrayList<>(patientGroups[0].getPatients());
+            for (int g = 1; g < phenoC.getNumGroups(); g++) {
+                pats.addAll(patientGroups[g].getPatients());
             }
+
+            // compute similarity matrix for all patients
+            int dim = pats.size();
+            PatientSimilarity pSim = new PatientSimilarity(pats, PhenoCompare.getOntology());
+            double[][] matrix = pSim.getSimilarityMatrix();
+
+            // write header line for dissimilarity matrix
+            // map Patient::getPid on pats, append to sb
+            for (Patient p : pats)
+                sb.append(String.format("\t%s", p.getPid()));
             sb.append(System.lineSeparator());
+
+            // write dissimilarity matrix to outFile
+            for (int r = 0; r < dim; r++) {
+                for (int c = 0; c < dim; c++) {
+                    sb.append(String.format("\t%4.2f", 1.0 - matrix[r][c]));
+                }
+                sb.append(System.lineSeparator());
+            }
+            bw.write(sb.toString());
+            bw.close();
+        } catch (IOException e) {
+            throw new IOException("[OutputMgr.writeDissim] Problem with output file " +
+                    dissimFile.getAbsolutePath(), e);
         }
-        bw.write(sb.toString());
-        bw.close();
     }
 
     /**
@@ -182,14 +195,19 @@ class OutputMgr {
             throws IOException {
         String line;
 
-        for (Patient p : subgroup.getPatients()) {
-            line = String.format("%d\t%s\t%s\t%s", groupNum, p.getIdSummary(),
-                    "https://www.ncbi.nlm.nih.gov/pubmed/" + p.getPmid(), p.getGene());
-            for (TermId subtype : findSubtypes(p.getHpoTerms(), tid)) {
-                bw.write(String.format("%s\t%s\t%s", line, subtype.getIdWithPrefix(),
-                        PhenoCompare.getTermMap().get(subtype).getName()));
-                bw.newLine();
+        try {
+            for (Patient p : subgroup.getPatients()) {
+                line = String.format("%d\t%s\t%s\t%s", groupNum, p.getIdSummary(),
+                        "https://www.ncbi.nlm.nih.gov/pubmed/" + p.getPmid(), p.getGene());
+                for (TermId subtype : findSubtypes(p.getHpoTerms(), tid)) {
+                    bw.write(String.format("%s\t%s\t%s", line, subtype.getIdWithPrefix(),
+                            PhenoCompare.getTermMap().get(subtype).getName()));
+                    bw.newLine();
+                }
             }
+        } catch (IOException e) {
+            throw new IOException("[OutputMgr.writeSubgroupDetail] Problem writing patient detail file. ",
+                    e);
         }
     }
 }

@@ -49,17 +49,26 @@ public class PhenoCompare {
     private static final Logger logger = LogManager.getLogger();
 
     /** The fully parsed HPO Ontology from ontolib */
-    private static Ontology<HpoTerm, HpoTermRelation> ontology=null;
+    private static Ontology<HpoTerm, HpoTermRelation> ontology;
     private static Map<TermId,HpoTerm> termMap;
 
-    PhenoCompare(String[] args) {
+    /**
+     * PhenoCompare constructor.
+     * @param args             command line args typed by user
+     * @throws IOException     if thrown by getOntolibOntology
+     * @throws ParseException  if parseCommandLine indicates that execution should halt
+     */
+    PhenoCompare(String[] args) throws IOException, ParseException {
         // Initialize hpoPath, genesPath, patientsPath, and resultsPath from the command line arguments
-        parseCommandLine(args);
-        hpoPatientSubgroups = new TreeMap<>();
-        termChiSq = new ArrayList<>();
-        // Initialize static fields
-        ontology = getOntolibOntology(hpoPath);
-        termMap = ontology.getTermMap();
+        if (parseCommandLine(args)) {
+            hpoPatientSubgroups = new TreeMap<>();
+            termChiSq = new ArrayList<>();
+            // Initialize static fields
+            ontology = getOntolibOntology(hpoPath);
+            termMap = ontology.getTermMap();
+        } else {
+            throw new ParseException("");
+        }
     }
 
     /**
@@ -219,26 +228,26 @@ public class PhenoCompare {
         return path.endsWith(File.separator) ? path : path + File.separator;
     }
 
-    private static Ontology<HpoTerm, HpoTermRelation> getOntolibOntology(String HPOpath) {
-        HpoOntology hpo;
-        Ontology<HpoTerm, HpoTermRelation> abnormalPhenoSubOntology = null;
-        try {
-            HpoOboParser hpoOboParser = new HpoOboParser(new File(HPOpath));
-            hpo = hpoOboParser.parse();
-            abnormalPhenoSubOntology = hpo.getPhenotypicAbnormalitySubOntology();
-        } catch (IOException e) {
-            logger.fatal(String.format("Unable to parse HPO OBO file at %s%n%s", HPOpath, e));
-            System.exit(1);
-        }
-        return abnormalPhenoSubOntology;
-    }
-
     public SortedMap<TermId, PatientGroup[]> getHpoPatientSubgroups() {
         return hpoPatientSubgroups;
     }
 
     public int getNumGroups() {
         return numGroups;
+    }
+
+    private static Ontology<HpoTerm, HpoTermRelation> getOntolibOntology(String HPOpath) throws IOException {
+        HpoOntology hpo;
+        Ontology<HpoTerm, HpoTermRelation> abnormalPhenoSubOntology;
+        try {
+            HpoOboParser hpoOboParser = new HpoOboParser(new File(HPOpath));
+            hpo = hpoOboParser.parse();
+            abnormalPhenoSubOntology = hpo.getPhenotypicAbnormalitySubOntology();
+            return abnormalPhenoSubOntology;
+        } catch (IOException e) {
+            throw new IOException("[PhenoCompare.getOntolibOntology] Unable to parse HPO OBO file at " +
+                    HPOpath, e);
+        }
     }
 
     public static Ontology<HpoTerm, HpoTermRelation> getOntology() {
@@ -267,11 +276,12 @@ public class PhenoCompare {
      *     -g full path including filename for file of gene names
      *     -o directory where hp.obo file can be found
      *     -p full path including filename for file of patient data
-     *     -r full path including filename for output file
+     *     -r directory for output files
      * Sets the instance variables of this PhenoCompare object accordingly.
      * @param args    the arguments user typed on command line
+     * @return boolean true if execution should continue, false if execution should terminate
      */
-    private void parseCommandLine(String[] args) {
+    private boolean parseCommandLine(String[] args) {
         // create the Options
         Option helpOpt= Option.builder("h")
                 .longOpt("help")
@@ -328,25 +338,27 @@ public class PhenoCompare {
             if (cmdl.hasOption("h")) {
                 // automatically generate usage information, write to System.out
                 formatter.printHelp("phenoCompare", allOptions);
-                System.exit(0);
+                return false;
             }
             else {
                 // parse the command line looking for required options
                 // This branch executed if command line does not match help option but also does not trigger a
-                // ParseException. Seems to occur only when user types the directory paths but omits -i -o -a -b.
+                // ParseException. Seems to occur only when user types the directory paths but omits -g -o -p -r.
                 parseRequiredOptions(parser, reqOptions, args);
+                return true;
             }
         }
         catch(ParseException e) {
             try {
                 // parse the command line looking for required options
                 parseRequiredOptions(parser, reqOptions, args);
+                return true;
             } catch (ParseException pe) {
                 System.err.println("Incorrect command line arguments --- " + pe.getMessage());
                 formatter.printHelp(new PrintWriter(System.err, true), 80,
                         "phenoCompare", null, allOptions, formatter.getLeftPadding(),
                         formatter.getDescPadding(), null);
-                System.exit(1);
+                return false;
             }
         }
     }
@@ -444,50 +456,42 @@ public class PhenoCompare {
      * @param args     command line arguments typed by user
      */
     public static void main(String[] args) {
-        PhenoCompare phenoC = new PhenoCompare(args);
-        OutputMgr omgr = new OutputMgr(phenoC);
+        try {
+            PhenoCompare phenoC = new PhenoCompare(args);
+            OutputMgr omgr = new OutputMgr(phenoC);
 
 //        logger.info("Starting PhenoCompare");
 //        ontology = getOntolibOntology(phenoC.hpoPath);
 //        termMap = ontology.getTermMap();
 
-        // Read genes file to form groups of genes
-        try {
+            // Read genes file to form groups of genes
             phenoC.geneGroups = new GeneGroups(phenoC.genesPath);
             phenoC.numGroups = phenoC.geneGroups.howManyGroups();
-        } catch (IOException | EmptyGroupException e) {
-            logger.fatal("", e);
-            System.exit(1);
-        }
 
-        // Read file of patient records and create patient groups corresponding to gene groups.
-        try {
+            // Read file of patient records and create patient groups corresponding to gene groups.
             phenoC.createPatientGroups();
-        } catch (IOException | EmptyGroupException e) {
-            logger.fatal("", e);
-            System.exit(1);
-        }
 
-        // For each node in the HPO ontology that covers one or more patients, count how many patients
-        // in each group fall under that node. Any node of the hierarchy that is not referenced has counts of
-        // 0 for each group.
-        phenoC.countPatients();
+            // For each node in the HPO ontology that covers one or more patients, count how many patients
+            // in each group fall under that node. Any node of the hierarchy that is not referenced has counts of
+            // 0 for each group.
+            phenoC.countPatients();
 
-        // For each HPO term whose expected frequency meets the minimum threshold, calculate the
-        // Chi-squared statistic.
-        phenoC.calculateChiSq();
-        // sort the Chi-squared values so that the most significant results (higher Chi-squared)
-        // are earlier in the list.
-        phenoC.termChiSq.sort(Comparator.reverseOrder());
+            // For each HPO term whose expected frequency meets the minimum threshold, calculate the
+            // Chi-squared statistic.
+            phenoC.calculateChiSq();
+            // sort the Chi-squared values so that the most significant results (higher Chi-squared)
+            // are earlier in the list.
+            phenoC.termChiSq.sort(Comparator.reverseOrder());
 
-        // Output counts and Chi-squared stats for each node of the ontology that meets the threshold for
-        // Chi-squared to be meaningful. Write dissimilarity matrix.
-        try {
+            // Output counts and Chi-squared stats for each node of the ontology that meets the threshold for
+            // Chi-squared to be meaningful. Write dissimilarity matrix.
             omgr.writeChiSquared();
             omgr.writeDissim();
-        } catch (IOException e) {
-            logger.fatal("[PhenoCompare.main] Problem writing output file", e);
-            System.exit(1);
+        } catch (ParseException e) {
+            // Command line parsing indicates execution should terminate. parseCommandLine method already has
+            // printed an error message, no need to do anything more
+        } catch (Exception e) {
+            logger.fatal("", e);
         }
     }
 }

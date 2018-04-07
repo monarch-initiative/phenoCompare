@@ -24,7 +24,7 @@ public class HPOChiSquaredTest {
     private static double epsilon = .0000000001;
 
     @BeforeClass
-    public static void setup() {
+    public static void before() {
         tid0 = new ImmutableTermId(HPOPREFIX, "0001252");
         tid1 = new ImmutableTermId(HPOPREFIX, "0001804");
         hcs0 = new HPOChiSquared(tid0, o);
