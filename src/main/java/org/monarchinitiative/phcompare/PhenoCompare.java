@@ -228,11 +228,11 @@ public class PhenoCompare {
         return path.endsWith(File.separator) ? path : path + File.separator;
     }
 
-    public SortedMap<TermId, PatientGroup[]> getHpoPatientSubgroups() {
+    SortedMap<TermId, PatientGroup[]> getHpoPatientSubgroups() {
         return hpoPatientSubgroups;
     }
 
-    public int getNumGroups() {
+    int getNumGroups() {
         return numGroups;
     }
 
@@ -250,23 +250,23 @@ public class PhenoCompare {
         }
     }
 
-    public static Ontology<HpoTerm, HpoTermRelation> getOntology() {
+    static Ontology<HpoTerm, HpoTermRelation> getOntology() {
         return ontology;
     }
 
-    public PatientGroup[] getPatientGroups() {
+    PatientGroup[] getPatientGroups() {
         return patientGroups;
     }
 
-    public String getResultsPath() {
+    String getResultsPath() {
         return resultsPath;
     }
 
-    public List<HPOChiSquared> getTermChiSq() {
+    List<HPOChiSquared> getTermChiSq() {
         return termChiSq;
     }
 
-    public static Map<TermId, HpoTerm> getTermMap() {
+    static Map<TermId, HpoTerm> getTermMap() {
         return termMap;
     }
 
@@ -492,6 +492,7 @@ public class PhenoCompare {
             // printed an error message, no need to do anything more
         } catch (Exception e) {
             logger.fatal("", e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 }
