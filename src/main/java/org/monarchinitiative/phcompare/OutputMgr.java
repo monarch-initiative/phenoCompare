@@ -47,7 +47,7 @@ class OutputMgr {
      */
     Set<TermId> findSubtypes(Set<TermId> hpoTerms, TermId target) {
         Set<TermId> subtypes = new TreeSet<>();
-        Ontology<HpoTerm, HpoTermRelation> ontology = PhenoCompare.getOntology();
+        Ontology<HpoTerm, HpoTermRelation> ontology = phenoC.getOntology();
         for (TermId tid : hpoTerms) {
             if (ontology.getAncestorTermIds(tid).contains(target)) {
                 subtypes.add(tid);
@@ -93,7 +93,7 @@ class OutputMgr {
         Map<TermId, PatientGroup[]> hpoPatientSubgroups = phenoC.getHpoPatientSubgroups();
         PatientGroup[] patientGroups = phenoC.getPatientGroups();
         PatientGroup[] subgroups;
-        Map<TermId, HpoTerm> termMap = PhenoCompare.getTermMap();
+        Map<TermId, HpoTerm> termMap = phenoC.getTermMap();
         TermId tid;
         String tidString, termName;
 
@@ -156,7 +156,7 @@ class OutputMgr {
 
             // compute similarity matrix for all patients
             int dim = pats.size();
-            PatientSimilarity pSim = new PatientSimilarity(pats, PhenoCompare.getOntology());
+            PatientSimilarity pSim = new PatientSimilarity(pats, phenoC.getOntology());
             double[][] matrix = pSim.getSimilarityMatrix();
 
             // write header line for dissimilarity matrix
@@ -201,7 +201,7 @@ class OutputMgr {
                         "https://www.ncbi.nlm.nih.gov/pubmed/" + p.getPmid(), p.getGene());
                 for (TermId subtype : findSubtypes(p.getHpoTerms(), tid)) {
                     bw.write(String.format("%s\t%s\t%s", line, subtype.getIdWithPrefix(),
-                            PhenoCompare.getTermMap().get(subtype).getName()));
+                            phenoC.getTermMap().get(subtype).getName()));
                     bw.newLine();
                 }
             }

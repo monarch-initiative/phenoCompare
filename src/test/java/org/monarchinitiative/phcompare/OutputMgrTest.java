@@ -4,7 +4,6 @@ import com.github.phenomics.ontolib.ontology.data.ImmutableTermId;
 import com.github.phenomics.ontolib.ontology.data.TermId;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 

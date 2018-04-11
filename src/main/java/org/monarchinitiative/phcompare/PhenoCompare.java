@@ -40,17 +40,17 @@ public class PhenoCompare {
     // hpoPatientSubgroups maps from an HPO term to an array of the patient subgroups covered by that term
     private SortedMap<TermId, PatientGroup[]> hpoPatientSubgroups;
     private int numGroups;                 // number of gene groups (and hence patient groups)
+    /** The fully parsed HPO Ontology from ontolib */
+    private Ontology<HpoTerm, HpoTermRelation> ontology;
     private PatientGroup[] patientGroups;  // array of patient groups
     private String patientsPath;   // path for input file containing one line per patient
     private String resultsPath;    // path for output file
     // termChiSq is a list of objects that pair an HPO term to the Chi-squared statistic for that term
     private List<HPOChiSquared> termChiSq;
+    private Map<TermId, HpoTerm> termMap;
 
     private static final Logger logger = LogManager.getLogger();
 
-    /** The fully parsed HPO Ontology from ontolib */
-    private static Ontology<HpoTerm, HpoTermRelation> ontology;
-    private static Map<TermId,HpoTerm> termMap;
 
     /**
      * PhenoCompare constructor.
@@ -61,11 +61,11 @@ public class PhenoCompare {
     PhenoCompare(String[] args) throws IOException, ParseException {
         // Initialize hpoPath, genesPath, patientsPath, and resultsPath from the command line arguments
         if (parseCommandLine(args)) {
-            hpoPatientSubgroups = new TreeMap<>();
-            termChiSq = new ArrayList<>();
-            // Initialize static fields
+            // Initialize ontology fields
             ontology = getOntolibOntology(hpoPath);
             termMap = ontology.getTermMap();
+            hpoPatientSubgroups = new TreeMap<>();
+            termChiSq = new ArrayList<>();
         } else {
             throw new ParseException("");
         }
@@ -250,7 +250,7 @@ public class PhenoCompare {
         }
     }
 
-    static Ontology<HpoTerm, HpoTermRelation> getOntology() {
+    Ontology<HpoTerm, HpoTermRelation> getOntology() {
         return ontology;
     }
 
@@ -266,7 +266,7 @@ public class PhenoCompare {
         return termChiSq;
     }
 
-    static Map<TermId, HpoTerm> getTermMap() {
+    Map<TermId, HpoTerm> getTermMap() {
         return termMap;
     }
 
