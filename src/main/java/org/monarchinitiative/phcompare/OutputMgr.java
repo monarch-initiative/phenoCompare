@@ -26,7 +26,6 @@ import java.util.*;
  *    for that term.
  */
 class OutputMgr {
-//    private static final Logger logger = LogManager.getLogger();
     private PhenoCompare phenoC;
     private File resultsDir;
 

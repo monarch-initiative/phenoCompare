@@ -359,28 +359,6 @@ public class PhenoCompare {
         }
     }
 
-    /*
-     * Code inherited from Sebastian Bauer (?) to read specified .obo file and create the corresponding
-     * Ontology object.
-     *
-     * @param pathObo    path to .obo file we want to read
-     * @return Ontology  the Ontology object created from .obo file
-     *
-     */
-//    private static Ontology parseObo(String pathObo) throws IOException, OBOParserException {
-//        System.err.println("Reading ontology from OBO file " + pathObo + " ...");
-//        OBOParser parser = new OBOParser(new OBOParserFileInput(pathObo));
-//        String parseResult = parser.doParse();
-//
-//        System.err.println("Information about parse result:");
-//        System.err.println(parseResult);
-//        TermContainer termContainer =
-//                new TermContainer(parser.getTermMap(), parser.getFormatVersion(), parser.getDate());
-//        final Ontology ontology = Ontology.create(termContainer);
-//        System.err.println("=> done reading OBO file");
-//        return ontology;
-//    }
-
     /**
      * Parses the command line arguments typed by user to look for the required (not help) options
      * @param psr                 command line parser
@@ -455,10 +433,6 @@ public class PhenoCompare {
         try {
             PhenoCompare phenoC = new PhenoCompare(args);
             OutputMgr omgr = new OutputMgr(phenoC);
-
-//        logger.info("Starting PhenoCompare");
-//        ontology = getOntolibOntology(phenoC.hpoPath);
-//        termMap = ontology.getTermMap();
 
             // Read genes file to form groups of genes
             phenoC.geneGroups = new GeneGroups(phenoC.genesPath);
