@@ -39,18 +39,15 @@ public class PhenoCompare {
     private String hpoPath;        // path to directory containing .obo file for HPO
     // hpoPatientSubgroups maps from an HPO term to an array of the patient subgroups covered by that term
     private SortedMap<TermId, PatientGroup[]> hpoPatientSubgroups;
-    private int numGroups;                 // number of gene groups (and hence patient groups)
-    /** The fully parsed HPO Ontology from ontolib */
-    private Ontology<HpoTerm, HpoTermRelation> ontology;
-    private PatientGroup[] patientGroups;  // array of patient groups
+    private int numGroups;         // number of gene groups (and hence patient groups)
+    private Ontology<HpoTerm, HpoTermRelation> ontology;   // fully parsed HPO Ontology from ontolib
+    private PatientGroup[] patientGroups;   // array of patient groups
     private String patientsPath;   // path for input file containing one line per patient
     private String resultsPath;    // path for output file
     // termChiSq is a list of objects that pair an HPO term to the Chi-squared statistic for that term
     private List<HPOChiSquared> termChiSq;
-    private Map<TermId, HpoTerm> termMap;
 
     private static final Logger logger = LogManager.getLogger();
-
 
     /**
      * PhenoCompare constructor.
@@ -63,7 +60,6 @@ public class PhenoCompare {
         if (parseCommandLine(args)) {
             // Initialize ontology fields
             ontology = getOntolibOntology(hpoPath);
-            termMap = ontology.getTermMap();
             hpoPatientSubgroups = new TreeMap<>();
             termChiSq = new ArrayList<>();
         } else {
@@ -98,7 +94,6 @@ public class PhenoCompare {
         // Iterate through the termChiSq list. For each element, calculate the corrected P value
         // according to number of comparisons performed. Toss out any HPOChiSquared object whose
         // corrected P value exceeds the threshold of 0.05.
-
         Iterator<HPOChiSquared> iter = termChiSq.iterator();
         while (iter.hasNext()) {
             HPOChiSquared chi = iter.next();
@@ -113,8 +108,9 @@ public class PhenoCompare {
      * group who have/do not have that phenotype.
      * @param hpoTerm         HPO termID
      * @param countsForTermID array of int containing counts of patients in each group
+     *                        who have phenotype encoded by HPO termID
      * @return null           if one of expected counts is below threshold of 5
-     *         HPOChiSquared     otherwise, object containg HPO termID and Chi-squared statistic
+     *         HPOChiSquared  otherwise, object containg HPO termID and Chi-squared statistic
      */
     private HPOChiSquared createChiSq(TermId hpoTerm, int[] countsForTermID) {
         double expected;
@@ -133,8 +129,8 @@ public class PhenoCompare {
         // statistic to be meaningful
         for (int g = 0; g < numGroups; g++) {
             for (int c = 0; c < 2; c++) {
-                expected = (countsForTermID[g] * totalHaveOrDont[c]) / (double) totalPatients;
-                if (expected < 5) {
+                expected = (patientGroups[g].size() * totalHaveOrDont[c]) / (double) totalPatients;
+                if (expected < 5.0) {
                     return null;
                 }
             }
@@ -159,7 +155,7 @@ public class PhenoCompare {
     /**
      * Each group of patients is created from patient records in the patients file.
      * @throws IOException           if problem opening or reading patients file
-     * @throws EmptyGroupException   if one or both patient groups is/are empty
+     * @throws EmptyGroupException   if one or more patient groups is/are empty
      */
     private void createPatientGroups() throws IOException, EmptyGroupException {
         String geneName, line;
@@ -267,7 +263,7 @@ public class PhenoCompare {
     }
 
     Map<TermId, HpoTerm> getTermMap() {
-        return termMap;
+        return ontology.getTermMap();
     }
 
     /**

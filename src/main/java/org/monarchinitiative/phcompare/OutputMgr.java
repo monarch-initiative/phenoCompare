@@ -83,7 +83,7 @@ class OutputMgr {
     }
 
     /**
-     * Writes Chi-squared statistics and p values to file named results.tsv in the results directory.
+     * Writes Chi-squared statistics and p values to file named chiSquared.tsv in the results directory.
      * Writes detail file for each HPO term listing patients that fall under that term.
      * @throws IOException    if problem writing to any output file
      */
@@ -194,6 +194,7 @@ class OutputMgr {
     private void writeSubgroupDetail(BufferedWriter bw, int groupNum, PatientGroup subgroup, TermId tid)
             throws IOException {
         String line;
+        Map<TermId, HpoTerm> termMap = phenoC.getTermMap();
 
         try {
             for (Patient p : subgroup.getPatients()) {
@@ -201,7 +202,7 @@ class OutputMgr {
                         "https://www.ncbi.nlm.nih.gov/pubmed/" + p.getPmid(), p.getGene());
                 for (TermId subtype : findSubtypes(p.getHpoTerms(), tid)) {
                     bw.write(String.format("%s\t%s\t%s", line, subtype.getIdWithPrefix(),
-                            phenoC.getTermMap().get(subtype).getName()));
+                            termMap.get(subtype).getName()));
                     bw.newLine();
                 }
             }
