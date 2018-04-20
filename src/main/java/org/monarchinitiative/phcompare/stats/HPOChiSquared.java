@@ -1,8 +1,6 @@
 package org.monarchinitiative.phcompare.stats;
 import com.github.phenomics.ontolib.ontology.data.TermId;
 
-import java.util.zip.DataFormatException;
-
 import static org.apache.commons.math3.stat.inference.TestUtils.chiSquare;
 import static org.apache.commons.math3.stat.inference.TestUtils.chiSquareTest;
 
@@ -63,14 +61,7 @@ public class HPOChiSquared implements Comparable<HPOChiSquared> {
 
     public double getChiSquareP() { return chiSquareP; }
 
-    public double getCorrectedP() throws DataFormatException {
-        if (correctedP < 0)
-        // have not yet computed corrected P value
-        {
-            throw new DataFormatException("Cannot return corrected P value before it has been computed");
-        }
-        return correctedP;
-    }
+    public double getCorrectedP() { return correctedP; }
 
     public TermId getHPOTermId() { return HPOTermId; }
 

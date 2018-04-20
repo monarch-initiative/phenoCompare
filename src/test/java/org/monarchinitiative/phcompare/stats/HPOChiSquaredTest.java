@@ -3,11 +3,7 @@ package org.monarchinitiative.phcompare.stats;
 import com.github.phenomics.ontolib.ontology.data.TermId;
 import com.github.phenomics.ontolib.ontology.data.ImmutableTermId;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import java.util.zip.DataFormatException;
 
 import static org.junit.Assert.*;
 import static org.monarchinitiative.phcompare.Patient.HPOPREFIX;
@@ -28,7 +24,7 @@ public class HPOChiSquaredTest {
     private static double epsilon = .0000000001;
 
     @BeforeClass
-    public static void setup() {
+    public static void before() {
         tid0 = new ImmutableTermId(HPOPREFIX, "0001252");
         tid1 = new ImmutableTermId(HPOPREFIX, "0001804");
         hcs0 = new HPOChiSquared(tid0, o);
@@ -53,21 +49,11 @@ public class HPOChiSquaredTest {
     }
 
     @Test
-    public void testHPOCorrectedP() throws Exception {
+    public void testHPOCorrectedP() {
         double expected = 0.482842169465;
         double cp = hcs1.correctPvalue(2);
         assertEquals(expected * 2, hcs1.getCorrectedP(), epsilon);
         cp = hcs1.correctPvalue(10);
         assertEquals(1.0, hcs1.getCorrectedP(), epsilon);
-    }
-
-    @Rule
-    public final ExpectedException thrown = ExpectedException.none();
-
-    @Test
-    public void testHPOCorrectedTooEarly() throws DataFormatException {
-        thrown.expect(DataFormatException.class);
-        thrown.expectMessage("Cannot return corrected P value before it has been computed");
-        hcs0.getCorrectedP();
     }
 }

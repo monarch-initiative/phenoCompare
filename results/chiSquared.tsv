@@ -1,0 +1,18 @@
+#HPO TermId	Term Name	Group1	Group2	ChiSq	Uncorr p Value	Corr p Value
+HP:0001249	Intellectual disability	   14/89	   29/49	 27.818	  0.00000	  0.00002
+HP:0002265	Large fleshy ears	    1/89	   14/49	 24.575	  0.00000	  0.00013
+HP:0000708	Behavioral abnormality	   11/89	   25/49	 24.497	  0.00000	  0.00013
+HP:0000400	Macrotia	    2/89	   15/49	 23.540	  0.00000	  0.00022
+HP:0000202	Oral cleft	    6/89	   18/49	 19.788	  0.00001	  0.00154
+HP:0001270	Motor delay	   21/89	   30/49	 19.205	  0.00001	  0.00209
+HP:0012379	Abnormal enzyme/coenzyme activity	   31/89	   36/49	 18.887	  0.00001	  0.00247
+HP:0004379	Abnormality of alkaline phosphatase activity	   31/89	   36/49	 18.887	  0.00001	  0.00247
+HP:0100737	Abnormality of the hard palate	    6/89	   17/49	 17.778	  0.00002	  0.00442
+HP:0000175	Cleft palate	    6/89	   17/49	 17.778	  0.00002	  0.00442
+HP:0000366	Abnormality of the nose	   24/89	   30/49	 15.571	  0.00008	  0.01414
+HP:0000431	Wide nasal bridge	   13/89	   22/49	 15.318	  0.00009	  0.01617
+HP:0000717	Autism	    3/89	   12/49	 14.548	  0.00014	  0.02432
+HP:0012759	Neurodevelopmental abnormality	   64/89	   48/49	 14.024	  0.00018	  0.03214
+HP:0000422	Abnormality of the nasal bridge	   18/89	   25/49	 13.972	  0.00019	  0.03303
+HP:0000356	Abnormality of the outer ear	   14/89	   22/49	 13.943	  0.00019	  0.03354
+HP:0000478	Abnormality of the eye	   36/89	   36/49	 13.808	  0.00020	  0.03603

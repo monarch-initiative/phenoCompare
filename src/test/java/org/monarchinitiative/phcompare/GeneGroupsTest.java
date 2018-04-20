@@ -46,6 +46,7 @@ public class GeneGroupsTest {
                 1, ggs.whichGroup("PIGV"));
         assertTrue(earlyg.contains("PIGM"));
         assertFalse(earlyg.contains("PIGV"));
+        assertTrue(midg.contains("PIGV"));
         assertTrue(lateg.contains("PIGG"));
     }
 }

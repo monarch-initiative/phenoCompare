@@ -25,6 +25,7 @@ hs_err_pid*
 phenoCompare.iml
 
 # R project files
-*.Rproj
+.RData
 .Rhistory
+*.Rproj
 .Rproj.user/

@@ -1,0 +1,46 @@
+# HP:0001249 Intellectual disability
+# GroupNum	Id Summary	PubMed	Gene	HPO term	Term name
+1	Edvardson;2017;PIGC;FamilyB-II-1	https://www.ncbi.nlm.nih.gov/pubmed/27694521	PIGC	HP:0001249	Intellectual disability
+1	Thompson;2012;PIGV;Patient 3	https://www.ncbi.nlm.nih.gov/pubmed/22315194	PIGV	HP:0010864	Intellectual disability, severe
+1	Ng;2012;PIGL;682-2-1	https://www.ncbi.nlm.nih.gov/pubmed/22444671	PIGL	HP:0001249	Intellectual disability
+1	Nakamura;2014;PIGO;Individual II-1	https://www.ncbi.nlm.nih.gov/pubmed/24417746	PIGO	HP:0010864	Intellectual disability, severe
+1	Kato;2014;PIGA;5	https://www.ncbi.nlm.nih.gov/pubmed/24706016	PIGA	HP:0002187	Intellectual disability, profound
+1	Kato;2014;PIGA;4	https://www.ncbi.nlm.nih.gov/pubmed/24706016	PIGA	HP:0002342	Intellectual disability, moderate
+1	Edvardson;2017;PIGC;FamilyA-II-4	https://www.ncbi.nlm.nih.gov/pubmed/27694521	PIGC	HP:0010864	Intellectual disability, severe
+1	Ng;2012;PIGL;680-2-3	https://www.ncbi.nlm.nih.gov/pubmed/22444671	PIGL	HP:0001249	Intellectual disability
+1	Kato;2014;PIGA;3	https://www.ncbi.nlm.nih.gov/pubmed/24706016	PIGA	HP:0002187	Intellectual disability, profound
+1	Kato;2014;PIGA;2	https://www.ncbi.nlm.nih.gov/pubmed/24706016	PIGA	HP:0002187	Intellectual disability, profound
+1	Edvardson;2017;PIGC;FamilyA-II-2	https://www.ncbi.nlm.nih.gov/pubmed/27694521	PIGC	HP:0010864	Intellectual disability, severe
+1	Ng;2012;PIGL;680-2-2	https://www.ncbi.nlm.nih.gov/pubmed/22444671	PIGL	HP:0001249	Intellectual disability
+1	Kato;2014;PIGA;1	https://www.ncbi.nlm.nih.gov/pubmed/24706016	PIGA	HP:0002187	Intellectual disability, profound
+1	Johnstone;2017;PIGP;male proband	https://www.ncbi.nlm.nih.gov/pubmed/28334793	PIGP	HP:0002187	Intellectual disability, profound
+2	Murakami;2014;PGAP1;III-2/MR079	https://www.ncbi.nlm.nih.gov/pubmed/24784135	PGAP1	HP:0010864	Intellectual disability, severe
+2	Hansen;2013;PGAP2;V:6/MR5	https://www.ncbi.nlm.nih.gov/pubmed/23561846	PGAP2	HP:0010864	Intellectual disability, severe
+2	Hansen;2013;PGAP2;IV:1/MR043	https://www.ncbi.nlm.nih.gov/pubmed/23561846	PGAP2	HP:0010864	Intellectual disability, severe
+2	Perez;2017;PGAP2;Patient 4-IV-7	https://www.ncbi.nlm.nih.gov/pubmed/29119105	PGAP2	HP:0001256	Intellectual disability, mild
+2	Abdel-Hamid;2017;PGAP3;Patient8/Family7	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0002187	Intellectual disability, profound
+2	Abdel-Hamid;2017;PGAP3;Patient9/Family8	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0002187	Intellectual disability, profound
+2	Pagnamenta;2017;PIGT;270250	https://www.ncbi.nlm.nih.gov/pubmed/28327575	PIGT	HP:0002187	Intellectual disability, profound
+2	Perez;2017;PGAP2;Patient 2-IV-5	https://www.ncbi.nlm.nih.gov/pubmed/29119105	PGAP2	HP:0002342	Intellectual disability, moderate
+2	Lam;2015;PIGT;Patient 2	https://www.ncbi.nlm.nih.gov/pubmed/25943031	PIGT	HP:0002187	Intellectual disability, profound
+2	Perez;2017;PGAP2;Patient 3-IV-6	https://www.ncbi.nlm.nih.gov/pubmed/29119105	PGAP2	HP:0001256	Intellectual disability, mild
+2	Perez;2017;PGAP2;Patient 1-IV-3	https://www.ncbi.nlm.nih.gov/pubmed/29119105	PGAP2	HP:0001256	Intellectual disability, mild
+2	Krawitz;2013;PGAP2;Individual A	https://www.ncbi.nlm.nih.gov/pubmed/23561847	PGAP2	HP:0001249	Intellectual disability
+2	Abdel-Hamid;2017;PGAP3;Patient1/Family1	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0010864	Intellectual disability, severe
+2	Nakashima;2014;PIGT;female proband	https://www.ncbi.nlm.nih.gov/pubmed/24906948	PIGT	HP:0002187	Intellectual disability, profound
+2	Pagnamenta;2017;PIGT;270250	https://www.ncbi.nlm.nih.gov/pubmed/28327575	PIGT	HP:0002187	Intellectual disability, profound
+2	Krawitz;2013;PGAP2;Individual B	https://www.ncbi.nlm.nih.gov/pubmed/23561847	PGAP2	HP:0001249	Intellectual disability
+2	Abdel-Hamid;2017;PGAP3;Patient10/family8	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0001256	Intellectual disability, mild
+2	Abdel-Hamid;2017;PGAP3;Patient10/family8	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0010864	Intellectual disability, severe
+2	Abdel-Hamid;2017;PGAP3;Patient2/Family2	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0002187	Intellectual disability, profound
+2	Abdel-Hamid;2017;PGAP3;Patient3/Family3	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0002187	Intellectual disability, profound
+2	Williams;2015;PGAP1;patient	https://www.ncbi.nlm.nih.gov/pubmed/25823418	PGAP1	HP:0001249	Intellectual disability
+2	Abdel-Hamid;2017;PGAP3;Patient7/Family7	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0002187	Intellectual disability, profound
+2	Abdel-Hamid;2017;PGAP3;Patient6/Family6	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0010864	Intellectual disability, severe
+2	Abdel-Hamid;2017;PGAP3;Patient4/Family4	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0010864	Intellectual disability, severe
+2	Abdel-Hamid;2017;PGAP3;Patient5/Family5	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0002187	Intellectual disability, profound
+2	Kvarnung;2013;PIGT;Patient V-2	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0001249	Intellectual disability
+2	Kvarnung;2013;PIGT;Patient V-1	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0001249	Intellectual disability
+2	Kvarnung;2013;PIGT;Patient V-5	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0001249	Intellectual disability
+2	Naseer;2016;PGAP2;Patient 2	https://www.ncbi.nlm.nih.gov/pubmed/27871432	PGAP2	HP:0001249	Intellectual disability
+2	Kvarnung;2013;PIGT;Patient V-4	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0001249	Intellectual disability

@@ -1,0 +1,30 @@
+# HP:0000202 Oral cleft
+# GroupNum	Id Summary	PubMed	Gene	HPO term	Term name
+1	Brady;2014;PIGN;Patient	https://www.ncbi.nlm.nih.gov/pubmed/24852103	PIGN	HP:0000175	Cleft palate
+1	Horn;2014;PIGV;Patient 7	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0000175	Cleft palate
+1	Horn;2014;PIGV;Patient 1	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0000175	Cleft palate
+1	Ng;2012;PIGL;680-2-3	https://www.ncbi.nlm.nih.gov/pubmed/22444671	PIGL	HP:0000175	Cleft palate
+1	Horn;2014;PIGV;Patient 9	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0000175	Cleft palate
+1	Ng;2012;PIGL;680-2-2	https://www.ncbi.nlm.nih.gov/pubmed/22444671	PIGL	HP:0000175	Cleft palate
+2	Pagnamenta;2017;PGAP3;257982-affectedbrother	https://www.ncbi.nlm.nih.gov/pubmed/28327575	PGAP3	HP:0000175	Cleft palate
+2	Sakaguchi;2018;PGAP3;proband	https://www.ncbi.nlm.nih.gov/pubmed/29531774	PGAP3	HP:0000175	Cleft palate
+2	Abdel-Hamid;2017;PGAP3;Patient9/Family8	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0000175	Cleft palate
+2	Knaus;2016;PGAP3;A-II-1	https://www.ncbi.nlm.nih.gov/pubmed/27120253	PGAP3	HP:0000175	Cleft palate
+2	Knaus;2016;PGAP3;A-II-1	https://www.ncbi.nlm.nih.gov/pubmed/27120253	PGAP3	HP:0410030	Cleft lip
+2	Abdel-Hamid;2017;PGAP3;Patient1/Family1	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0000202	Oral cleft
+2	Abdel-Hamid;2017;PGAP3;Patient1/Family1	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0000204	Cleft upper lip
+2	Krawitz;2013;PGAP2;Individual B	https://www.ncbi.nlm.nih.gov/pubmed/23561847	PGAP2	HP:0000175	Cleft palate
+2	Howard;2014;PGAP3;V-1/Family A	https://www.ncbi.nlm.nih.gov/pubmed/24439110	PGAP3	HP:0000175	Cleft palate
+2	Abdel-Hamid;2017;PGAP3;Patient10/family8	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0000175	Cleft palate
+2	Abdel-Hamid;2017;PGAP3;Patient2/Family2	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0000175	Cleft palate
+2	Abdel-Hamid;2017;PGAP3;Patient2/Family2	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0000202	Oral cleft
+2	Abdel-Hamid;2017;PGAP3;Patient3/Family3	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0008501	Median cleft lip and palate
+2	Nampoothiri;2017;PGAP3;Older Brother	https://www.ncbi.nlm.nih.gov/pubmed/28794914	PGAP3	HP:0000175	Cleft palate
+2	Abdel-Hamid;2017;PGAP3;Patient7/Family7	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0000175	Cleft palate
+2	Abdel-Hamid;2017;PGAP3;Patient6/Family6	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0000175	Cleft palate
+2	Abdel-Hamid;2017;PGAP3;Patient6/Family6	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0008501	Median cleft lip and palate
+2	Abdel-Hamid;2017;PGAP3;Patient4/Family4	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0000175	Cleft palate
+2	Abdel-Hamid;2017;PGAP3;Patient5/Family5	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0000175	Cleft palate
+2	Pagnamenta;2017;PGAP3;257982	https://www.ncbi.nlm.nih.gov/pubmed/28327575	PGAP3	HP:0000175	Cleft palate
+2	Nampoothiri;2017;PGAP3;Younger sister	https://www.ncbi.nlm.nih.gov/pubmed/28794914	PGAP3	HP:0000175	Cleft palate
+2	Howard;2014;PGAP3;V-2/Family A	https://www.ncbi.nlm.nih.gov/pubmed/24439110	PGAP3	HP:0000175	Cleft palate
