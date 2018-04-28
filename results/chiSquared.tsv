@@ -1,18 +1,22 @@
 #HPO TermId	Term Name	Group1	Group2	ChiSq	Uncorr p Value	Corr p Value
-HP:0001249	Intellectual disability	   14/89	   29/49	 27.818	  0.00000	  0.00002
-HP:0002265	Large fleshy ears	    1/89	   14/49	 24.575	  0.00000	  0.00013
-HP:0000708	Behavioral abnormality	   11/89	   25/49	 24.497	  0.00000	  0.00013
-HP:0000400	Macrotia	    2/89	   15/49	 23.540	  0.00000	  0.00022
-HP:0000202	Oral cleft	    6/89	   18/49	 19.788	  0.00001	  0.00154
-HP:0001270	Motor delay	   21/89	   30/49	 19.205	  0.00001	  0.00209
-HP:0012379	Abnormal enzyme/coenzyme activity	   31/89	   36/49	 18.887	  0.00001	  0.00247
-HP:0004379	Abnormality of alkaline phosphatase activity	   31/89	   36/49	 18.887	  0.00001	  0.00247
-HP:0100737	Abnormality of the hard palate	    6/89	   17/49	 17.778	  0.00002	  0.00442
-HP:0000175	Cleft palate	    6/89	   17/49	 17.778	  0.00002	  0.00442
-HP:0000366	Abnormality of the nose	   24/89	   30/49	 15.571	  0.00008	  0.01414
-HP:0000431	Wide nasal bridge	   13/89	   22/49	 15.318	  0.00009	  0.01617
-HP:0000717	Autism	    3/89	   12/49	 14.548	  0.00014	  0.02432
-HP:0012759	Neurodevelopmental abnormality	   64/89	   48/49	 14.024	  0.00018	  0.03214
-HP:0000422	Abnormality of the nasal bridge	   18/89	   25/49	 13.972	  0.00019	  0.03303
-HP:0000356	Abnormality of the outer ear	   14/89	   22/49	 13.943	  0.00019	  0.03354
-HP:0000478	Abnormality of the eye	   36/89	   36/49	 13.808	  0.00020	  0.03603
+HP:0001249	Intellectual disability	   15/93	   39/59	 39.357	  0.00000	  0.00000
+HP:0002360	Sleep disturbance	    0/93	   13/59	 22.408	  0.00000	  0.00047
+HP:0002265	Large fleshy ears	    1/93	   14/59	 20.828	  0.00001	  0.00106
+HP:0011849	Abnormal bone ossification	    2/93	   15/59	 19.684	  0.00001	  0.00193
+HP:0004349	Reduced bone mineral density	    2/93	   15/59	 19.684	  0.00001	  0.00193
+HP:0004348	Abnormality of bone mineral density	    2/93	   15/59	 19.684	  0.00001	  0.00193
+HP:0000400	Macrotia	    2/93	   15/59	 19.684	  0.00001	  0.00193
+HP:0003330	Abnormal bone structure	    3/93	   15/59	 17.038	  0.00004	  0.00773
+HP:0012758	Neurodevelopmental delay	   57/93	   54/59	 16.753	  0.00004	  0.00898
+HP:0000366	Abnormality of the nose	   26/93	   36/59	 16.336	  0.00005	  0.01119
+HP:0012759	Neurodevelopmental abnormality	   68/93	   58/59	 16.150	  0.00006	  0.01235
+HP:0000938	Osteopenia	    2/93	   13/59	 16.045	  0.00006	  0.01305
+HP:0000202	Oral cleft	    6/93	   18/59	 15.712	  0.00007	  0.01556
+HP:0011297	Abnormality of digit	   31/93	    4/59	 14.361	  0.00015	  0.03185
+HP:0000708	Behavioral abnormality	   14/93	   25/59	 14.124	  0.00017	  0.03610
+HP:0100737	Abnormality of the hard palate	    6/93	   17/59	 14.057	  0.00018	  0.03743
+HP:0000175	Cleft palate	    6/93	   17/59	 14.057	  0.00018	  0.03743
+HP:0100261	Abnormal tendon morphology	   19/93	    0/59	 13.776	  0.00021	  0.04346
+HP:0011805	Abnormality of muscle morphology	   25/93	    2/59	 13.638	  0.00022	  0.04678
+HP:0011927	Short digit	   22/93	    1/59	 13.557	  0.00023	  0.04883
+HP:0001367	Abnormal joint morphology	   22/93	    1/59	 13.557	  0.00023	  0.04883

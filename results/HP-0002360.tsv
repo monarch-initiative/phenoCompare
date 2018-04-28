@@ -1,0 +1,16 @@
+# HP:0002360 Sleep disturbance
+# GroupNum	Id Summary	PubMed	Gene	HPO term	Term name
+2	Sakaguchi;2018;PGAP3;proband	https://www.ncbi.nlm.nih.gov/pubmed/29531774	PGAP3	HP:0002360	Sleep disturbance
+2	Sakaguchi;2018;PGAP3;proband	https://www.ncbi.nlm.nih.gov/pubmed/29531774	PGAP3	HP:0003763	Bruxism
+2	Hansen;2013;PGAP2;V:6/MR5	https://www.ncbi.nlm.nih.gov/pubmed/23561846	PGAP2	HP:0002360	Sleep disturbance
+2	Hansen;2013;PGAP2;IV:1/MR043	https://www.ncbi.nlm.nih.gov/pubmed/23561846	PGAP2	HP:0002360	Sleep disturbance
+2	Abdel-Hamid;2017;PGAP3;Patient8/Family7	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0003763	Bruxism
+2	Abdel-Hamid;2017;PGAP3;Patient9/Family8	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0003763	Bruxism
+2	Howard;2014;PGAP3;V-3/Family A	https://www.ncbi.nlm.nih.gov/pubmed/24439110	PGAP3	HP:0003763	Bruxism
+2	Lam;2015;PIGT;Patient 2	https://www.ncbi.nlm.nih.gov/pubmed/25943031	PIGT	HP:0002870	Obstructive sleep apnea
+2	Knaus;2016;PGAP3;A-II-1	https://www.ncbi.nlm.nih.gov/pubmed/27120253	PGAP3	HP:0002360	Sleep disturbance
+2	Howard;2014;PGAP3;V-1/Family A	https://www.ncbi.nlm.nih.gov/pubmed/24439110	PGAP3	HP:0003763	Bruxism
+2	Abdel-Hamid;2017;PGAP3;Patient2/Family2	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0003763	Bruxism
+2	Abdel-Hamid;2017;PGAP3;Patient7/Family7	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0003763	Bruxism
+2	Knaus;2016;PGAP3;B-II-2	https://www.ncbi.nlm.nih.gov/pubmed/27120253	PGAP3	HP:0002360	Sleep disturbance
+2	Howard;2014;PGAP3;V-2/Family A	https://www.ncbi.nlm.nih.gov/pubmed/24439110	PGAP3	HP:0003763	Bruxism

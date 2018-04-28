@@ -2,10 +2,14 @@
 # GroupNum	Id Summary	PubMed	Gene	HPO term	Term name
 1	Makrythanasis;2016;PIGG;JP01	https://www.ncbi.nlm.nih.gov/pubmed/26996948	PIGG	HP:0000717	Autism
 1	Makrythanasis;2016;PIGG;PK01	https://www.ncbi.nlm.nih.gov/pubmed/26996948	PIGG	HP:0000729	Autistic behavior
+1	Nguyen;2018;PIGH;Proband	https://www.ncbi.nlm.nih.gov/pubmed/29603516	PIGH	HP:0000717	Autism
+1	Nguyen;2018;PIGH;Proband	https://www.ncbi.nlm.nih.gov/pubmed/29603516	PIGH	HP:0010529	Echolalia
 1	Makrythanasis;2016;PIGG;PK02	https://www.ncbi.nlm.nih.gov/pubmed/26996948	PIGG	HP:0000729	Autistic behavior
+1	Xie;2018;PIGA;Older twin	https://www.ncbi.nlm.nih.gov/pubmed/29502866	PIGA	HP:0000817	Poor eye contact
 1	Makrythanasis;2016;PIGG;EG01	https://www.ncbi.nlm.nih.gov/pubmed/26996948	PIGG	HP:0000729	Autistic behavior
 1	Johnstone;2017;PIGP;female proband	https://www.ncbi.nlm.nih.gov/pubmed/28334793	PIGP	HP:0000817	Poor eye contact
 1	Makrythanasis;2016;PIGG;EG02	https://www.ncbi.nlm.nih.gov/pubmed/26996948	PIGG	HP:0000729	Autistic behavior
+1	Xie;2018;PIGA;younger twin	https://www.ncbi.nlm.nih.gov/pubmed/29502866	PIGA	HP:0000817	Poor eye contact
 1	Zehavi;2017;PIGO;Patient 1	https://www.ncbi.nlm.nih.gov/pubmed/28900819	PIGO	HP:0000711	Restlessness
 1	Zehavi;2017;PIGO;Patient 1	https://www.ncbi.nlm.nih.gov/pubmed/28900819	PIGO	HP:0000758	Impaired use of nonverbal behaviors
 1	Zehavi;2017;PIGO;Patient 1	https://www.ncbi.nlm.nih.gov/pubmed/28900819	PIGO	HP:0000817	Poor eye contact

@@ -45,12 +45,13 @@ cp <- function(dissdist, plotdir, coloring.fn, subtitle) {
   dend <- as.dendrogram(ahclus)
   dend <- color_branches(dend, k = 8, col = eight.colors)
   labels_colors(dend) <- genes.color(labels(dend), coloring.fn)
+  labels_cex(dend) <- rep(0.75, length(labels(dend)))
   
   pdf(paste(plotdir, "agnes8.pdf", sep = "/"), width = 18, height = 8)
   plot(dend, main = "Hierarchical clustering, average method, 8 clusters",
        sub = subtitle)
   dev.off()
-  
+
   # pam (partitioning around medoids clustering, related to k-means but you can start with a dissimilarity matrix
   # instead of the dataset from which the dissimilarity values are derived
   for (i in 2:5) {

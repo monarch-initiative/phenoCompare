@@ -1,0 +1,37 @@
+# HP:0001367 Abnormal joint morphology
+# GroupNum	Id Summary	PubMed	Gene	HPO term	Term name
+1	Brady;2014;PIGN;Patient	https://www.ncbi.nlm.nih.gov/pubmed/24852103	PIGN	HP:0001060	Axillary pterygia
+1	Horn;2014;PIGV;Patient 1	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0003037	Enlarged joints
+1	Horn;2014;PIGV;Patient 1	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0005781	Contractures of the large joints
+1	Barone;2012;DPM2;Patient 3	https://www.ncbi.nlm.nih.gov/pubmed/23109149	DPM2	HP:0002803	Congenital contracture
+1	Barone;2012;DPM2;Patient 2	https://www.ncbi.nlm.nih.gov/pubmed/23109149	DPM2	HP:0002803	Congenital contracture
+1	Swoboda;2014;PIGA;III-10	https://www.ncbi.nlm.nih.gov/pubmed/24259288	PIGA	HP:0001371	Flexion contracture
+1	Barone;2012;DPM2;Patient 1	https://www.ncbi.nlm.nih.gov/pubmed/23109149	DPM2	HP:0002987	Elbow flexion contracture
+1	Barone;2012;DPM2;Patient 1	https://www.ncbi.nlm.nih.gov/pubmed/23109149	DPM2	HP:0006380	Knee flexion contracture
+1	Barone;2012;DPM2;Patient 1	https://www.ncbi.nlm.nih.gov/pubmed/23109149	DPM2	HP:0100360	Contractures of the joints of the upper limbs
+1	Makrythanasis;2016;PIGG;EG01	https://www.ncbi.nlm.nih.gov/pubmed/26996948	PIGG	HP:0001382	Joint hypermobility
+1	Makrythanasis;2016;PIGG;EG02	https://www.ncbi.nlm.nih.gov/pubmed/26996948	PIGG	HP:0001382	Joint hypermobility
+1	Ilkovski;2015;PIGY;Family A-II-2	https://www.ncbi.nlm.nih.gov/pubmed/26293662	PIGY	HP:0003273	Hip contracture
+1	Tarailo-Graovac;2015;PIGA;II:2	https://www.ncbi.nlm.nih.gov/pubmed/25885527	PIGA	HP:0001371	Flexion contracture
+1	Tarailo-Graovac;2015;PIGA;II:2	https://www.ncbi.nlm.nih.gov/pubmed/25885527	PIGA	HP:0012385	Camptodactyly
+1	Martin;2014;PIGQ;Patient 	https://www.ncbi.nlm.nih.gov/pubmed/24463883	PIGQ	HP:0001371	Flexion contracture
+1	Kato;2014;PIGA;IV-2	https://www.ncbi.nlm.nih.gov/pubmed/24706016	PIGA	HP:0001371	Flexion contracture
+1	Yang;2013;DPM1;patient	https://www.ncbi.nlm.nih.gov/pubmed/23856421	DPM1	HP:0009276	Contracture of the proximal interphalangeal joint of the 4th finger
+1	Yang;2013;DPM1;patient	https://www.ncbi.nlm.nih.gov/pubmed/23856421	DPM1	HP:0012385	Camptodactyly
+1	Kato;2014;PIGA;IV-4	https://www.ncbi.nlm.nih.gov/pubmed/24706016	PIGA	HP:0001367	Abnormal joint morphology
+1	Kato;2014;PIGA;IV-4	https://www.ncbi.nlm.nih.gov/pubmed/24706016	PIGA	HP:0001371	Flexion contracture
+1	Ilkovski;2015;PIGY;Family A-II-1	https://www.ncbi.nlm.nih.gov/pubmed/26293662	PIGY	HP:0002987	Elbow flexion contracture
+1	Ilkovski;2015;PIGY;Family A-II-1	https://www.ncbi.nlm.nih.gov/pubmed/26293662	PIGY	HP:0006380	Knee flexion contracture
+1	Kato;2014;PIGA;4	https://www.ncbi.nlm.nih.gov/pubmed/24706016	PIGA	HP:0001367	Abnormal joint morphology
+1	Kato;2014;PIGA;4	https://www.ncbi.nlm.nih.gov/pubmed/24706016	PIGA	HP:0001371	Flexion contracture
+1	Johnston;2012;PIGA;IV-4	https://www.ncbi.nlm.nih.gov/pubmed/22305531	PIGA	HP:0001371	Flexion contracture
+1	Swoboda;2014;PIGA;IV-3	https://www.ncbi.nlm.nih.gov/pubmed/24259288	PIGA	HP:0003121	Limb joint contracture
+1	Kato;2014;PIGA;2	https://www.ncbi.nlm.nih.gov/pubmed/24706016	PIGA	HP:0001367	Abnormal joint morphology
+1	Johnston;2012;PIGA;IV-2	https://www.ncbi.nlm.nih.gov/pubmed/22305531	PIGA	HP:0002987	Elbow flexion contracture
+1	Johnston;2012;PIGA;IV-2	https://www.ncbi.nlm.nih.gov/pubmed/22305531	PIGA	HP:0003273	Hip contracture
+1	Johnston;2012;PIGA;IV-2	https://www.ncbi.nlm.nih.gov/pubmed/22305531	PIGA	HP:0006380	Knee flexion contracture
+1	Kato;2014;PIGA;1	https://www.ncbi.nlm.nih.gov/pubmed/24706016	PIGA	HP:0001371	Flexion contracture
+1	Kato;2014;PIGA;1	https://www.ncbi.nlm.nih.gov/pubmed/24706016	PIGA	HP:0005692	Joint hyperflexibility
+1	Johnstone;2017;PIGP;male proband	https://www.ncbi.nlm.nih.gov/pubmed/28334793	PIGP	HP:0003037	Enlarged joints
+1	Johnstone;2017;PIGP;male proband	https://www.ncbi.nlm.nih.gov/pubmed/28334793	PIGP	HP:0006380	Knee flexion contracture
+2	Lam;2015;PIGT;Patient 2	https://www.ncbi.nlm.nih.gov/pubmed/25943031	PIGT	HP:0001382	Joint hypermobility
