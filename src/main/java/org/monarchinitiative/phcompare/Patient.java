@@ -150,18 +150,23 @@ public class Patient {
         for (String hpostring : hpoTermIds) {
             int i = hpostring.indexOf(":");
             if (i < 0) {
-                logger.error("ERROR -- Could not parse " + hpostring+" because we did not find a :");
+                logger.error("ERROR -- Could not parse " + hpostring + " because we did not find a :");
                 return;
             } else {
-                hpostring = hpostring.substring(i+1);
+                hpostring = hpostring.substring(i + 1);
             }
-            TermId id = new ImmutableTermId(HPOPREFIX,hpostring);
-            hpoTerms.add(id);
+            TermId id = new ImmutableTermId(HPOPREFIX, hpostring);
+            if (hpoTerms.contains(id)) {
+                logger.info("[Patient.parseHPOterms] Duplicate HPO term " + hpostring +
+                        " for patient " + pid);
+            } else {
+                hpoTerms.add(id);
+            }
         }
     }
 
     /**
-     * Lists the patient id, gene, and HPO term IDs of this Patient.
+     * Lists the patient id, gene, PubMed ID, id-summary, and HPO term IDs of this Patient.
      * @return     String containing textual representation of Patient object.
      */
     @Override
@@ -178,7 +183,7 @@ public class Patient {
         sb.append(System.lineSeparator());
         for (TermId t : getHpoTerms()) {
             sb.append("\t");
-            sb.append(t.toString());
+            sb.append(t.getIdWithPrefix());
             sb.append(System.lineSeparator());
         }
         return sb.toString();

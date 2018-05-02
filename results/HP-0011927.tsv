@@ -1,0 +1,30 @@
+# HP:0011927 Short digit
+# GroupNum	Id Summary	PubMed	Gene	HPO term	Term name
+1	Brady;2014;PIGN;Patient	https://www.ncbi.nlm.nih.gov/pubmed/24852103	PIGN	HP:0001831	Short toe
+1	Pagnamenta;2017;PIGL;277013	https://www.ncbi.nlm.nih.gov/pubmed/28327575	PIGL	HP:0009381	Short finger
+1	Horn;2014;PIGV;Patient 4	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0009381	Short finger
+1	Horn;2014;PIGV;Patient 5	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0001831	Short toe
+1	Horn;2014;PIGV;Patient 5	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0009381	Short finger
+1	Horn;2014;PIGV;Patient 5	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0009882	Short distal phalanx of finger
+1	Horn;2014;PIGV;Patient 2	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0009882	Short distal phalanx of finger
+1	Maydan;2011;PIGN;V-1	https://www.ncbi.nlm.nih.gov/pubmed/21493957	PIGN	HP:0001156	Brachydactyly
+1	Horn;2014;PIGV;Patient 3	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0006118	Shortening of all distal phalanges of the fingers
+1	Krawitz;2012;PIGO;II-1/family A	https://www.ncbi.nlm.nih.gov/pubmed/22683086	PIGO	HP:0006118	Shortening of all distal phalanges of the fingers
+1	Thompson;2012;PIGV;Patient 1	https://www.ncbi.nlm.nih.gov/pubmed/22315194	PIGV	HP:0006118	Shortening of all distal phalanges of the fingers
+1	Fujiwara;2015;PIGL;girl	https://www.ncbi.nlm.nih.gov/pubmed/25706356	PIGL	HP:0011927	Short digit
+1	Thompson;2012;PIGV;Patient 3	https://www.ncbi.nlm.nih.gov/pubmed/22315194	PIGV	HP:0006118	Shortening of all distal phalanges of the fingers
+1	Ceroni;1590;PIGL;Patient 10	https://www.ncbi.nlm.nih.gov/pubmed/29473937	PIGL	HP:0001156	Brachydactyly
+1	Ilkovski;2015;PIGY;Family A-II-2	https://www.ncbi.nlm.nih.gov/pubmed/26293662	PIGY	HP:0011927	Short digit
+1	Ng;2012;PIGL;33300	https://www.ncbi.nlm.nih.gov/pubmed/22444671	PIGL	HP:0001156	Brachydactyly
+1	Krawitz;2012;PIGO;II-1/family A	https://www.ncbi.nlm.nih.gov/pubmed/22683086	PIGO	HP:0006118	Shortening of all distal phalanges of the fingers
+1	Pagnamenta;2017;PIGO;263039	https://www.ncbi.nlm.nih.gov/pubmed/28327575	PIGO	HP:0001156	Brachydactyly
+1	Krawitz;2012;PIGO;II-1/family B	https://www.ncbi.nlm.nih.gov/pubmed/22683086	PIGO	HP:0006118	Shortening of all distal phalanges of the fingers
+1	Ilkovski;2015;PIGY;Family A-II-1	https://www.ncbi.nlm.nih.gov/pubmed/26293662	PIGY	HP:0006118	Shortening of all distal phalanges of the fingers
+1	Ilkovski;2015;PIGY;Family A-II-1	https://www.ncbi.nlm.nih.gov/pubmed/26293662	PIGY	HP:0011927	Short digit
+1	Ng;2012;PIGL;3988	https://www.ncbi.nlm.nih.gov/pubmed/22444671	PIGL	HP:0011927	Short digit
+1	Kuki;2013;PIGO;boy	https://www.ncbi.nlm.nih.gov/pubmed/24049131	PIGO	HP:0009381	Short finger
+1	Kuki;2013;PIGO;boy	https://www.ncbi.nlm.nih.gov/pubmed/24049131	PIGO	HP:0009882	Short distal phalanx of finger
+1	Horn;2014;PIGV;Patient 8	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0006118	Shortening of all distal phalanges of the fingers
+1	Horn;2014;PIGV;Patient 8	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0009381	Short finger
+1	Johnston;2012;PIGA;IV-2	https://www.ncbi.nlm.nih.gov/pubmed/22305531	PIGA	HP:0009381	Short finger
+2	Sakaguchi;2018;PGAP3;proband	https://www.ncbi.nlm.nih.gov/pubmed/29531774	PGAP3	HP:0006118	Shortening of all distal phalanges of the fingers

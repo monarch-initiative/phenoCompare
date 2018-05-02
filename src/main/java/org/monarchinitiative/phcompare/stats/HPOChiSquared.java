@@ -12,8 +12,8 @@ import static org.apache.commons.math3.stat.inference.TestUtils.chiSquareTest;
 public class HPOChiSquared implements Comparable<HPOChiSquared> {
     private double chiSquare;    // chi-squared statistic
     private double chiSquareP;   // p-value associated with the chi-squared statistic for this HPO term
+    private double correctedP = -1.0;   // p-value after Bonferroni correction for multiple comparisons
     private TermId HPOTermId;    // HPO term for which this is the chi-squared statistic
-//    private long observed[][];   // observed counts for patients who have, do not have this HPO term
 
     public HPOChiSquared(TermId hpoTerm, long[][] observed) {
         chiSquare = chiSquare(observed);
@@ -36,6 +36,17 @@ public class HPOChiSquared implements Comparable<HPOChiSquared> {
         return cmp != 0 ? cmp : HPOTermId.getId().compareTo(hcs.HPOTermId.getId());
     }
 
+    public double correctPvalue(int numComparisons) {
+        correctedP = Math.min(chiSquareP * numComparisons, 1.0);
+        return correctedP;
+    }
+
+    /**
+     * Two HPOChiSquared objects are considered equal if they have the same chiSquare value and
+     * the same HPO term id.
+     * @param o    object to which this HPOChiSquared is compared
+     * @return     true if this HPOChiSquared and the object o are equal, false otherwise
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -49,6 +60,8 @@ public class HPOChiSquared implements Comparable<HPOChiSquared> {
     public double getChiSquare() { return chiSquare; }
 
     public double getChiSquareP() { return chiSquareP; }
+
+    public double getCorrectedP() { return correctedP; }
 
     public TermId getHPOTermId() { return HPOTermId; }
 

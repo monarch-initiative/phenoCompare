@@ -24,7 +24,7 @@ public class HPOChiSquaredTest {
     private static double epsilon = .0000000001;
 
     @BeforeClass
-    public static void setup() throws Exception {
+    public static void before() {
         tid0 = new ImmutableTermId(HPOPREFIX, "0001252");
         tid1 = new ImmutableTermId(HPOPREFIX, "0001804");
         hcs0 = new HPOChiSquared(tid0, o);
@@ -44,7 +44,16 @@ public class HPOChiSquaredTest {
     }
 
     @Test
-    public void testCompareTo() throws Exception {
+    public void testCompareTo() {
         assertTrue(hcs0.compareTo(hcs1) < 0);
+    }
+
+    @Test
+    public void testHPOCorrectedP() {
+        double expected = 0.482842169465;
+        double cp = hcs1.correctPvalue(2);
+        assertEquals(expected * 2, hcs1.getCorrectedP(), epsilon);
+        cp = hcs1.correctPvalue(10);
+        assertEquals(1.0, hcs1.getCorrectedP(), epsilon);
     }
 }
