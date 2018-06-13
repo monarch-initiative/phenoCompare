@@ -15,7 +15,7 @@ comparisons to achieve &alpha; &le; 0.05. This analysis covers not only those te
 case records, but also their supertypes referenced implicitly through the structure of the ontology.
 
 phenoCompare has four command line arguments:<p>
--o&Tab;directory containing _hp.obo_ file<p>
--g&Tab;_txt_ file containing lists of early, late GPI pathway genes<p>
--p&Tab;_tsv_ file of patient records<p>
--r&Tab;directory for result files<p>
+-o&nbsp;&nbsp;&nbsp;directory containing _hp.obo_ file<br>
+-g&nbsp;&nbsp;&nbsp;_txt_ file containing lists of early, late GPI pathway genes<br>
+-p&nbsp;&nbsp;&nbsp;_tsv_ file of patient records<br>
+-r&nbsp;&nbsp;&nbsp;directory for result files<p>
