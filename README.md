@@ -11,7 +11,7 @@ of T in the ontology). We calculate the chi-squared statistic to identify HPO te
 significantly different between the early and late groups of patients. To be considered for hypothesis
 testing, the HPO term must reach an expected value of at least 5 in each cell of its contingency table
 (early/late patient group vs. has/does not have HPO term). We apply a Bonferroni correction for multiple
-comparisons to achieve 𝛂 ≤ 0.05. This analysis covers not only those terms explicitly referenced in
+comparisons to achieve 𝛂 ≤ &alpha; &le; 0.05. This analysis covers not only those terms explicitly referenced in
 case records, but also their supertypes referenced implicitly through the structure of the ontology.
 
 phenoCompare has four command line arguments:
