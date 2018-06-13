@@ -11,11 +11,11 @@ of T in the ontology). We calculate the chi-squared statistic to identify HPO te
 significantly different between the early and late groups of patients. To be considered for hypothesis
 testing, the HPO term must reach an expected value of at least 5 in each cell of its contingency table
 (early/late patient group vs. has/does not have HPO term). We apply a Bonferroni correction for multiple
-comparisons to achieve 𝛂 ≤ &alpha; &le; 0.05. This analysis covers not only those terms explicitly referenced in
+comparisons to achieve &alpha; &le; 0.05. This analysis covers not only those terms explicitly referenced in
 case records, but also their supertypes referenced implicitly through the structure of the ontology.
 
-phenoCompare has four command line arguments:
-* -o    directory containing _hp.obo_ file
-* -g    txt file containing lists of early, late GPI pathway genes
-* -p    tsv file of patient records
-* -r    directory for result files
+phenoCompare has four command line arguments:<p>
+-o&Tab;directory containing _hp.obo_ file<p>
+-g&Tab;_txt_ file containing lists of early, late GPI pathway genes<p>
+-p&Tab;_tsv_ file of patient records<p>
+-r&Tab;directory for result files<p>
