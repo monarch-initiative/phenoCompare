@@ -29,3 +29,7 @@ phenoCompare.iml
 .Rhistory
 *.Rproj
 .Rproj.user/
+
+gsppc/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt
+gsppc/human_protein_coding_genes.tsv
+.Rproj.user

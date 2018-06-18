@@ -1,0 +1,66 @@
+---
+title: "Gene Set Phenotypic Profile Comparison"
+author: "Hannah Blau"
+date: "6/4/2018"
+output: html_notebook
+params:
+  to.compare: "ENTREZ_gene_sets.tsv"
+  gene.info: "human_protein_coding_genes.tsv"
+  pheno.to.gene: "ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt"
+  num.iter: 100000
+---
+This notebook compares two disjoint sets of genes to see whether their phenotypic profiles are more similar than one would expect by chance.
+
+#### Inputs
+* file containing list of gene ids for each gene set (one gene set per line, tab-separated). The gene sets may be of different sizes.
+* file containing gene id and gene name for all human protein coding genes, extracted from [ftp.ncbi.nih.gov/gene/DATA/gene_info.gz](http://ftp.ncbi.nih.gov/gene/DATA/gene_info.gz)
+* file mapping HPO phenotype id/name to gene id/name: [ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt](http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/lastSuccessfulBuild/artifact/annotation/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt)
+* number of iterations in loop to estimate p-value through simulation ($n$)
+
+#### Algorithm
+1. For each set of genes ($G_{0}$, $G_{1}$), create a set containing all phenotypes related to those genes ($P_{0}$, $P_{1}$).
+2. Compute Jaccard similarity of $P_{0}$ and $P_{1}$.
+
+To estimate the p value by simulation, hold $G_{0}$ fixed and choose the second gene set at random from all human protein-coding genes.
+
+3. Iterate $n$ times:
++ Select from all human protein-coding genes a set $G_{2}$ that is disjoint from $G_{0}$ and equal in size to $G_{1}$.
++ Create the corresponding set of phenotypes $P_{2}$ and compute the Jaccard similarity of $P_{0}$ and $P_{2}$. Note that $P_{2}$ might be empty.
++ Maintain running count $m$ of how many times the similarity of $P_{0}$ and $P_{2}$ is $\geq$ similarity of $P_{0}$ and $P_{1}$.
+
+4. Calculate p value: $m$ / $n$
+
+#### Load library
+
+```{r}
+library(tidyverse)
+```
+
+#### Read input files
+
+```{r}
+human.genes <- read.table(params$gene.info, header = TRUE, colClasses = c("integer", "character"))
+genes.file <- file(params$to.compare, "r")
+lines.read <- readLines(genes.file)
+lines.read
+```
+#### Create gene sets
+Two gene sets, one for GPI pathway genes and the other for genes that code the GPI achored proteins. Each is a set of ENTREZ gene ids, read as integers. Have to parse the strings read from params$to.compare to create sets of integers.
+
+
+#### Close input files
+
+```{r}
+close(genes.file)
+```
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
