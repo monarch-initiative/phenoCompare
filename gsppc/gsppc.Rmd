@@ -11,48 +11,73 @@ params:
 ---
 This notebook compares two disjoint sets of genes to see whether their phenotypic profiles are more similar than one would expect by chance.
 
-#### Inputs
-* file containing list of gene ids for each gene set (one gene set per line, tab-separated). The gene sets may be of different sizes.
-* file containing gene id and gene name for all human protein coding genes, extracted from [ftp.ncbi.nih.gov/gene/DATA/gene_info.gz](http://ftp.ncbi.nih.gov/gene/DATA/gene_info.gz)
+### Inputs
+* file containing list of ENTREZ gene ids for each gene set (ids are tab-separated, blank line marks the end of the first set). The gene sets may be of different sizes.
+* file containing gene id and gene name for all human protein coding genes, extracted from [ftp.ncbi.nih.gov/gene/DATA/gene_info.gz](http://ftp.ncbi.nih.gov/gene/DATA/gene_info.gz) with
+```{bash, eval = FALSE}
+zgrep ^9606 gene_info.gz  | grep protein-coding | cut -f2,3 > human_protein_coding_genes.tsv
+```
 * file mapping HPO phenotype id/name to gene id/name: [ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt](http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/lastSuccessfulBuild/artifact/annotation/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt)
 * number of iterations in loop to estimate p-value through simulation ($n$)
 
-#### Algorithm
-1. For each set of genes ($G_{0}$, $G_{1}$), create a set containing all phenotypes related to those genes ($P_{0}$, $P_{1}$).
-2. Compute Jaccard similarity of $P_{0}$ and $P_{1}$.
+### Algorithm
+1. For each set of genes ($G_{1}$, $G_{2}$), create a set containing all phenotypes related to those genes ($P_{1}$, $P_{2}$).
+2. Compute Jaccard similarity of $P_{1}$ and $P_{2}$.
 
-To estimate the p value by simulation, hold $G_{0}$ fixed and choose the second gene set at random from all human protein-coding genes.
+To estimate the p value by simulation, hold $G_{1}$ fixed and choose the second gene set at random from all human protein-coding genes.
 
 3. Iterate $n$ times:
-+ Select from all human protein-coding genes a set $G_{2}$ that is disjoint from $G_{0}$ and equal in size to $G_{1}$.
-+ Create the corresponding set of phenotypes $P_{2}$ and compute the Jaccard similarity of $P_{0}$ and $P_{2}$. Note that $P_{2}$ might be empty.
-+ Maintain running count $m$ of how many times the similarity of $P_{0}$ and $P_{2}$ is $\geq$ similarity of $P_{0}$ and $P_{1}$.
++ Select from all human protein-coding genes a set $G_{3}$ that is disjoint from $G_{1}$ and equal in size to $G_{2}$.
++ Create the corresponding set of phenotypes $P_{3}$ and compute the Jaccard similarity of $P_{1}$ and $P_{3}$. Note that $P_{3}$ might be empty.
++ Maintain running count $m$ of how many times the similarity of $P_{1}$ and $P_{3}$ is $\geq$ similarity of $P_{1}$ and $P_{2}$.
 
 4. Calculate p value: $m$ / $n$
 
-#### Load library
-
+### Load libraries
+Meyer D and Hornik K (2009). “Generalized and Customizable Sets in R.” _Journal of Statistical Software_, 31(2), pp. 1–27. doi: 10.18637/jss.v031.i02.
 ```{r}
-library(tidyverse)
+library(sets, quietly = TRUE)
 ```
 
-#### Read input files
+### Read input files
 
 ```{r}
-human.genes <- read.table(params$gene.info, header = TRUE, colClasses = c("integer", "character"))
+human.genes <- read.table(params$gene.info, sep = "\t", skip = 1,
+                          col.names = c("GeneID", "Symbol"), colClasses = c("integer", "character"))
+pheno.2.gene <- read.table(params$pheno.to.gene, sep = "\t", skip = 1,
+                           col.names = c("HPO.ID", "HPO.Name", "Gene.ID", "Gene.Name"),
+                           colClasses = c("character", "character", "integer", "character"))
 genes.file <- file(params$to.compare, "r")
 lines.read <- readLines(genes.file)
+close(genes.file)
 lines.read
 ```
-#### Create gene sets
-Two gene sets, one for GPI pathway genes and the other for genes that code the GPI achored proteins. Each is a set of ENTREZ gene ids, read as integers. Have to parse the strings read from params$to.compare to create sets of integers.
+The blank line indicates the end of the first set and the beginning of the second set.
 
-
-#### Close input files
-
+### Create gene sets
+Create two gene sets, one for GPI pathway genes and the other for genes that code the GPI achored proteins. Each is a set of ENTREZ gene ids, treated as integers. Parse the strings read from __params$to.compare__ to create sets of integers.
 ```{r}
-close(genes.file)
+collector <- c()
+gene.sets <- list()
+for (i in 2:length(lines.read)) {
+  if (lines.read[i] == c("")) {
+    gene.sets[[1]] <- as.set(unlist(lapply(collector, as.integer)))
+    collector <- c()
+  }
+  else {
+    collector <- c(collector, unlist(strsplit(lines.read[i], "\t")))
+  }
+}
+gene.sets[[2]] <- as.set(unlist(lapply(collector, as.integer)))
 ```
+### Create phenotype sets
+For each set of genes, create the corresponding set of phenotypes that includes every phenotype reported for each gene.
+
+First define function that takes gene id as parameter and returns set of phenotypes associated with that gene.
+find.phenotypes <- function(gene.id) {
+phenotypes <- c()
+
+}
 
 This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
 

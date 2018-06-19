@@ -177,52 +177,72 @@ $(document).ready(function () {
 
 <!-- rnb-text-begin -->
 <p>This notebook compares two disjoint sets of genes to see whether their phenotypic profiles are more similar than one would expect by chance.</p>
-<div id="inputs" class="section level4">
-<h4>Inputs</h4>
+<div id="inputs" class="section level3">
+<h3>Inputs</h3>
 <ul>
-<li>file containing list of gene ids for each gene set (one gene set per line, tab-separated). The gene sets may be of different sizes.</li>
-<li>file containing gene id and gene name for all human protein coding genes, extracted from <a href="http://ftp.ncbi.nih.gov/gene/DATA/gene_info.gz">ftp.ncbi.nih.gov/gene/DATA/gene_info.gz</a></li>
+<li>file containing list of ENTREZ gene ids for each gene set (ids are tab-separated, blank line marks the end of the first set). The gene sets may be of different sizes.</li>
+<li>file containing gene id and gene name for all human protein coding genes, extracted from <a href="http://ftp.ncbi.nih.gov/gene/DATA/gene_info.gz">ftp.ncbi.nih.gov/gene/DATA/gene_info.gz</a> with</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiemdyZXAgXjk2MDYgZ2VuZV9pbmZvLmd6ICB8IGdyZXAgcHJvdGVpbi1jb2RpbmcgfCBjdXQgLWYyLDMgPiBodW1hbl9wcm90ZWluX2NvZGluZ19nZW5lcy50c3YifQ== -->
+<pre class="r"><code>zgrep ^9606 gene_info.gz  | grep protein-coding | cut -f2,3 &gt; human_protein_coding_genes.tsv</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<ul>
 <li>file mapping HPO phenotype id/name to gene id/name: <a href="http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/lastSuccessfulBuild/artifact/annotation/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt">ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt</a></li>
 <li>number of iterations in loop to estimate p-value through simulation (<span class="math inline">\(n\)</span>)</li>
 </ul>
 </div>
-<div id="algorithm" class="section level4">
-<h4>Algorithm</h4>
+<div id="algorithm" class="section level3">
+<h3>Algorithm</h3>
 <ol style="list-style-type: decimal">
-<li>For each set of genes (<span class="math inline">\(G_{0}\)</span>, <span class="math inline">\(G_{1}\)</span>), create a set containing all phenotypes related to those genes (<span class="math inline">\(P_{0}\)</span>, <span class="math inline">\(P_{1}\)</span>).</li>
-<li>Compute Jaccard similarity of <span class="math inline">\(P_{0}\)</span> and <span class="math inline">\(P_{1}\)</span>.</li>
+<li>For each set of genes (<span class="math inline">\(G_{1}\)</span>, <span class="math inline">\(G_{2}\)</span>), create a set containing all phenotypes related to those genes (<span class="math inline">\(P_{1}\)</span>, <span class="math inline">\(P_{2}\)</span>).</li>
+<li>Compute Jaccard similarity of <span class="math inline">\(P_{1}\)</span> and <span class="math inline">\(P_{2}\)</span>.</li>
 </ol>
-<p>To estimate the p value by simulation, hold <span class="math inline">\(G_{0}\)</span> fixed and choose the second gene set at random from all human protein-coding genes.</p>
+<p>To estimate the p value by simulation, hold <span class="math inline">\(G_{1}\)</span> fixed and choose the second gene set at random from all human protein-coding genes.</p>
 <ol start="3" style="list-style-type: decimal">
 <li>Iterate <span class="math inline">\(n\)</span> times:</li>
 </ol>
 <ul>
-<li>Select from all human protein-coding genes a set <span class="math inline">\(G_{2}\)</span> that is disjoint from <span class="math inline">\(G_{0}\)</span> and equal in size to <span class="math inline">\(G_{1}\)</span>.</li>
-<li>Create the corresponding set of phenotypes <span class="math inline">\(P_{2}\)</span> and compute the Jaccard similarity of <span class="math inline">\(P_{0}\)</span> and <span class="math inline">\(P_{2}\)</span>. Note that <span class="math inline">\(P_{2}\)</span> might be empty.</li>
-<li>Maintain running count <span class="math inline">\(m\)</span> of how many times the similarity of <span class="math inline">\(P_{0}\)</span> and <span class="math inline">\(P_{2}\)</span> is <span class="math inline">\(\geq\)</span> similarity of <span class="math inline">\(P_{0}\)</span> and <span class="math inline">\(P_{1}\)</span>.</li>
+<li>Select from all human protein-coding genes a set <span class="math inline">\(G_{3}\)</span> that is disjoint from <span class="math inline">\(G_{1}\)</span> and equal in size to <span class="math inline">\(G_{2}\)</span>.</li>
+<li>Create the corresponding set of phenotypes <span class="math inline">\(P_{3}\)</span> and compute the Jaccard similarity of <span class="math inline">\(P_{1}\)</span> and <span class="math inline">\(P_{3}\)</span>. Note that <span class="math inline">\(P_{3}\)</span> might be empty.</li>
+<li>Maintain running count <span class="math inline">\(m\)</span> of how many times the similarity of <span class="math inline">\(P_{1}\)</span> and <span class="math inline">\(P_{3}\)</span> is <span class="math inline">\(\geq\)</span> similarity of <span class="math inline">\(P_{1}\)</span> and <span class="math inline">\(P_{2}\)</span>.</li>
 </ul>
 <ol start="4" style="list-style-type: decimal">
 <li>Calculate p value: <span class="math inline">\(m\)</span> / <span class="math inline">\(n\)</span></li>
 </ol>
 </div>
-<div id="load-library" class="section level4">
-<h4>Load library</h4>
+<div id="load-libraries" class="section level3">
+<h3>Load libraries</h3>
+<p>Meyer D and Hornik K (2009). “Generalized and Customizable Sets in R.” <em>Journal of Statistical Software</em>, 31(2), pp. 1–27. doi: 10.18637/jss.v031.i02.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5dmVyc2UpXG5gYGAifQ== -->
-<pre class="r"><code>library(tidyverse)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShzZXRzLCBxdWlldGx5ID0gVFJVRSlcbmBgYCJ9 -->
+<pre class="r"><code>library(sets, quietly = TRUE)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
-<div id="read-input-files" class="section level4">
-<h4>Read input files</h4>
+<div id="read-input-files" class="section level3">
+<h3>Read input files</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaHVtYW4uZ2VuZXMgPC0gcmVhZC50YWJsZShwYXJhbXMkZ2VuZS5pbmZvLCBoZWFkZXIgPSBUUlVFLCBjb2xDbGFzc2VzID0gYyhcImludGVnZXJcIiwgXCJjaGFyYWN0ZXJcIikpXG5nZW5lcy5maWxlIDwtIGZpbGUocGFyYW1zJHRvLmNvbXBhcmUsIFwiclwiKVxubGluZXMucmVhZCA8LSByZWFkTGluZXMoZ2VuZXMuZmlsZSlcbmxpbmVzLnJlYWRcbmBgYCJ9 -->
-<pre class="r"><code>human.genes &lt;- read.table(params$gene.info, header = TRUE, colClasses = c(&quot;integer&quot;, &quot;character&quot;))
-genes.file &lt;- file(params$to.compare, &quot;r&quot;)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaHVtYW4uZ2VuZXMgPC0gcmVhZC50YWJsZShwYXJhbXMkZ2VuZS5pbmZvLCBzZXAgPSBcIlxcdFwiLCBza2lwID0gMSxcbiAgICAgICAgICAgICAgICAgICAgICAgICAgY29sLm5hbWVzID0gYyhcIkdlbmVJRFwiLCBcIlN5bWJvbFwiKSwgY29sQ2xhc3NlcyA9IGMoXCJpbnRlZ2VyXCIsIFwiY2hhcmFjdGVyXCIpKVxucGhlbm8uMi5nZW5lIDwtIHJlYWQudGFibGUocGFyYW1zJHBoZW5vLnRvLmdlbmUsIHNlcCA9IFwiXFx0XCIsIHNraXAgPSAxLFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgY29sLm5hbWVzID0gYyhcIkhQTy5JRFwiLCBcIkhQTy5OYW1lXCIsIFwiR2VuZS5JRFwiLCBcIkdlbmUuTmFtZVwiKSxcbiAgICAgICAgICAgICAgICAgICAgICAgICAgIGNvbENsYXNzZXMgPSBjKFwiY2hhcmFjdGVyXCIsIFwiY2hhcmFjdGVyXCIsIFwiaW50ZWdlclwiLCBcImNoYXJhY3RlclwiKSlcbmBgYCJ9 -->
+<pre class="r"><code>human.genes &lt;- read.table(params$gene.info, sep = &quot;\t&quot;, skip = 1,
+                          col.names = c(&quot;GeneID&quot;, &quot;Symbol&quot;), colClasses = c(&quot;integer&quot;, &quot;character&quot;))
+pheno.2.gene &lt;- read.table(params$pheno.to.gene, sep = &quot;\t&quot;, skip = 1,
+                           col.names = c(&quot;HPO.ID&quot;, &quot;HPO.Name&quot;, &quot;Gene.ID&quot;, &quot;Gene.Name&quot;),
+                           colClasses = c(&quot;character&quot;, &quot;character&quot;, &quot;integer&quot;, &quot;character&quot;))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRU9GIHdpdGhpbiBxdW90ZWQgc3RyaW5nbnVtYmVyIG9mIGl0ZW1zIHJlYWQgaXMgbm90IGEgbXVsdGlwbGUgb2YgdGhlIG51bWJlciBvZiBjb2x1bW5zXG4ifQ== -->
+<pre><code>EOF within quoted stringnumber of items read is not a multiple of the number of columns</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2VuZXMuZmlsZSA8LSBmaWxlKHBhcmFtcyR0by5jb21wYXJlLCBcInJcIilcbmxpbmVzLnJlYWQgPC0gcmVhZExpbmVzKGdlbmVzLmZpbGUpXG5jbG9zZShnZW5lcy5maWxlKVxubGluZXMucmVhZFxuYGBgIn0= -->
+<pre class="r"><code>genes.file &lt;- file(params$to.compare, &quot;r&quot;)
 lines.read &lt;- readLines(genes.file)
+close(genes.file)
 lines.read</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoiIFsxXSBcIiNUd28gc2V0cyBvZiB0YWItc2VwYXJhdGVkIEVOVFJFWiBnZW5lIGlkcywgYmxhbmsgbGluZSBtYXJrcyBlbmQgb2YgZmlyc3Qgc2V0XCJcbiBbMl0gXCI4ODE4XFx0ODQ5OTJcXHQ1Mjc3XFx0NTI3OVxcdDUyODNcXHQ1MTIyN1xcdDkwOTFcXHQ5NDg3XFx0OTMxODNcXHQ1NDk2NVwiICAgICAgICAgICAgICAgXG4gWzNdIFwiNTU2NTBcXHQyMzU1NlxcdDk0ODhcXHQ4NDcyMFxcdDUyODFcXHQ1NDg3MlxcdDI4NDA5OFxcdDU0MzQ0XFx0ODgxM1xcdDk1MjZcIiAgICAgICAgICAgIFxuIFs0XSBcIjUxNjA0XFx0MTAwMjZcXHQ5NDAwNVxcdDEyODg2OVxcdDg3MzNcXHQ4MDA1NVxcdDkzMjEwXFx0MjczMTVcXHQ2NTI1OFwiICAgICAgICAgICAgICAgIFxuIFs1XSBcIlwiICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcbiBbNl0gXCI0M1xcdDI0OVxcdDI1MFxcdDQxOVxcdDY4M1xcdDc2NFxcdDkyNTRcXHQ1NjQ3N1xcdDkyOVxcdDEwMDEzMzk0MVwiICAgICAgICAgICAgICAgICAgICAgXG4gWzddIFwiOTU5XFx0OTYyXFx0MTA0M1xcdDk2NVxcdDk2NlxcdDEwMTJcXHQ2MzRcXHQzODg1NTFcXHQ3Mjk3NjdcXHQxMjU5MzFcIiAgICAgICAgICAgICAgICAgIFxuIFs4XSBcIjkwMjczXFx0MTA4NFxcdDEwODlcXHQxMDQ4XFx0MTA4N1xcdDEwODhcXHQxMjcyXFx0MTYwNFxcdDE4MDBcXHQxOTQ0XCIgICAgICAgICAgICAgICAgICBcbiBbOV0gXCIxOTQ1XFx0MTk0NlxcdDE5NDlcXHQyMjE1XFx0MjM1MlxcdDI2NzRcXHQyNzY1XFx0MjgxM1xcdDMzODMyOFxcdDg2OTJcIiAgICAgICAgICAgICAgICAgXG5bMTBdIFwiMjY2NzI3XFx0NDMyNlxcdDY0Mzg2XFx0NDY4NFxcdDIyOTc4XFx0NTMyOVxcdDU2MjFcXHQ2NTA3OFxcdDg0ODJcXHQyNzI5M1wiICAgICAgICAgICAgIFxuWzExXSBcIjcwNzBcXHQ4ODc2XCIgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4ifQ== -->
@@ -240,20 +260,35 @@ lines.read</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<p>The blank line indicates the end of the first set and the beginning of the second set.</p>
 </div>
-<div id="create-gene-sets" class="section level4">
-<h4>Create gene sets</h4>
-<p>Two gene sets, one for GPI pathway genes and the other for genes that code the GPI achored proteins. Each is a set of ENTREZ gene ids, read as integers. Have to parse the strings read from params$to.compare to create sets of integers.</p>
-</div>
-<div id="close-input-files" class="section level4">
-<h4>Close input files</h4>
+<div id="create-gene-sets" class="section level3">
+<h3>Create gene sets</h3>
+<p>Create two gene sets, one for GPI pathway genes and the other for genes that code the GPI achored proteins. Each is a set of ENTREZ gene ids, treated as integers. Parse the strings read from <strong>params$to.compare</strong> to create sets of integers.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2xvc2UoZ2VuZXMuZmlsZSlcbmBgYCJ9 -->
-<pre class="r"><code>close(genes.file)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29sbGVjdG9yIDwtIGMoKVxuZ2VuZS5zZXRzIDwtIGxpc3QoKVxuZm9yIChpIGluIDI6bGVuZ3RoKGxpbmVzLnJlYWQpKSB7XG4gIGlmIChsaW5lcy5yZWFkW2ldID09IGMoXCJcIikpIHtcbiAgICBnZW5lLnNldHNbWzFdXSA8LSBhcy5zZXQodW5saXN0KGxhcHBseShjb2xsZWN0b3IsIGFzLmludGVnZXIpKSlcbiAgICBjb2xsZWN0b3IgPC0gYygpXG4gIH1cbiAgZWxzZSB7XG4gICAgY29sbGVjdG9yIDwtIGMoY29sbGVjdG9yLCB1bmxpc3Qoc3Ryc3BsaXQobGluZXMucmVhZFtpXSwgXCJcXHRcIikpKVxuICB9XG59XG5nZW5lLnNldHNbWzJdXSA8LSBhcy5zZXQodW5saXN0KGxhcHBseShjb2xsZWN0b3IsIGFzLmludGVnZXIpKSlcbmBgYCJ9 -->
+<pre class="r"><code>collector &lt;- c()
+gene.sets &lt;- list()
+for (i in 2:length(lines.read)) {
+  if (lines.read[i] == c(&quot;&quot;)) {
+    gene.sets[[1]] &lt;- as.set(unlist(lapply(collector, as.integer)))
+    collector &lt;- c()
+  }
+  else {
+    collector &lt;- c(collector, unlist(strsplit(lines.read[i], &quot;\t&quot;)))
+  }
+}
+gene.sets[[2]] &lt;- as.set(unlist(lapply(collector, as.integer)))</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+</div>
+<div id="create-phenotype-sets" class="section level3">
+<h3>Create phenotype sets</h3>
+<p>For each set of genes, create the corresponding set of phenotypes that includes every phenotype reported for each gene.</p>
+<p>First define function that takes gene id as parameter and returns set of phenotypes associated with that gene. find.phenotypes &lt;- function(gene.id) { phenotypes &lt;- c()</p>
+<p>}</p>
 <p>This is an <a href="http://rmarkdown.rstudio.com">R Markdown</a> Notebook. When you execute code within the notebook, the results appear beneath the code.</p>
 <p>Try executing this chunk by clicking the <em>Run</em> button within the chunk or by placing your cursor inside it and pressing <em>Cmd+Shift+Enter</em>.</p>
 <p>Add a new chunk by clicking the <em>Insert Chunk</em> button on the toolbar or by pressing <em>Cmd+Option+I</em>.</p>
@@ -262,7 +297,7 @@ lines.read</code></pre>
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiR2VuZSBTZXQgUGhlbm90eXBpYyBQcm9maWxlIENvbXBhcmlzb24iCmF1dGhvcjogIkhhbm5haCBCbGF1IgpkYXRlOiAiNi80LzIwMTgiCm91dHB1dDogaHRtbF9ub3RlYm9vawpwYXJhbXM6CiAgdG8uY29tcGFyZTogIkVOVFJFWl9nZW5lX3NldHMudHN2IgogIGdlbmUuaW5mbzogImh1bWFuX3Byb3RlaW5fY29kaW5nX2dlbmVzLnRzdiIKICBwaGVuby50by5nZW5lOiAiQUxMX1NPVVJDRVNfQUxMX0ZSRVFVRU5DSUVTX3BoZW5vdHlwZV90b19nZW5lcy50eHQiCiAgbnVtLml0ZXI6IDEwMDAwMAotLS0KVGhpcyBub3RlYm9vayBjb21wYXJlcyB0d28gZGlzam9pbnQgc2V0cyBvZiBnZW5lcyB0byBzZWUgd2hldGhlciB0aGVpciBwaGVub3R5cGljIHByb2ZpbGVzIGFyZSBtb3JlIHNpbWlsYXIgdGhhbiBvbmUgd291bGQgZXhwZWN0IGJ5IGNoYW5jZS4KCiMjIyMgSW5wdXRzCiogZmlsZSBjb250YWluaW5nIGxpc3Qgb2YgZ2VuZSBpZHMgZm9yIGVhY2ggZ2VuZSBzZXQgKG9uZSBnZW5lIHNldCBwZXIgbGluZSwgdGFiLXNlcGFyYXRlZCkuIFRoZSBnZW5lIHNldHMgbWF5IGJlIG9mIGRpZmZlcmVudCBzaXplcy4KKiBmaWxlIGNvbnRhaW5pbmcgZ2VuZSBpZCBhbmQgZ2VuZSBuYW1lIGZvciBhbGwgaHVtYW4gcHJvdGVpbiBjb2RpbmcgZ2VuZXMsIGV4dHJhY3RlZCBmcm9tIFtmdHAubmNiaS5uaWguZ292L2dlbmUvREFUQS9nZW5lX2luZm8uZ3pdKGh0dHA6Ly9mdHAubmNiaS5uaWguZ292L2dlbmUvREFUQS9nZW5lX2luZm8uZ3opCiogZmlsZSBtYXBwaW5nIEhQTyBwaGVub3R5cGUgaWQvbmFtZSB0byBnZW5lIGlkL25hbWU6IFtBTExfU09VUkNFU19BTExfRlJFUVVFTkNJRVNfcGhlbm90eXBlX3RvX2dlbmVzLnR4dF0oaHR0cDovL2NvbXBiaW8uY2hhcml0ZS5kZS9qZW5raW5zL2pvYi9ocG8uYW5ub3RhdGlvbnMubW9udGhseS9sYXN0U3VjY2Vzc2Z1bEJ1aWxkL2FydGlmYWN0L2Fubm90YXRpb24vQUxMX1NPVVJDRVNfQUxMX0ZSRVFVRU5DSUVTX3BoZW5vdHlwZV90b19nZW5lcy50eHQpCiogbnVtYmVyIG9mIGl0ZXJhdGlvbnMgaW4gbG9vcCB0byBlc3RpbWF0ZSBwLXZhbHVlIHRocm91Z2ggc2ltdWxhdGlvbiAoJG4kKQoKIyMjIyBBbGdvcml0aG0KMS4gRm9yIGVhY2ggc2V0IG9mIGdlbmVzICgkR197MH0kLCAkR197MX0kKSwgY3JlYXRlIGEgc2V0IGNvbnRhaW5pbmcgYWxsIHBoZW5vdHlwZXMgcmVsYXRlZCB0byB0aG9zZSBnZW5lcyAoJFBfezB9JCwgJFBfezF9JCkuCjIuIENvbXB1dGUgSmFjY2FyZCBzaW1pbGFyaXR5IG9mICRQX3swfSQgYW5kICRQX3sxfSQuCgpUbyBlc3RpbWF0ZSB0aGUgcCB2YWx1ZSBieSBzaW11bGF0aW9uLCBob2xkICRHX3swfSQgZml4ZWQgYW5kIGNob29zZSB0aGUgc2Vjb25kIGdlbmUgc2V0IGF0IHJhbmRvbSBmcm9tIGFsbCBodW1hbiBwcm90ZWluLWNvZGluZyBnZW5lcy4KCjMuIEl0ZXJhdGUgJG4kIHRpbWVzOgorIFNlbGVjdCBmcm9tIGFsbCBodW1hbiBwcm90ZWluLWNvZGluZyBnZW5lcyBhIHNldCAkR197Mn0kIHRoYXQgaXMgZGlzam9pbnQgZnJvbSAkR197MH0kIGFuZCBlcXVhbCBpbiBzaXplIHRvICRHX3sxfSQuCisgQ3JlYXRlIHRoZSBjb3JyZXNwb25kaW5nIHNldCBvZiBwaGVub3R5cGVzICRQX3syfSQgYW5kIGNvbXB1dGUgdGhlIEphY2NhcmQgc2ltaWxhcml0eSBvZiAkUF97MH0kIGFuZCAkUF97Mn0kLiBOb3RlIHRoYXQgJFBfezJ9JCBtaWdodCBiZSBlbXB0eS4KKyBNYWludGFpbiBydW5uaW5nIGNvdW50ICRtJCBvZiBob3cgbWFueSB0aW1lcyB0aGUgc2ltaWxhcml0eSBvZiAkUF97MH0kIGFuZCAkUF97Mn0kIGlzICRcZ2VxJCBzaW1pbGFyaXR5IG9mICRQX3swfSQgYW5kICRQX3sxfSQuCgo0LiBDYWxjdWxhdGUgcCB2YWx1ZTogJG0kIC8gJG4kCgojIyMjIExvYWQgbGlicmFyeQoKYGBge3J9CmxpYnJhcnkodGlkeXZlcnNlKQpgYGAKCiMjIyMgUmVhZCBpbnB1dCBmaWxlcwoKYGBge3J9Cmh1bWFuLmdlbmVzIDwtIHJlYWQudGFibGUocGFyYW1zJGdlbmUuaW5mbywgaGVhZGVyID0gVFJVRSwgY29sQ2xhc3NlcyA9IGMoImludGVnZXIiLCAiY2hhcmFjdGVyIikpCmdlbmVzLmZpbGUgPC0gZmlsZShwYXJhbXMkdG8uY29tcGFyZSwgInIiKQpsaW5lcy5yZWFkIDwtIHJlYWRMaW5lcyhnZW5lcy5maWxlKQpsaW5lcy5yZWFkCmBgYAojIyMjIENyZWF0ZSBnZW5lIHNldHMKVHdvIGdlbmUgc2V0cywgb25lIGZvciBHUEkgcGF0aHdheSBnZW5lcyBhbmQgdGhlIG90aGVyIGZvciBnZW5lcyB0aGF0IGNvZGUgdGhlIEdQSSBhY2hvcmVkIHByb3RlaW5zLiBFYWNoIGlzIGEgc2V0IG9mIEVOVFJFWiBnZW5lIGlkcywgcmVhZCBhcyBpbnRlZ2Vycy4gSGF2ZSB0byBwYXJzZSB0aGUgc3RyaW5ncyByZWFkIGZyb20gcGFyYW1zJHRvLmNvbXBhcmUgdG8gY3JlYXRlIHNldHMgb2YgaW50ZWdlcnMuCgoKIyMjIyBDbG9zZSBpbnB1dCBmaWxlcwoKYGBge3J9CmNsb3NlKGdlbmVzLmZpbGUpCmBgYAoKVGhpcyBpcyBhbiBbUiBNYXJrZG93bl0oaHR0cDovL3JtYXJrZG93bi5yc3R1ZGlvLmNvbSkgTm90ZWJvb2suIFdoZW4geW91IGV4ZWN1dGUgY29kZSB3aXRoaW4gdGhlIG5vdGVib29rLCB0aGUgcmVzdWx0cyBhcHBlYXIgYmVuZWF0aCB0aGUgY29kZS4gCgpUcnkgZXhlY3V0aW5nIHRoaXMgY2h1bmsgYnkgY2xpY2tpbmcgdGhlICpSdW4qIGJ1dHRvbiB3aXRoaW4gdGhlIGNodW5rIG9yIGJ5IHBsYWNpbmcgeW91ciBjdXJzb3IgaW5zaWRlIGl0IGFuZCBwcmVzc2luZyAqQ21kK1NoaWZ0K0VudGVyKi4gCgpBZGQgYSBuZXcgY2h1bmsgYnkgY2xpY2tpbmcgdGhlICpJbnNlcnQgQ2h1bmsqIGJ1dHRvbiBvbiB0aGUgdG9vbGJhciBvciBieSBwcmVzc2luZyAqQ21kK09wdGlvbitJKi4KCldoZW4geW91IHNhdmUgdGhlIG5vdGVib29rLCBhbiBIVE1MIGZpbGUgY29udGFpbmluZyB0aGUgY29kZSBhbmQgb3V0cHV0IHdpbGwgYmUgc2F2ZWQgYWxvbmdzaWRlIGl0IChjbGljayB0aGUgKlByZXZpZXcqIGJ1dHRvbiBvciBwcmVzcyAqQ21kK1NoaWZ0K0sqIHRvIHByZXZpZXcgdGhlIEhUTUwgZmlsZSkuIAoKVGhlIHByZXZpZXcgc2hvd3MgeW91IGEgcmVuZGVyZWQgSFRNTCBjb3B5IG9mIHRoZSBjb250ZW50cyBvZiB0aGUgZWRpdG9yLiBDb25zZXF1ZW50bHksIHVubGlrZSAqS25pdCosICpQcmV2aWV3KiBkb2VzIG5vdCBydW4gYW55IFIgY29kZSBjaHVua3MuIEluc3RlYWQsIHRoZSBvdXRwdXQgb2YgdGhlIGNodW5rIHdoZW4gaXQgd2FzIGxhc3QgcnVuIGluIHRoZSBlZGl0b3IgaXMgZGlzcGxheWVkLgoK</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiR2VuZSBTZXQgUGhlbm90eXBpYyBQcm9maWxlIENvbXBhcmlzb24iCmF1dGhvcjogIkhhbm5haCBCbGF1IgpkYXRlOiAiNi80LzIwMTgiCm91dHB1dDogaHRtbF9ub3RlYm9vawpwYXJhbXM6CiAgdG8uY29tcGFyZTogIkVOVFJFWl9nZW5lX3NldHMudHN2IgogIGdlbmUuaW5mbzogImh1bWFuX3Byb3RlaW5fY29kaW5nX2dlbmVzLnRzdiIKICBwaGVuby50by5nZW5lOiAiQUxMX1NPVVJDRVNfQUxMX0ZSRVFVRU5DSUVTX3BoZW5vdHlwZV90b19nZW5lcy50eHQiCiAgbnVtLml0ZXI6IDEwMDAwMAotLS0KVGhpcyBub3RlYm9vayBjb21wYXJlcyB0d28gZGlzam9pbnQgc2V0cyBvZiBnZW5lcyB0byBzZWUgd2hldGhlciB0aGVpciBwaGVub3R5cGljIHByb2ZpbGVzIGFyZSBtb3JlIHNpbWlsYXIgdGhhbiBvbmUgd291bGQgZXhwZWN0IGJ5IGNoYW5jZS4KCiMjIyBJbnB1dHMKKiBmaWxlIGNvbnRhaW5pbmcgbGlzdCBvZiBFTlRSRVogZ2VuZSBpZHMgZm9yIGVhY2ggZ2VuZSBzZXQgKGlkcyBhcmUgdGFiLXNlcGFyYXRlZCwgYmxhbmsgbGluZSBtYXJrcyB0aGUgZW5kIG9mIHRoZSBmaXJzdCBzZXQpLiBUaGUgZ2VuZSBzZXRzIG1heSBiZSBvZiBkaWZmZXJlbnQgc2l6ZXMuCiogZmlsZSBjb250YWluaW5nIGdlbmUgaWQgYW5kIGdlbmUgbmFtZSBmb3IgYWxsIGh1bWFuIHByb3RlaW4gY29kaW5nIGdlbmVzLCBleHRyYWN0ZWQgZnJvbSBbZnRwLm5jYmkubmloLmdvdi9nZW5lL0RBVEEvZ2VuZV9pbmZvLmd6XShodHRwOi8vZnRwLm5jYmkubmloLmdvdi9nZW5lL0RBVEEvZ2VuZV9pbmZvLmd6KSB3aXRoCmBgYHtiYXNoLCBldmFsID0gRkFMU0V9CnpncmVwIF45NjA2IGdlbmVfaW5mby5neiAgfCBncmVwIHByb3RlaW4tY29kaW5nIHwgY3V0IC1mMiwzID4gaHVtYW5fcHJvdGVpbl9jb2RpbmdfZ2VuZXMudHN2CmBgYAoqIGZpbGUgbWFwcGluZyBIUE8gcGhlbm90eXBlIGlkL25hbWUgdG8gZ2VuZSBpZC9uYW1lOiBbQUxMX1NPVVJDRVNfQUxMX0ZSRVFVRU5DSUVTX3BoZW5vdHlwZV90b19nZW5lcy50eHRdKGh0dHA6Ly9jb21wYmlvLmNoYXJpdGUuZGUvamVua2lucy9qb2IvaHBvLmFubm90YXRpb25zLm1vbnRobHkvbGFzdFN1Y2Nlc3NmdWxCdWlsZC9hcnRpZmFjdC9hbm5vdGF0aW9uL0FMTF9TT1VSQ0VTX0FMTF9GUkVRVUVOQ0lFU19waGVub3R5cGVfdG9fZ2VuZXMudHh0KQoqIG51bWJlciBvZiBpdGVyYXRpb25zIGluIGxvb3AgdG8gZXN0aW1hdGUgcC12YWx1ZSB0aHJvdWdoIHNpbXVsYXRpb24gKCRuJCkKCiMjIyBBbGdvcml0aG0KMS4gRm9yIGVhY2ggc2V0IG9mIGdlbmVzICgkR197MX0kLCAkR197Mn0kKSwgY3JlYXRlIGEgc2V0IGNvbnRhaW5pbmcgYWxsIHBoZW5vdHlwZXMgcmVsYXRlZCB0byB0aG9zZSBnZW5lcyAoJFBfezF9JCwgJFBfezJ9JCkuCjIuIENvbXB1dGUgSmFjY2FyZCBzaW1pbGFyaXR5IG9mICRQX3sxfSQgYW5kICRQX3syfSQuCgpUbyBlc3RpbWF0ZSB0aGUgcCB2YWx1ZSBieSBzaW11bGF0aW9uLCBob2xkICRHX3sxfSQgZml4ZWQgYW5kIGNob29zZSB0aGUgc2Vjb25kIGdlbmUgc2V0IGF0IHJhbmRvbSBmcm9tIGFsbCBodW1hbiBwcm90ZWluLWNvZGluZyBnZW5lcy4KCjMuIEl0ZXJhdGUgJG4kIHRpbWVzOgorIFNlbGVjdCBmcm9tIGFsbCBodW1hbiBwcm90ZWluLWNvZGluZyBnZW5lcyBhIHNldCAkR197M30kIHRoYXQgaXMgZGlzam9pbnQgZnJvbSAkR197MX0kIGFuZCBlcXVhbCBpbiBzaXplIHRvICRHX3syfSQuCisgQ3JlYXRlIHRoZSBjb3JyZXNwb25kaW5nIHNldCBvZiBwaGVub3R5cGVzICRQX3szfSQgYW5kIGNvbXB1dGUgdGhlIEphY2NhcmQgc2ltaWxhcml0eSBvZiAkUF97MX0kIGFuZCAkUF97M30kLiBOb3RlIHRoYXQgJFBfezN9JCBtaWdodCBiZSBlbXB0eS4KKyBNYWludGFpbiBydW5uaW5nIGNvdW50ICRtJCBvZiBob3cgbWFueSB0aW1lcyB0aGUgc2ltaWxhcml0eSBvZiAkUF97MX0kIGFuZCAkUF97M30kIGlzICRcZ2VxJCBzaW1pbGFyaXR5IG9mICRQX3sxfSQgYW5kICRQX3syfSQuCgo0LiBDYWxjdWxhdGUgcCB2YWx1ZTogJG0kIC8gJG4kCgojIyMgTG9hZCBsaWJyYXJpZXMKTWV5ZXIgRCBhbmQgSG9ybmlrIEsgKDIwMDkpLiDigJxHZW5lcmFsaXplZCBhbmQgQ3VzdG9taXphYmxlIFNldHMgaW4gUi7igJ0gX0pvdXJuYWwgb2YgU3RhdGlzdGljYWwgU29mdHdhcmVfLCAzMSgyKSwgcHAuIDHigJMyNy4gZG9pOiAxMC4xODYzNy9qc3MudjAzMS5pMDIuCmBgYHtyfQpsaWJyYXJ5KHNldHMsIHF1aWV0bHkgPSBUUlVFKQpgYGAKCiMjIyBSZWFkIGlucHV0IGZpbGVzCgpgYGB7cn0KaHVtYW4uZ2VuZXMgPC0gcmVhZC50YWJsZShwYXJhbXMkZ2VuZS5pbmZvLCBzZXAgPSAiXHQiLCBza2lwID0gMSwKICAgICAgICAgICAgICAgICAgICAgICAgICBjb2wubmFtZXMgPSBjKCJHZW5lSUQiLCAiU3ltYm9sIiksIGNvbENsYXNzZXMgPSBjKCJpbnRlZ2VyIiwgImNoYXJhY3RlciIpKQpwaGVuby4yLmdlbmUgPC0gcmVhZC50YWJsZShwYXJhbXMkcGhlbm8udG8uZ2VuZSwgc2VwID0gIlx0Iiwgc2tpcCA9IDEsCiAgICAgICAgICAgICAgICAgICAgICAgICAgIGNvbC5uYW1lcyA9IGMoIkhQTy5JRCIsICJIUE8uTmFtZSIsICJHZW5lLklEIiwgIkdlbmUuTmFtZSIpLAogICAgICAgICAgICAgICAgICAgICAgICAgICBjb2xDbGFzc2VzID0gYygiY2hhcmFjdGVyIiwgImNoYXJhY3RlciIsICJpbnRlZ2VyIiwgImNoYXJhY3RlciIpKQpnZW5lcy5maWxlIDwtIGZpbGUocGFyYW1zJHRvLmNvbXBhcmUsICJyIikKbGluZXMucmVhZCA8LSByZWFkTGluZXMoZ2VuZXMuZmlsZSkKY2xvc2UoZ2VuZXMuZmlsZSkKbGluZXMucmVhZApgYGAKVGhlIGJsYW5rIGxpbmUgaW5kaWNhdGVzIHRoZSBlbmQgb2YgdGhlIGZpcnN0IHNldCBhbmQgdGhlIGJlZ2lubmluZyBvZiB0aGUgc2Vjb25kIHNldC4KCiMjIyBDcmVhdGUgZ2VuZSBzZXRzCkNyZWF0ZSB0d28gZ2VuZSBzZXRzLCBvbmUgZm9yIEdQSSBwYXRod2F5IGdlbmVzIGFuZCB0aGUgb3RoZXIgZm9yIGdlbmVzIHRoYXQgY29kZSB0aGUgR1BJIGFjaG9yZWQgcHJvdGVpbnMuIEVhY2ggaXMgYSBzZXQgb2YgRU5UUkVaIGdlbmUgaWRzLCB0cmVhdGVkIGFzIGludGVnZXJzLiBQYXJzZSB0aGUgc3RyaW5ncyByZWFkIGZyb20gX19wYXJhbXMkdG8uY29tcGFyZV9fIHRvIGNyZWF0ZSBzZXRzIG9mIGludGVnZXJzLgpgYGB7cn0KY29sbGVjdG9yIDwtIGMoKQpnZW5lLnNldHMgPC0gbGlzdCgpCmZvciAoaSBpbiAyOmxlbmd0aChsaW5lcy5yZWFkKSkgewogIGlmIChsaW5lcy5yZWFkW2ldID09IGMoIiIpKSB7CiAgICBnZW5lLnNldHNbWzFdXSA8LSBhcy5zZXQodW5saXN0KGxhcHBseShjb2xsZWN0b3IsIGFzLmludGVnZXIpKSkKICAgIGNvbGxlY3RvciA8LSBjKCkKICB9CiAgZWxzZSB7CiAgICBjb2xsZWN0b3IgPC0gYyhjb2xsZWN0b3IsIHVubGlzdChzdHJzcGxpdChsaW5lcy5yZWFkW2ldLCAiXHQiKSkpCiAgfQp9CmdlbmUuc2V0c1tbMl1dIDwtIGFzLnNldCh1bmxpc3QobGFwcGx5KGNvbGxlY3RvciwgYXMuaW50ZWdlcikpKQpgYGAKIyMjIENyZWF0ZSBwaGVub3R5cGUgc2V0cwpGb3IgZWFjaCBzZXQgb2YgZ2VuZXMsIGNyZWF0ZSB0aGUgY29ycmVzcG9uZGluZyBzZXQgb2YgcGhlbm90eXBlcyB0aGF0IGluY2x1ZGVzIGV2ZXJ5IHBoZW5vdHlwZSByZXBvcnRlZCBmb3IgZWFjaCBnZW5lLgoKRmlyc3QgZGVmaW5lIGZ1bmN0aW9uIHRoYXQgdGFrZXMgZ2VuZSBpZCBhcyBwYXJhbWV0ZXIgYW5kIHJldHVybnMgc2V0IG9mIHBoZW5vdHlwZXMgYXNzb2NpYXRlZCB3aXRoIHRoYXQgZ2VuZS4KZmluZC5waGVub3R5cGVzIDwtIGZ1bmN0aW9uKGdlbmUuaWQpIHsKcGhlbm90eXBlcyA8LSBjKCkKCn0KClRoaXMgaXMgYW4gW1IgTWFya2Rvd25dKGh0dHA6Ly9ybWFya2Rvd24ucnN0dWRpby5jb20pIE5vdGVib29rLiBXaGVuIHlvdSBleGVjdXRlIGNvZGUgd2l0aGluIHRoZSBub3RlYm9vaywgdGhlIHJlc3VsdHMgYXBwZWFyIGJlbmVhdGggdGhlIGNvZGUuIAoKVHJ5IGV4ZWN1dGluZyB0aGlzIGNodW5rIGJ5IGNsaWNraW5nIHRoZSAqUnVuKiBidXR0b24gd2l0aGluIHRoZSBjaHVuayBvciBieSBwbGFjaW5nIHlvdXIgY3Vyc29yIGluc2lkZSBpdCBhbmQgcHJlc3NpbmcgKkNtZCtTaGlmdCtFbnRlciouIAoKQWRkIGEgbmV3IGNodW5rIGJ5IGNsaWNraW5nIHRoZSAqSW5zZXJ0IENodW5rKiBidXR0b24gb24gdGhlIHRvb2xiYXIgb3IgYnkgcHJlc3NpbmcgKkNtZCtPcHRpb24rSSouCgpXaGVuIHlvdSBzYXZlIHRoZSBub3RlYm9vaywgYW4gSFRNTCBmaWxlIGNvbnRhaW5pbmcgdGhlIGNvZGUgYW5kIG91dHB1dCB3aWxsIGJlIHNhdmVkIGFsb25nc2lkZSBpdCAoY2xpY2sgdGhlICpQcmV2aWV3KiBidXR0b24gb3IgcHJlc3MgKkNtZCtTaGlmdCtLKiB0byBwcmV2aWV3IHRoZSBIVE1MIGZpbGUpLiAKClRoZSBwcmV2aWV3IHNob3dzIHlvdSBhIHJlbmRlcmVkIEhUTUwgY29weSBvZiB0aGUgY29udGVudHMgb2YgdGhlIGVkaXRvci4gQ29uc2VxdWVudGx5LCB1bmxpa2UgKktuaXQqLCAqUHJldmlldyogZG9lcyBub3QgcnVuIGFueSBSIGNvZGUgY2h1bmtzLiBJbnN0ZWFkLCB0aGUgb3V0cHV0IG9mIHRoZSBjaHVuayB3aGVuIGl0IHdhcyBsYXN0IHJ1biBpbiB0aGUgZWRpdG9yIGlzIGRpc3BsYXllZC4KCg==</div>
 
 
 
