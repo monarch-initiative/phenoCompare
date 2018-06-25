@@ -33,29 +33,24 @@ To estimate the p value by simulation, hold $G_{1}$ fixed and choose the second 
 
 4. Calculate p value: $m$ / $n$
 
-### Load libraries
-Meyer D and Hornik K (2009). “Generalized and Customizable Sets in R.” _Journal of Statistical Software_, 31(2), pp. 1–27. doi: 10.18637/jss.v031.i02.
+### Load library
+Meyer D and Hornik K (2009). “Generalized and Customizable Sets in R.” _Journal of Statistical Software_, 31(2), pp. 1–27. doi: 10.18637/jss.v031.i02.0001459
 ```{r}
 library(sets, quietly = TRUE)
 ```
-
 ### Read input files
-
 ```{r}
 human.genes <- read.table(params$gene.info, sep = "\t", skip = 1,
                           col.names = c("GeneID", "Symbol"), colClasses = c("integer", "character"))
-pheno.2.gene <- read.table(params$pheno.to.gene, sep = "\t", skip = 1,
+pheno.2.gene <- read.delim(params$pheno.to.gene, header = FALSE, sep = "\t", skip = 1,
                            col.names = c("HPO.ID", "HPO.Name", "Gene.ID", "Gene.Name"),
                            colClasses = c("character", "character", "integer", "character"))
 genes.file <- file(params$to.compare, "r")
 lines.read <- readLines(genes.file)
 close(genes.file)
-lines.read
 ```
-The blank line indicates the end of the first set and the beginning of the second set.
-
 ### Create gene sets
-Create two gene sets, one for GPI pathway genes and the other for genes that code the GPI achored proteins. Each is a set of ENTREZ gene ids, treated as integers. Parse the strings read from __params$to.compare__ to create sets of integers.
+Create two gene sets, one for GPI pathway genes and the other for genes that code the GPI achored proteins. Each is a set of ENTREZ gene ids, treated as integers. Parse the strings read from __params$to.compare__ to create sets of integers. A blank line indicates the end of the first set and the beginning of the second set. The set constructor expects a vector, not a list, of elements.
 ```{r}
 collector <- c()
 gene.sets <- list()
@@ -70,14 +65,39 @@ for (i in 2:length(lines.read)) {
 }
 gene.sets[[2]] <- as.set(unlist(lapply(collector, as.integer)))
 ```
-### Create phenotype sets
-For each set of genes, create the corresponding set of phenotypes that includes every phenotype reported for each gene.
-
-First define function that takes gene id as parameter and returns set of phenotypes associated with that gene.
+### Compute Jaccard similarity of phenotype sets
+For each set of genes, we want the corresponding set of phenotypes that includes every phenotype reported for any of the genes. First, define a function that takes a single gene id as its argument and returns the set of phenotypes associated with that gene.
+```{r}
 find.phenotypes <- function(gene.id) {
-phenotypes <- c()
-
+  phenotypes <- subset(pheno.2.gene, select=HPO.ID, subset=(Gene.ID==gene.id))
+  as.set(phenotypes$HPO.ID)
 }
+```
+Next, define a function that takes a set of gene ids as its argument and returns the set of all phenotypes associated with those genes.
+```{r}
+findall.phenotypes <- function(gene.ids) {
+  phenotypes <- as.set(c())
+  for (gene.id in gene.ids) {
+    phenotypes <- set_union(phenotypes, find.phenotypes(gene.id))
+  }
+  phenotypes
+}
+```
+Now, use this function to find the sets of phenotypes $P_{1}$ and $P_{2}$ for the two input sets of genes $G_{1}$ and $G_{2}$. Calculate the Jaccard similarity of $P_{1}$ and $P_{2}$.
+```{r}
+p1 <- findall.phenotypes(gene.sets[[1]])
+p2 <- findall.phenotypes(gene.sets[[2]])
+pheno.similarity <- set_similarity(p1, p2, method = "Jaccard")
+```
+
+
+
+
+
+
+
+
+
 
 This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
 
