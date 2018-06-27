@@ -1,13 +1,13 @@
 ---
 title: "Gene Set Phenotypic Profile Comparison"
-author: "Hannah Blau"
+author: "Hannah Blau and Peter Robinson"
 date: "6/4/2018"
 output: html_notebook
 params:
   to.compare: "ENTREZ_gene_sets.tsv"
   gene.info: "human_protein_coding_genes.tsv"
   pheno.to.gene: "ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt"
-  num.iter: 100000
+  num.iter: 10000
 ---
 This notebook compares two disjoint sets of genes to see whether their phenotypic profiles are more similar than one would expect by chance.
 
@@ -76,7 +76,7 @@ find.phenotypes <- function(gene.id) {
 Next, define a function that takes a set of gene ids as its argument and returns the set of all phenotypes associated with those genes.
 ```{r}
 findall.phenotypes <- function(gene.ids) {
-  phenotypes <- as.set(c())
+  phenotypes <- as.set(c())       # initialize phenotypes to empty set
   for (gene.id in gene.ids) {
     phenotypes <- set_union(phenotypes, find.phenotypes(gene.id))
   }
@@ -87,25 +87,34 @@ Now, use this function to find the sets of phenotypes $P_{1}$ and $P_{2}$ for th
 ```{r}
 p1 <- findall.phenotypes(gene.sets[[1]])
 p2 <- findall.phenotypes(gene.sets[[2]])
-pheno.similarity <- set_similarity(p1, p2, method = "Jaccard")
+p1p2.similarity <- set_similarity(p1, p2, method = "Jaccard")
 ```
 
+### Random sampling from human protein coding genes
+Define a boolean function that takes two sets as its arguments and returns TRUE if the two sets overlap, FALSE otherwise.
+```{r}
+overlap <- function(set1, set2) {
+  length(set_intersection(set1, set2)) > 0
+}
+```
+Repeat __params\$num.iter__ times: choose at random a set of genes from __params\$gene.info__ equal in size to $G_{2}$ and disjoint from $G_{1}$. Find the set of associated phenotypes $P_{3}$ and calculate the Jaccard similarity with $P_{1}$. Count how many times $P_{1}$'s similarity to $P_{3}$ is $\geq$ its similarity to $P_{2}$.
 
-
-
-
-
-
-
-
-
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
-
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
-
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
-
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
-
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
-
+```{r}
+m <- 0
+cardinality.g2 <- length(gene.sets[[2]])
+for (i in 1:params$num.iter) {
+  g3 <- sample(human.genes$GeneID, cardinality.g2)
+  while (overlap(gene.sets[[1]], g3)) {
+    g3 <- sample(human.genes$GeneID, cardinality.g2)
+  }
+  p3 <- findall.phenotypes(g3)
+  if (set_similarity(p1, p3, method = "Jaccard") >= p1p2.similarity) {
+    m <- m + 1
+  }
+}
+```
+### Calculate p value
+```{r}
+options(digits = 5)
+cat("p value is : ", m/params$num.iter, "\n")
+```
