@@ -1,7 +1,7 @@
 ---
 title: "Gene Set Phenotypic Profile Comparison"
 author: "Hannah Blau and Peter Robinson"
-date: "6/4/2018"
+date: "6/27/2018"
 output: html_notebook
 params:
   to.compare: "ENTREZ_gene_sets.tsv"
@@ -27,7 +27,7 @@ zgrep ^9606 gene_info.gz  | grep protein-coding | cut -f2,3 > human_protein_codi
 To estimate the p value by simulation, hold $G_{1}$ fixed and choose the second gene set at random from all human protein-coding genes.
 
 3. Iterate $n$ times:
-+ Select from all human protein-coding genes a set $G_{3}$ that is disjoint from $G_{1}$ and equal in size to $G_{2}$.
++ Select from all human protein-coding genes a set $G_{3}$ equal in size to $G_{2}$.
 + Create the corresponding set of phenotypes $P_{3}$ and compute the Jaccard similarity of $P_{1}$ and $P_{3}$. Note that $P_{3}$ might be empty.
 + Maintain running count $m$ of how many times the similarity of $P_{1}$ and $P_{3}$ is $\geq$ similarity of $P_{1}$ and $P_{2}$.
 
@@ -50,7 +50,7 @@ lines.read <- readLines(genes.file)
 close(genes.file)
 ```
 ### Create gene sets
-Create two gene sets, one for GPI pathway genes and the other for genes that code the GPI achored proteins. Each is a set of ENTREZ gene ids, treated as integers. Parse the strings read from __params$to.compare__ to create sets of integers. A blank line indicates the end of the first set and the beginning of the second set. The set constructor expects a vector, not a list, of elements.
+Create two gene sets, one for GPI pathway genes and the other for genes that code the GPI anchored proteins. Each is a set of ENTREZ gene ids, treated as integers. Parse the strings read from __params$to.compare__ to create sets of integers. A blank line indicates the end of the first set and the beginning of the second set. The set constructor expects a vector, not a list, of elements.
 ```{r}
 collector <- c()
 gene.sets <- list()
@@ -91,22 +91,13 @@ p1p2.similarity <- set_similarity(p1, p2, method = "Jaccard")
 ```
 
 ### Random sampling from human protein coding genes
-Define a boolean function that takes two sets as its arguments and returns TRUE if the two sets overlap, FALSE otherwise.
-```{r}
-overlap <- function(set1, set2) {
-  length(set_intersection(set1, set2)) > 0
-}
-```
-Repeat __params\$num.iter__ times: choose at random a set of genes from __params\$gene.info__ equal in size to $G_{2}$ and disjoint from $G_{1}$. Find the set of associated phenotypes $P_{3}$ and calculate the Jaccard similarity with $P_{1}$. Count how many times $P_{1}$'s similarity to $P_{3}$ is $\geq$ its similarity to $P_{2}$.
+Repeat __params\$num.iter__ times: choose at random a set $G_{3}$ of genes from __params\$gene.info__ equal in size to $G_{2}$. Find the set of associated phenotypes $P_{3}$ and calculate the Jaccard similarity with $P_{1}$. Count how many times $P_{1}$'s similarity to $P_{3}$ is $\geq$ its similarity to $P_{2}$.
 
 ```{r}
 m <- 0
 cardinality.g2 <- length(gene.sets[[2]])
 for (i in 1:params$num.iter) {
   g3 <- sample(human.genes$GeneID, cardinality.g2)
-  while (overlap(gene.sets[[1]], g3)) {
-    g3 <- sample(human.genes$GeneID, cardinality.g2)
-  }
   p3 <- findall.phenotypes(g3)
   if (set_similarity(p1, p3, method = "Jaccard") >= p1p2.similarity) {
     m <- m + 1
@@ -114,7 +105,8 @@ for (i in 1:params$num.iter) {
 }
 ```
 ### Calculate p value
+P value after `r params$num.iter` iterations.
 ```{r}
-options(digits = 5)
+options(digits = 4)
 cat("p value is : ", m/params$num.iter, "\n")
 ```
