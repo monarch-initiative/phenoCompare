@@ -1,0 +1,112 @@
+---
+title: "Gene Set Phenotypic Profile Comparison"
+author: "Hannah Blau and Peter Robinson"
+date: "6/27/2018"
+output: html_notebook
+params:
+  to.compare: "ENTREZ_gene_sets.tsv"
+  gene.info: "human_protein_coding_genes.tsv"
+  pheno.to.gene: "ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt"
+  num.iter: 10000
+---
+This notebook compares two disjoint sets of genes to see whether their phenotypic profiles are more similar than one would expect by chance.
+
+### Inputs
+* file containing list of ENTREZ gene ids for each gene set (ids are tab-separated, blank line marks the end of the first set). The gene sets may be of different sizes.
+* file containing gene id and gene name for all human protein coding genes, extracted from [ftp.ncbi.nih.gov/gene/DATA/gene_info.gz](http://ftp.ncbi.nih.gov/gene/DATA/gene_info.gz) with
+```{bash, eval = FALSE}
+zgrep ^9606 gene_info.gz  | grep protein-coding | cut -f2,3 > human_protein_coding_genes.tsv
+```
+* file mapping HPO phenotype id/name to gene id/name: [ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt](http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/lastSuccessfulBuild/artifact/annotation/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt)
+* number of iterations in loop to estimate p-value through simulation ($n$)
+
+### Algorithm
+1. For each set of genes ($G_{1}$, $G_{2}$), create a set containing all phenotypes related to those genes ($P_{1}$, $P_{2}$).
+2. Compute Jaccard similarity of $P_{1}$ and $P_{2}$.
+
+To estimate the p value by simulation, hold $G_{1}$ fixed and choose the second gene set at random from all human protein-coding genes.
+
+3. Iterate $n$ times:
++ Select from all human protein-coding genes a set $G_{3}$ equal in size to $G_{2}$.
++ Create the corresponding set of phenotypes $P_{3}$ and compute the Jaccard similarity of $P_{1}$ and $P_{3}$. Note that $P_{3}$ might be empty.
++ Maintain running count $m$ of how many times the similarity of $P_{1}$ and $P_{3}$ is $\geq$ similarity of $P_{1}$ and $P_{2}$.
+
+4. Calculate p value: $m$ / $n$
+
+### Load library
+Meyer D and Hornik K (2009). “Generalized and Customizable Sets in R.” _Journal of Statistical Software_, 31(2), pp. 1–27. doi: 10.18637/jss.v031.i02.0001459
+```{r}
+library(sets, quietly = TRUE)
+```
+### Read input files
+```{r}
+human.genes <- read.table(params$gene.info, sep = "\t", skip = 1,
+                          col.names = c("GeneID", "Symbol"), colClasses = c("integer", "character"))
+pheno.2.gene <- read.delim(params$pheno.to.gene, header = FALSE, sep = "\t", skip = 1,
+                           col.names = c("HPO.ID", "HPO.Name", "Gene.ID", "Gene.Name"),
+                           colClasses = c("character", "character", "integer", "character"))
+genes.file <- file(params$to.compare, "r")
+lines.read <- readLines(genes.file)
+close(genes.file)
+```
+### Create gene sets
+Create two gene sets, one for GPI pathway genes and the other for genes that code the GPI anchored proteins. Each is a set of ENTREZ gene ids, treated as integers. Parse the strings read from __params$to.compare__ to create sets of integers. A blank line indicates the end of the first set and the beginning of the second set. The set constructor expects a vector, not a list, of elements.
+```{r}
+collector <- c()
+gene.sets <- list()
+for (i in 2:length(lines.read)) {
+  if (lines.read[i] == c("")) {
+    gene.sets[[1]] <- as.set(unlist(lapply(collector, as.integer)))
+    collector <- c()
+  }
+  else {
+    collector <- c(collector, unlist(strsplit(lines.read[i], "\t")))
+  }
+}
+gene.sets[[2]] <- as.set(unlist(lapply(collector, as.integer)))
+```
+### Compute Jaccard similarity of phenotype sets
+For each set of genes, we want the corresponding set of phenotypes that includes every phenotype reported for any of the genes. First, define a function that takes a single gene id as its argument and returns the set of phenotypes associated with that gene.
+```{r}
+find.phenotypes <- function(gene.id) {
+  phenotypes <- subset(pheno.2.gene, select=HPO.ID, subset=(Gene.ID==gene.id))
+  as.set(phenotypes$HPO.ID)
+}
+```
+Next, define a function that takes a set of gene ids as its argument and returns the set of all phenotypes associated with those genes.
+```{r}
+findall.phenotypes <- function(gene.ids) {
+  phenotypes <- as.set(c())       # initialize phenotypes to empty set
+  for (gene.id in gene.ids) {
+    phenotypes <- set_union(phenotypes, find.phenotypes(gene.id))
+  }
+  phenotypes
+}
+```
+Now, use this function to find the sets of phenotypes $P_{1}$ and $P_{2}$ for the two input sets of genes $G_{1}$ and $G_{2}$. Calculate the Jaccard similarity of $P_{1}$ and $P_{2}$.
+```{r}
+p1 <- findall.phenotypes(gene.sets[[1]])
+p2 <- findall.phenotypes(gene.sets[[2]])
+p1p2.similarity <- set_similarity(p1, p2, method = "Jaccard")
+```
+
+### Random sampling from human protein coding genes
+Repeat __params\$num.iter__ times: choose at random a set $G_{3}$ of genes from __params\$gene.info__ equal in size to $G_{2}$. Find the set of associated phenotypes $P_{3}$ and calculate the Jaccard similarity with $P_{1}$. Count how many times $P_{1}$'s similarity to $P_{3}$ is $\geq$ its similarity to $P_{2}$.
+
+```{r}
+m <- 0
+cardinality.g2 <- length(gene.sets[[2]])
+for (i in 1:params$num.iter) {
+  g3 <- sample(human.genes$GeneID, cardinality.g2)
+  p3 <- findall.phenotypes(g3)
+  if (set_similarity(p1, p3, method = "Jaccard") >= p1p2.similarity) {
+    m <- m + 1
+  }
+}
+```
+### Calculate p value
+P value after `r params$num.iter` iterations.
+```{r}
+options(digits = 4)
+cat("p value is : ", m/params$num.iter, "\n")
+```
