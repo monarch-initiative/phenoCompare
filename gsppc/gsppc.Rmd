@@ -9,7 +9,7 @@ params:
   pheno.to.gene: "ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt"
   num.iter: 10000
 ---
-This notebook compares two disjoint sets of genes to see whether their phenotypic profiles are more similar than one would expect by chance.
+This notebook compares two sets of genes to see whether their phenotypic profiles are more similar than one would expect by chance.
 
 ### Inputs
 * file containing list of ENTREZ gene ids for each gene set (ids are tab-separated, blank line marks the end of the first set). The gene sets may be of different sizes.
