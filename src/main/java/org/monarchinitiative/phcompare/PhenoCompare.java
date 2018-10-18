@@ -55,7 +55,7 @@ public class PhenoCompare {
      * @throws IOException     if thrown by getOntolibOntology
      * @throws ParseException  if parseCommandLine indicates that execution should halt
      */
-    PhenoCompare(String[] args) throws IOException, ParseException {
+    public PhenoCompare(String[] args) throws IOException, ParseException {
         // Initialize hpoPath, genesPath, patientsPath, and resultsPath from the command line arguments
         if (parseCommandLine(args)) {
             // Initialize ontology fields
@@ -254,7 +254,7 @@ public class PhenoCompare {
         return patientGroups;
     }
 
-    String getResultsPath() {
+    public String getResultsPath() {
         return resultsPath;
     }
 
