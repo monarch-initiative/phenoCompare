@@ -1,13 +1,14 @@
 ---
 title: "Gene Set Phenotypic Profile Comparison"
 author: "Hannah Blau and Peter Robinson"
-date: "12 Sept 2018"
+date: "18 Oct 2018"
 output: html_notebook
 params:
   to.compare: "ENTREZ_gene_sets.tsv"
   gene.info: "human_protein_coding_genes.tsv"
   pheno.to.gene: "ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt"
-  num.iter: 100000
+  gene.to.pheno: "ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt"
+  num.iter: 10000
 ---
 This notebook compares two sets of genes to see whether their phenotypic profiles are more similar than one would expect by chance.
 
@@ -17,7 +18,7 @@ This notebook compares two sets of genes to see whether their phenotypic profile
 ```{bash, eval = FALSE}
 zgrep ^9606 gene_info.gz  | grep protein-coding | cut -f2,3 > human_protein_coding_genes.tsv
 ```
-* file mapping HPO phenotype id/name to gene id/name: [ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt](http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/lastSuccessfulBuild/artifact/annotation/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt)
+* file mapping gene id/name to HPO phenotype id/name: [ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt](http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/lastSuccessfulBuild/artifact/annotation/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt)
 * number of iterations in loop to estimate p-value through simulation ($n$)
 
 ### Algorithm
@@ -42,9 +43,9 @@ library(sets, quietly = TRUE)
 ```{r}
 human.genes <- read.table(params$gene.info, sep = "\t", skip = 1,
                           col.names = c("GeneID", "Symbol"), colClasses = c("integer", "character"))
-pheno.2.gene <- read.delim(params$pheno.to.gene, header = FALSE, sep = "\t", skip = 1,
-                           col.names = c("HPO.ID", "HPO.Name", "Gene.ID", "Gene.Name"),
-                           colClasses = c("character", "character", "integer", "character"))
+gene.2.pheno <- read.delim(params$gene.to.pheno, header = FALSE, sep = "\t", skip = 1,
+                           col.names = c("Gene.ID", "Gene.Name", "HPO.Name", "HPO.ID"),
+                           colClasses = c("integer", "character", "character", "character"))
 genes.file <- file(params$to.compare, "r")
 lines.read <- readLines(genes.file)
 close(genes.file)
@@ -69,7 +70,7 @@ gene.sets[[2]] <- as.set(unlist(lapply(collector, as.integer)))
 For each set of genes, we want the corresponding set of phenotypes that includes every phenotype reported for any of the genes. First, define a function that takes a single gene id as its argument and returns the set of phenotypes associated with that gene.
 ```{r}
 find.phenotypes <- function(gene.id) {
-  phenotypes <- subset(pheno.2.gene, select=HPO.ID, subset=(Gene.ID==gene.id))
+  phenotypes <- subset(gene.2.pheno, select=HPO.ID, subset=(Gene.ID==gene.id))
   as.set(phenotypes$HPO.ID)
 }
 ```

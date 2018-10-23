@@ -33,3 +33,4 @@ phenoCompare.iml
 gsppc/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt
 gsppc/human_protein_coding_genes.tsv
 .Rproj.user
+/gsppc/.backup-Rproj.user/
