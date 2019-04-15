@@ -1,13 +1,13 @@
 ---
 title: "Gene Set Phenotypic Profile Comparison"
 author: "Hannah Blau and Peter Robinson"
-date: "6/27/2018"
+date: "12 Sept 2018"
 output: html_notebook
 params:
   to.compare: "ENTREZ_gene_sets.tsv"
   gene.info: "human_protein_coding_genes.tsv"
   pheno.to.gene: "ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt"
-  num.iter: 10000
+  num.iter: 100000
 ---
 This notebook compares two sets of genes to see whether their phenotypic profiles are more similar than one would expect by chance.
 
