@@ -20,3 +20,10 @@ phenoCompare has four command line arguments:<p>
 -g&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_txt_ file containing lists of early, late GPI pathway genes<br>
 -p&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_tsv_ file of patient records<br>
 -r&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;directory for result files<p>
+
+example usage:
+```
+java -jar target/phenoCompare-1.0.0.jar \
+> -o src/main/resources -g src/main/resources/gpiGenesTwoGroups.txt \
+> -p src/main/resources/gpi_variants2018July06.tsv -r resultsTodaysDate
+```
