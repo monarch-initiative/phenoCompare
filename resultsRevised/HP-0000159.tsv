@@ -1,0 +1,71 @@
+# HP:0000159 Abnormality of the lip
+# GroupNum	Id Summary	PubMed	Gene	HPO term	Term name
+1	Horn;2014;PIGV;Patient 4	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0010804	Tented upper lip vermilion
+1	Horn;2014;PIGV;Patient 5	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0010804	Tented upper lip vermilion
+1	Maydan;2011;PIGN;V-2	https://www.ncbi.nlm.nih.gov/pubmed/21493957	PIGN	HP:0000219	Thin upper lip vermilion
+1	Maydan;2011;PIGN;V-2	https://www.ncbi.nlm.nih.gov/pubmed/21493957	PIGN	HP:0000319	Smooth philtrum
+1	Horn;2014;PIGV;Patient 2	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0010804	Tented upper lip vermilion
+1	Maydan;2011;PIGN;V-1	https://www.ncbi.nlm.nih.gov/pubmed/21493957	PIGN	HP:0010804	Tented upper lip vermilion
+1	Barone;2012;DPM2;Patient 1	https://www.ncbi.nlm.nih.gov/pubmed/23109149	DPM2	HP:0000219	Thin upper lip vermilion
+1	Barone;2012;DPM2;Patient 1	https://www.ncbi.nlm.nih.gov/pubmed/23109149	DPM2	HP:0002002	Deep philtrum
+1	Horn;2014;PIGV;Patient 3	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0010804	Tented upper lip vermilion
+1	Chiyonobu;2014;PIGW;Patient	https://www.ncbi.nlm.nih.gov/pubmed/24367057	PIGW	HP:0010804	Tented upper lip vermilion
+1	Krawitz;2012;PIGO;II-2/family A	https://www.ncbi.nlm.nih.gov/pubmed/22683086	PIGO	HP:0010804	Tented upper lip vermilion
+1	Ohba;2014;PIGN;Patient 1	https://www.ncbi.nlm.nih.gov/pubmed/24253414	PIGN	HP:0010804	Tented upper lip vermilion
+1	Thompson;2012;PIGV;Patient 1	https://www.ncbi.nlm.nih.gov/pubmed/22315194	PIGV	HP:0010804	Tented upper lip vermilion
+1	Fujiwara;2015;PIGL;girl	https://www.ncbi.nlm.nih.gov/pubmed/25706356	PIGL	HP:0010804	Tented upper lip vermilion
+1	Thompson;2012;PIGV;Patient 3	https://www.ncbi.nlm.nih.gov/pubmed/22315194	PIGV	HP:0005326	Hypoplastic philtrum
+1	Thompson;2012;PIGV;Patient 3	https://www.ncbi.nlm.nih.gov/pubmed/22315194	PIGV	HP:0010804	Tented upper lip vermilion
+1	Ohba;2014;PIGN;Patient2	https://www.ncbi.nlm.nih.gov/pubmed/24253414	PIGN	HP:0010804	Tented upper lip vermilion
+1	Krawitz;2012;PIGO;II-1/family A	https://www.ncbi.nlm.nih.gov/pubmed/22683086	PIGO	HP:0010804	Tented upper lip vermilion
+1	Thompson;2012;PIGV;Patient 2	https://www.ncbi.nlm.nih.gov/pubmed/22315194	PIGV	HP:0010804	Tented upper lip vermilion
+1	Schenk;2001;MPDU1;Patient S	https://www.ncbi.nlm.nih.gov/pubmed/11733564	MPDU1	HP:0000233	Thin vermilion border
+1	Lam;2015;PIGT;Patient 2	https://www.ncbi.nlm.nih.gov/pubmed/25943031	PIGT	HP:0000343	Long philtrum
+1	Thompson;2012;PIGV;Patient 4	https://www.ncbi.nlm.nih.gov/pubmed/22315194	PIGV	HP:0010804	Tented upper lip vermilion
+1	Lam;2015;PIGT;Patient 1	https://www.ncbi.nlm.nih.gov/pubmed/25943031	PIGT	HP:0000343	Long philtrum
+1	Ng;2012;PIGL;33300	https://www.ncbi.nlm.nih.gov/pubmed/22444671	PIGL	HP:0000322	Short philtrum
+1	Ng;2012;PIGL;33300	https://www.ncbi.nlm.nih.gov/pubmed/22444671	PIGL	HP:0012471	Thick vermilion border
+1	Nakashima;2014;PIGT;female proband	https://www.ncbi.nlm.nih.gov/pubmed/24906948	PIGT	HP:0010804	Tented upper lip vermilion
+1	Pagnamenta;2017;PIGO;263039	https://www.ncbi.nlm.nih.gov/pubmed/28327575	PIGO	HP:0000219	Thin upper lip vermilion
+1	Ng;2012;PIGL;682-2-1	https://www.ncbi.nlm.nih.gov/pubmed/22444671	PIGL	HP:0012471	Thick vermilion border
+1	Krawitz;2012;PIGO;II-1/family B	https://www.ncbi.nlm.nih.gov/pubmed/22683086	PIGO	HP:0010804	Tented upper lip vermilion
+1	Nakamura;2014;PIGO;Individual II-1	https://www.ncbi.nlm.nih.gov/pubmed/24417746	PIGO	HP:0010804	Tented upper lip vermilion
+1	van der Crabben;2014;PIGA;III-1	https://www.ncbi.nlm.nih.gov/pubmed/24259184	PIGA	HP:0000233	Thin vermilion border
+1	van der Crabben;2014;PIGA;III-1	https://www.ncbi.nlm.nih.gov/pubmed/24259184	PIGA	HP:0000288	Abnormality of the philtrum
+1	Ng;2012;PIGL;3988	https://www.ncbi.nlm.nih.gov/pubmed/22444671	PIGL	HP:0000343	Long philtrum
+1	Ng;2012;PIGL;680-2-3	https://www.ncbi.nlm.nih.gov/pubmed/22444671	PIGL	HP:0012471	Thick vermilion border
+1	Horn;2014;PIGV;Patient 8	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0010804	Tented upper lip vermilion
+1	Horn;2014;PIGV;Patient 9	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0010804	Tented upper lip vermilion
+1	Ng;2012;PIGL;680-2-2	https://www.ncbi.nlm.nih.gov/pubmed/22444671	PIGL	HP:0012471	Thick vermilion border
+2	Howard;2014;PGAP3;II-1/Family C	https://www.ncbi.nlm.nih.gov/pubmed/24439110	PGAP3	HP:0010804	Tented upper lip vermilion
+2	Howard;2014;PGAP3;II-1/Family B	https://www.ncbi.nlm.nih.gov/pubmed/24439110	PGAP3	HP:0010804	Tented upper lip vermilion
+2	Pagnamenta;2017;PGAP3;257982-affectedbrother	https://www.ncbi.nlm.nih.gov/pubmed/28327575	PGAP3	HP:0000219	Thin upper lip vermilion
+2	Pagnamenta;2017;PGAP3;257982-affectedbrother	https://www.ncbi.nlm.nih.gov/pubmed/28327575	PGAP3	HP:0000319	Smooth philtrum
+2	Sakaguchi;2018;PGAP3;proband	https://www.ncbi.nlm.nih.gov/pubmed/29531774	PGAP3	HP:0010804	Tented upper lip vermilion
+2	Abdel-Hamid;2017;PGAP3;Patient8/Family7	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0010804	Tented upper lip vermilion
+2	Abdel-Hamid;2017;PGAP3;Patient9/Family8	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0010804	Tented upper lip vermilion
+2	Howard;2014;PGAP3;V-3/Family A	https://www.ncbi.nlm.nih.gov/pubmed/24439110	PGAP3	HP:0010804	Tented upper lip vermilion
+2	Knaus;2016;PGAP3;A-II-1	https://www.ncbi.nlm.nih.gov/pubmed/27120253	PGAP3	HP:0010804	Tented upper lip vermilion
+2	Krawitz;2013;PGAP2;Individual A	https://www.ncbi.nlm.nih.gov/pubmed/23561847	PGAP2	HP:0010804	Tented upper lip vermilion
+2	Abdel-Hamid;2017;PGAP3;Patient1/Family1	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0000204	Cleft upper lip
+2	Abdel-Hamid;2017;PGAP3;Patient1/Family1	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0010804	Tented upper lip vermilion
+2	Krawitz;2013;PGAP2;Individual B	https://www.ncbi.nlm.nih.gov/pubmed/23561847	PGAP2	HP:0010804	Tented upper lip vermilion
+2	Howard;2014;PGAP3;V-1/Family A	https://www.ncbi.nlm.nih.gov/pubmed/24439110	PGAP3	HP:0010804	Tented upper lip vermilion
+2	Abdel-Hamid;2017;PGAP3;Patient10/family8	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0010804	Tented upper lip vermilion
+2	Abdel-Hamid;2017;PGAP3;Patient2/Family2	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0010804	Tented upper lip vermilion
+2	Abdel-Hamid;2017;PGAP3;Patient3/Family3	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0008501	Median cleft lip and palate
+2	Abdel-Hamid;2017;PGAP3;Patient3/Family3	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0010804	Tented upper lip vermilion
+2	Nampoothiri;2017;PGAP3;Older Brother	https://www.ncbi.nlm.nih.gov/pubmed/28794914	PGAP3	HP:0000319	Smooth philtrum
+2	Nampoothiri;2017;PGAP3;Older Brother	https://www.ncbi.nlm.nih.gov/pubmed/28794914	PGAP3	HP:0002263	Exaggerated cupid's bow
+2	Nampoothiri;2017;PGAP3;Older Brother	https://www.ncbi.nlm.nih.gov/pubmed/28794914	PGAP3	HP:0010804	Tented upper lip vermilion
+2	Abdel-Hamid;2017;PGAP3;Patient7/Family7	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0010804	Tented upper lip vermilion
+2	Abdel-Hamid;2017;PGAP3;Patient6/Family6	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0008501	Median cleft lip and palate
+2	Abdel-Hamid;2017;PGAP3;Patient6/Family6	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0010804	Tented upper lip vermilion
+2	Abdel-Hamid;2017;PGAP3;Patient4/Family4	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0010804	Tented upper lip vermilion
+2	Abdel-Hamid;2017;PGAP3;Patient5/Family5	https://www.ncbi.nlm.nih.gov/pubmed/28390064	PGAP3	HP:0010804	Tented upper lip vermilion
+2	Pagnamenta;2017;PGAP3;257982	https://www.ncbi.nlm.nih.gov/pubmed/28327575	PGAP3	HP:0000219	Thin upper lip vermilion
+2	Pagnamenta;2017;PGAP3;257982	https://www.ncbi.nlm.nih.gov/pubmed/28327575	PGAP3	HP:0000319	Smooth philtrum
+2	Nampoothiri;2017;PGAP3;Younger sister	https://www.ncbi.nlm.nih.gov/pubmed/28794914	PGAP3	HP:0000319	Smooth philtrum
+2	Nampoothiri;2017;PGAP3;Younger sister	https://www.ncbi.nlm.nih.gov/pubmed/28794914	PGAP3	HP:0002263	Exaggerated cupid's bow
+2	Knaus;2016;PGAP3;B-II-2	https://www.ncbi.nlm.nih.gov/pubmed/27120253	PGAP3	HP:0010804	Tented upper lip vermilion
+2	Howard;2014;PGAP3;V-2/Family A	https://www.ncbi.nlm.nih.gov/pubmed/24439110	PGAP3	HP:0010804	Tented upper lip vermilion

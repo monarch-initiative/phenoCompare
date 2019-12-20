@@ -1,0 +1,33 @@
+#HPO TermId	Term Name	Group1	Group2	ChiSq	Uncorr p Value	Corr p Value
+HP:0001270	Motor delay	   22/113	   29/39	 39.181	  0.00000	  0.00000
+HP:0000202	Oral cleft	    6/113	   18/39	 36.377	  0.00000	  0.00000
+HP:0000708	Behavioral abnormality	   15/113	   24/39	 35.407	  0.00000	  0.00000
+HP:0100737	Abnormality of the hard palate	    6/113	   17/39	 33.084	  0.00000	  0.00000
+HP:0000175	Cleft palate	    6/113	   17/39	 33.084	  0.00000	  0.00000
+HP:0000431	Wide nasal bridge	   13/113	   22/39	 32.987	  0.00000	  0.00000
+HP:0003155	Elevated alkaline phosphatase	   32/113	   31/39	 31.280	  0.00000	  0.00000
+HP:0000750	Delayed speech and language development	   34/113	   30/39	 26.089	  0.00000	  0.00005
+HP:0012379	Abnormal enzyme/coenzyme activity	   37/113	   31/39	 25.624	  0.00000	  0.00006
+HP:0004379	Abnormality of alkaline phosphatase activity	   37/113	   31/39	 25.624	  0.00000	  0.00006
+HP:0011339	Abnormality of upper lip vermillion	   23/113	   24/39	 23.023	  0.00000	  0.00023
+HP:0000356	Abnormality of the outer ear	   18/113	   21/39	 21.853	  0.00000	  0.00043
+HP:0200007	Abnormal size of the palpebral fissures	    7/113	   14/39	 21.483	  0.00000	  0.00052
+HP:0008050	Abnormality of the palpebral fissures	   13/113	   18/39	 21.440	  0.00000	  0.00053
+HP:0012758	Neurodevelopmental delay	   72/113	   39/39	 19.377	  0.00001	  0.00156
+HP:0030669	Abnormal morphology of the ocular adnexa	   20/113	   21/39	 19.232	  0.00001	  0.00168
+HP:0010804	Tented upper lip vermilion	   20/113	   21/39	 19.232	  0.00001	  0.00168
+HP:0000422	Abnormality of the nasal bridge	   23/113	   22/39	 18.086	  0.00002	  0.00306
+HP:0000492	Abnormal eyelid morphology	   19/113	   20/39	 18.058	  0.00002	  0.00311
+HP:0031703	Abnormal ear morphology	   21/113	   21/39	 18.029	  0.00002	  0.00316
+HP:0000177	Abnormality of upper lip	   28/113	   24/39	 17.407	  0.00003	  0.00437
+HP:0005484	Postnatal microcephaly	   13/113	   16/39	 16.366	  0.00005	  0.00757
+HP:0000377	Abnormality of the pinna	   17/113	   18/39	 15.831	  0.00007	  0.01004
+HP:0010935	Abnormality of the upper urinary tract	   34/113	    0/39	 15.116	  0.00010	  0.01466
+HP:0100886	Abnormality of globe location	   26/113	   22/39	 14.971	  0.00011	  0.01583
+HP:0000252	Microcephaly	   20/113	   19/39	 14.625	  0.00013	  0.01902
+HP:0000598	Abnormality of the ear	   27/113	   22/39	 14.033	  0.00018	  0.02604
+HP:0001939	Abnormality of metabolism/homeostasis	   54/113	   32/39	 13.855	  0.00020	  0.02863
+HP:0000159	Abnormality of the lip	   32/113	   24/39	 13.751	  0.00021	  0.03027
+HP:0000316	Hypertelorism	   23/113	   20/39	 13.671	  0.00022	  0.03158
+HP:0040195	Decreased head circumference	   21/113	   19/39	 13.577	  0.00023	  0.03319
+HP:0000079	Abnormality of the urinary system	   35/113	    1/39	 12.946	  0.00032	  0.04648
