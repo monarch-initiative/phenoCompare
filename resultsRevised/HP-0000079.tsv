@@ -1,0 +1,60 @@
+# HP:0000079 Abnormality of the urinary system
+# GroupNum	Id Summary	PubMed	Gene	HPO term	Term name
+1	Brady;2014;PIGN;Patient	https://www.ncbi.nlm.nih.gov/pubmed/24852103	PIGN	HP:0000110	Renal dysplasia
+1	Brady;2014;PIGN;Patient	https://www.ncbi.nlm.nih.gov/pubmed/24852103	PIGN	HP:0003244	Penile hypospadias
+1	Horn;2014;PIGV;Patient 7	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0000126	Hydronephrosis
+1	McInerney-Leo;2016;PIGN;COLL-2.3	https://www.ncbi.nlm.nih.gov/pubmed/27038415	PIGN	HP:0000110	Renal dysplasia
+1	McInerney-Leo;2016;PIGN;COLL-2.3	https://www.ncbi.nlm.nih.gov/pubmed/27038415	PIGN	HP:0000803	Renal cortical cysts
+1	Pagnamenta;2017;PIGL;277013	https://www.ncbi.nlm.nih.gov/pubmed/28327575	PIGL	HP:0000107	Renal cyst
+1	Horn;2014;PIGV;Patient 6	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0000081	Duplicated collecting system
+1	Horn;2014;PIGV;Patient 1	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0000126	Hydronephrosis
+1	Maydan;2011;PIGN;V-2	https://www.ncbi.nlm.nih.gov/pubmed/21493957	PIGN	HP:0000072	Hydroureter
+1	Maydan;2011;PIGN;V-2	https://www.ncbi.nlm.nih.gov/pubmed/21493957	PIGN	HP:0000126	Hydronephrosis
+1	Horn;2014;PIGV;Patient 3	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0000077	Abnormality of the kidney
+1	McInerney-Leo;2016;PIGN;NSGC-7.4	https://www.ncbi.nlm.nih.gov/pubmed/27038415	PIGN	HP:0000110	Renal dysplasia
+1	McInerney-Leo;2016;PIGN;NSGC-7.4	https://www.ncbi.nlm.nih.gov/pubmed/27038415	PIGN	HP:0000803	Renal cortical cysts
+1	Krawitz;2012;PIGO;II-2/family A	https://www.ncbi.nlm.nih.gov/pubmed/22683086	PIGO	HP:0000076	Vesicoureteral reflux
+1	Ohba;2014;PIGN;Patient 1	https://www.ncbi.nlm.nih.gov/pubmed/24253414	PIGN	HP:0000010	Recurrent urinary tract infections
+1	Ohba;2014;PIGN;Patient 1	https://www.ncbi.nlm.nih.gov/pubmed/24253414	PIGN	HP:0000076	Vesicoureteral reflux
+1	Thompson;2012;PIGV;Patient 1	https://www.ncbi.nlm.nih.gov/pubmed/22315194	PIGV	HP:0000126	Hydronephrosis
+1	Thompson;2012;PIGV;Patient 3	https://www.ncbi.nlm.nih.gov/pubmed/22315194	PIGV	HP:0000072	Hydroureter
+1	Thompson;2012;PIGV;Patient 3	https://www.ncbi.nlm.nih.gov/pubmed/22315194	PIGV	HP:0000077	Abnormality of the kidney
+1	Thompson;2012;PIGV;Patient 3	https://www.ncbi.nlm.nih.gov/pubmed/22315194	PIGV	HP:0000126	Hydronephrosis
+1	Ohba;2014;PIGN;Patient2	https://www.ncbi.nlm.nih.gov/pubmed/24253414	PIGN	HP:0000010	Recurrent urinary tract infections
+1	Ohba;2014;PIGN;Patient2	https://www.ncbi.nlm.nih.gov/pubmed/24253414	PIGN	HP:0000076	Vesicoureteral reflux
+1	Krawitz;2012;PIGO;II-1/family A	https://www.ncbi.nlm.nih.gov/pubmed/22683086	PIGO	HP:0000076	Vesicoureteral reflux
+1	Ceroni;1590;PIGL;Patient 10	https://www.ncbi.nlm.nih.gov/pubmed/29473937	PIGL	HP:0000126	Hydronephrosis
+1	Thompson;2012;PIGV;Patient 2	https://www.ncbi.nlm.nih.gov/pubmed/22315194	PIGV	HP:0000126	Hydronephrosis
+1	Thompson;2012;PIGV;Patient 2	https://www.ncbi.nlm.nih.gov/pubmed/22315194	PIGV	HP:0010946	Dilatation of the renal pelvis
+1	McInerney-Leo;2016;PIGN;NSGC-7.3	https://www.ncbi.nlm.nih.gov/pubmed/27038415	PIGN	HP:0000110	Renal dysplasia
+1	McInerney-Leo;2016;PIGN;NSGC-7.3	https://www.ncbi.nlm.nih.gov/pubmed/27038415	PIGN	HP:0000803	Renal cortical cysts
+1	Schenk;2001;MPDU1;Patient S	https://www.ncbi.nlm.nih.gov/pubmed/11733564	MPDU1	HP:0000803	Renal cortical cysts
+1	Tarailo-Graovac;2015;PIGA;II:2	https://www.ncbi.nlm.nih.gov/pubmed/25885527	PIGA	HP:0000126	Hydronephrosis
+1	Ng;2012;PIGL;33300	https://www.ncbi.nlm.nih.gov/pubmed/22444671	PIGL	HP:0012211	Abnormal renal physiology
+1	Ng;2012;PIGL;33300	https://www.ncbi.nlm.nih.gov/pubmed/22444671	PIGL	HP:0100542	Abnormal localization of kidney
+1	Nakashima;2014;PIGT;female proband	https://www.ncbi.nlm.nih.gov/pubmed/24906948	PIGT	HP:0000071	Ureteral stenosis
+1	Nakashima;2014;PIGT;female proband	https://www.ncbi.nlm.nih.gov/pubmed/24906948	PIGT	HP:0000072	Hydroureter
+1	Nakashima;2014;PIGT;female proband	https://www.ncbi.nlm.nih.gov/pubmed/24906948	PIGT	HP:0000787	Nephrolithiasis
+1	Kato;2014;PIGA;IV-2	https://www.ncbi.nlm.nih.gov/pubmed/24706016	PIGA	HP:0000076	Vesicoureteral reflux
+1	Pagnamenta;2017;PIGT;258094	https://www.ncbi.nlm.nih.gov/pubmed/28327575	PIGT	HP:0000787	Nephrolithiasis
+1	Kato;2014;PIGA;IV-4	https://www.ncbi.nlm.nih.gov/pubmed/24706016	PIGA	HP:0000076	Vesicoureteral reflux
+1	Kvarnung;2013;PIGT;Patient V-2	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0000072	Hydroureter
+1	Kvarnung;2013;PIGT;Patient V-2	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0000113	Polycystic kidney dysplasia
+1	Kvarnung;2013;PIGT;Patient V-2	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0000121	Nephrocalcinosis
+1	Ng;2012;PIGL;3988	https://www.ncbi.nlm.nih.gov/pubmed/22444671	PIGL	HP:0000126	Hydronephrosis
+1	Kvarnung;2013;PIGT;Patient V-1	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0000121	Nephrocalcinosis
+1	Kvarnung;2013;PIGT;Patient V-5	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0000072	Hydroureter
+1	Kvarnung;2013;PIGT;Patient V-5	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0000121	Nephrocalcinosis
+1	Jezela-Stanek;2016;PIGN;Patient 2	https://www.ncbi.nlm.nih.gov/pubmed/26879448	PIGN	HP:0000010	Recurrent urinary tract infections
+1	Horn;2014;PIGV;Patient 8	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0000021	Megacystis
+1	Horn;2014;PIGV;Patient 8	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0000072	Hydroureter
+1	Horn;2014;PIGV;Patient 8	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0000076	Vesicoureteral reflux
+1	Horn;2014;PIGV;Patient 8	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0000126	Hydronephrosis
+1	Horn;2014;PIGV;Patient 9	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0000072	Hydroureter
+1	Horn;2014;PIGV;Patient 9	https://www.ncbi.nlm.nih.gov/pubmed/24129430	PIGV	HP:0000126	Hydronephrosis
+1	Kvarnung;2013;PIGT;Patient V-4	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0000072	Hydroureter
+1	Kvarnung;2013;PIGT;Patient V-4	https://www.ncbi.nlm.nih.gov/pubmed/23636107	PIGT	HP:0000121	Nephrocalcinosis
+1	Johnston;2012;PIGA;IV-2	https://www.ncbi.nlm.nih.gov/pubmed/22305531	PIGA	HP:0000076	Vesicoureteral reflux
+1	Johnston;2012;PIGA;IV-2	https://www.ncbi.nlm.nih.gov/pubmed/22305531	PIGA	HP:0000081	Duplicated collecting system
+1	Kato;2014;PIGA;1	https://www.ncbi.nlm.nih.gov/pubmed/24706016	PIGA	HP:0000076	Vesicoureteral reflux
+2	Perez;2017;PGAP2;Patient 4-IV-7	https://www.ncbi.nlm.nih.gov/pubmed/29119105	PGAP2	HP:0000805	Enuresis
